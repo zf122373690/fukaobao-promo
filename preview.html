@@ -1,0 +1,1210 @@
+<!doctype html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#141414">
+<title>T3 设备控制台 — 本地预览</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#141414;
+  --bg-card:#1c1c1c;
+  --bg-card2:#222222;
+  --bg-input:#181818;
+  --border:#2a2a2a;
+  --border-subtle:#222222;
+  --fg:#e0ddd8;
+  --fg-dim:#8a8780;
+  --fg-muted:#5c5954;
+  --accent:#c8a45c;
+  --accent-h:#d4b06a;
+  --accent-subtle:rgba(200,164,92,.1);
+  --green:#7eb77f;
+  --green-subtle:rgba(126,183,127,.1);
+  --amber:#d4a853;
+  --amber-subtle:rgba(212,168,83,.1);
+  --red:#c75b5b;
+  --red-subtle:rgba(199,91,91,.1);
+  --radius:8px;
+  --radius-sm:6px;
+}
+html{-webkit-text-size-adjust:100%;color-scheme:dark}
+body{
+  font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--fg);
+  line-height:1.55;
+  min-height:100vh;
+  margin:0 auto;
+  max-width:960px;
+  position:relative;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.mono{font-family:"SF Mono","Cascadia Code","JetBrains Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+
+/* 预览模式提示条 */
+.preview-bar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:960px;background:var(--accent);color:#141414;text-align:center;font-size:13px;font-weight:700;padding:5px 0;z-index:100;letter-spacing:.04em}
+.preview-bar+.app{padding-top:28px}
+
+/* ===== App 容器 ===== */
+.app{width:100%;min-height:100vh;position:relative;z-index:1}
+
+/* ===== 顶部状态栏 ===== */
+.topbar{background:rgba(28,28,28,.92);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:30;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.preview-bar ~ .app .topbar{top:28px}
+.brand{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.brand-mark{width:32px;height:32px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;letter-spacing:-.5px;color:#141414}
+.brand-name{font-size:17px;font-weight:600;letter-spacing:-.2px;line-height:1.2;color:var(--fg)}
+.brand-sub{font-size:10px;color:var(--fg-muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.status-pill{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 8px;border-radius:20px;background:var(--green-subtle);border:1px solid rgba(126,183,127,.15);flex-shrink:0}
+.dot-live{width:6px;height:6px;border-radius:50%;background:var(--green);animation:live 3s infinite}
+@keyframes live{0%,100%{opacity:1}50%{opacity:.4}}
+@media(prefers-reduced-motion:reduce){.dot-live{animation:none}.btn{transition:none}}
+.status-txt{font-size:12px;color:var(--fg-dim);font-weight:500}
+
+/* ===== 设备信息条（顶栏内）===== */
+.chips{display:flex;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:center;min-width:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;display:flex;align-items:center;gap:0;padding:3px 8px;background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:4px;min-width:0}
+.chip::before{content:attr(data-label);font-size:10px;color:var(--fg-muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-right:5px;white-space:nowrap}
+.chip-v{font-size:12px;color:var(--fg-dim);font-weight:500;white-space:nowrap}
+.chip-v.mono{font-family:"SF Mono",Consolas,monospace;font-size:11px}
+
+/* ===== Tab 底部栏 ===== */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:960px;background:rgba(28,28,28,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:40;padding-bottom:env(safe-area-inset-bottom);box-sizing:border-box}
+.tab{flex:1;border:0;background:transparent;color:var(--fg-muted);font:inherit;font-size:13px;font-weight:500;padding:12px 4px 14px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;transition:color .2s}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--accent);font-weight:600}
+.tab.on::after{content:"";position:absolute;top:0;left:25%;right:25%;height:3px;background:var(--accent);border-radius:0 0 2px 2px}
+
+/* ===== 主内容 ===== */
+.main{padding:18px 20px 110px}
+.pane{display:none}.pane.on{display:block}
+
+/* ===== 卡片 ===== */
+.card{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:border-color .2s}
+.card-hd{padding:14px 18px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border-subtle)}
+.card-hd h2{font-size:17px;font-weight:600;letter-spacing:-.1px;color:var(--fg)}
+.card-hd .ic{width:17px;height:17px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.card-hd .meta{margin-left:auto;font-size:12px;color:var(--fg-muted);font-weight:500}
+.card-bd{padding:16px 20px 18px}
+
+/* ===== 表单 ===== */
+.fld{margin-bottom:14px}
+.fld:last-child{margin-bottom:0}
+.fld-lbl{display:block;font-size:13px;font-weight:500;color:var(--fg-dim);margin-bottom:6px;letter-spacing:.01em}
+.fld-hint{font-size:12px;color:var(--fg-muted);margin-top:4px;line-height:1.5}
+.inp,select,textarea{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font:inherit;font-size:16px;background:var(--bg-input);color:var(--fg);transition:border-color .15s,box-shadow .15s}
+.inp:focus,select:focus,textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-subtle)}
+.inp:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px;box-shadow:none}
+textarea{resize:vertical;min-height:60px;line-height:1.55}
+.inp-row{display:flex;gap:6px}
+.inp-row .inp{flex:1}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235c5954' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;background-color:var(--bg-input)}
+select option{background:var(--bg-card);color:var(--fg)}
+
+/* ===== 按钮 ===== */
+.btn{border:0;border-radius:var(--radius-sm);padding:12px 18px;font:inherit;font-size:16px;font-weight:600;background:var(--bg-card2);color:var(--fg-dim);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,color .15s,transform .15s;white-space:nowrap}
+.btn:hover{background:#2a2a2a;color:var(--fg)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#141414;font-weight:700}
+.btn-primary:hover{background:var(--accent-h)}
+.btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn-ghost:hover{background:var(--accent-subtle)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#d46b6b}
+.btn-warn{background:var(--amber);color:#141414;font-weight:700}
+.btn-warn:hover{background:#deb86a}
+.btn-sm{padding:7px 12px;font-size:13px;border-radius:4px}
+.btn-row{display:flex;gap:8px;margin-top:14px}
+.btn-row .btn{flex:1}
+
+/* ===== SIM 设置双列 ===== */
+.sim-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:400px){.sim-row{grid-template-columns:1fr}}
+.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:380px){.sim-grid{grid-template-columns:1fr}}
+.sim-card{position:relative;background:var(--bg-card2);border:1px solid var(--border-subtle);border-radius:var(--radius);padding:16px;transition:border-color .2s}
+.sim-card::before{content:"";position:absolute;top:0;left:16px;right:16px;height:3px;border-radius:0 0 2px 2px;background:var(--accent)}
+.sim-card.off::before{background:var(--fg-muted)}
+.sim-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.sim-title{font-size:12px;font-weight:700;color:var(--fg-muted);letter-spacing:.08em;text-transform:uppercase}
+.sim-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:600}
+.sim-badge.ok{background:var(--green-subtle);color:var(--green)}
+.sim-badge.err{background:var(--red-subtle);color:var(--red)}
+.sim-badge.warn{background:var(--amber-subtle);color:var(--amber)}
+.sim-badge.idle{background:rgba(92,89,84,.1);color:var(--fg-muted)}
+
+.signal{display:flex;align-items:flex-end;gap:3px;height:16px;margin-bottom:10px}
+.signal span{width:4px;background:var(--border);border-radius:2px;transition:background .3s}
+.signal span:nth-child(1){height:25%}
+.signal span:nth-child(2){height:50%}
+.signal span:nth-child(3){height:75%}
+.signal span:nth-child(4){height:100%}
+.signal span.on{background:var(--accent)}
+.signal-txt{font-size:11px;color:var(--fg-muted);margin-left:4px;font-family:"SF Mono",monospace}
+
+.sim-info{font-size:13px;color:var(--fg-dim);line-height:1.7}
+.sim-info b{color:var(--fg);font-weight:600}
+.sim-info .op{font-size:14px;color:var(--fg);font-weight:600;margin-bottom:3px;display:block}
+.sim-info .num{font-family:"SF Mono",monospace;color:var(--accent)}
+
+/* ===== 状态行 ===== */
+.kv{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:14px}
+.kv:last-child{border-bottom:0}
+.kv-k{color:var(--fg-muted)}
+.kv-v{color:var(--fg);font-weight:500}
+
+/* ===== 分区标签 ===== */
+.eyebrow{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px;padding:0 2px;opacity:.85}
+.eyebrow:first-child{margin-top:0}
+.divider{border:0;border-top:1px solid var(--border-subtle);margin:14px 0}
+
+/* ===== 注释块 ===== */
+.note{font-size:13px;color:var(--fg-dim);background:var(--bg-input);border-radius:var(--radius-sm);padding:10px 12px;line-height:1.6}
+.note b{color:var(--fg)}
+
+/* ===== OTA ===== */
+.ota-box{padding:12px 14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:14px;color:var(--fg-dim);line-height:1.6;margin-bottom:12px;border:1px solid var(--border-subtle)}
+
+/* ===== 双栏（转发页）===== */
+.cols{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:680px){.cols{grid-template-columns:1.5fr 1fr}}
+
+/* ===== 录音提示 ===== */
+.rec-tip{font-size:12px;color:var(--amber);margin-top:4px}
+
+/* ===== 链接 ===== */
+.link{color:var(--accent);font-size:13px;font-weight:600;text-decoration:none}
+.link:hover{text-decoration:underline}
+
+/* ===== 卡片内子分区 ===== */
+.card-section{margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle)}
+.card-section:first-child{margin-top:0;padding-top:0;border-top:0}
+
+/* ===== 工具页瀑布流 ===== */
+.tools-grid{column-count:2;column-gap:12px}
+.tools-grid .card{display:inline-block;width:100%;margin:0 0 12px;break-inside:avoid;vertical-align:top}
+.tools-grid .card-bd{padding:14px 16px 16px}
+.tools-grid .fld{margin-bottom:10px}
+.tools-grid .btn-row{margin-top:10px}
+.tool-split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.file-pick{display:block;width:100%;box-sizing:border-box;border:1px dashed var(--border);border-radius:var(--radius-sm);background:var(--bg-input);padding:12px;color:var(--fg-dim);font-size:13px}
+@media(max-width:620px){.tools-grid{column-count:1}.tool-split{grid-template-columns:1fr}}
+
+/* ===== 消息中心 ===== */
+.inbox-item{padding:14px;margin:0 0 8px;background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .2s}
+.inbox-item:hover{border-color:var(--accent)}
+.inbox-item.is-call{border-left:3px solid var(--orange,#f59e0b)}
+.inbox-item.is-sms{border-left:3px solid var(--accent)}
+.inbox-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.inbox-col{min-width:0}
+.inbox-col-hd{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg-card);z-index:1;display:flex;align-items:center;gap:8px}
+.inbox-col-cnt{font-size:12px;color:var(--fg-muted);font-weight:400}
+.inbox-col-stats{font-size:11px;color:var(--fg-muted);font-weight:400;margin-left:auto}
+.inbox-empty-sm{padding:20px 10px;font-size:13px}
+@media(max-width:500px){.inbox-cols{grid-template-columns:1fr}}
+.inbox-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.inbox-hd-l{display:flex;align-items:center;gap:6px;min-width:0;flex:1}
+.inbox-type-ic{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.inbox-type-ic.sms{stroke:var(--accent);fill:none;stroke-width:2}
+.inbox-type-ic.call{stroke:var(--orange,#f59e0b);fill:none;stroke-width:2}
+.inbox-phone{font-size:15px;font-weight:600;color:var(--fg);font-family:monospace,Consolas,monospace}
+.inbox-time{font-size:11px;color:var(--fg-muted);white-space:nowrap;flex-shrink:0}
+.inbox-body{font-size:14px;color:var(--fg);line-height:1.6;overflow-wrap:anywhere;word-break:normal;white-space:pre-wrap}
+.inbox-body.collapsed{max-height:120px;overflow:hidden;position:relative}
+.inbox-body.collapsed::after{content:'';position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,var(--bg-card2))}
+.inbox-empty{text-align:center;padding:40px 20px;color:var(--fg-muted);font-size:15px}
+.inbox-empty svg{width:48px;height:48px;margin-bottom:12px;opacity:.3;stroke:var(--fg-muted)}
+
+/* ===== 收件箱回复 ===== */
+.inbox-actions{display:flex;gap:8px;margin-top:12px}
+.inbox-reply-btn{font-size:12px;padding:4px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-input);color:var(--fg-dim);cursor:pointer;transition:border-color .2s,color .2s}
+.inbox-reply-btn:hover{border-color:var(--accent);color:var(--accent)}
+.inbox-reply-form{display:none;margin-top:12px;padding:14px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.inbox-reply-form.on{display:block}
+.inbox-reply-form .fld{margin-bottom:10px}
+.inbox-reply-form .fld:last-child{margin-bottom:0}
+.inbox-reply-form .inp-row{display:flex;gap:6px}
+.inbox-reply-form .inp{flex:1}
+.inbox-reply-form textarea.inp{min-height:70px;resize:vertical}
+</style>
+</head><body>
+<div class="preview-bar">PREVIEW MODE — Mock 数据，仅用于 UI 预览</div>
+<div class="app">
+
+<div class="topbar">
+<div class="brand">
+<div class="brand-mark">T3</div>
+<div>
+<div class="brand-name">T3 设备控制台</div>
+<div class="brand-sub">双卡短信转发</div>
+</div>
+</div>
+<div class="chips">
+<div class="chip" data-label="MAC"><span class="chip-v mono" id="top_mac">—</span></div>
+<div class="chip" data-label="WiFi"><span class="chip-v" id="top_wifi">—</span></div>
+<div class="chip" data-label="IP"><span class="chip-v mono" id="top_ip">—</span></div>
+<div class="chip" data-label="运行"><span class="chip-v" id="top_uptime">—</span></div>
+<div class="chip" data-label="版本"><span class="chip-v mono" id="top_ver">—</span></div>
+</div>
+<div class="status-pill">
+<span class="dot-live"></span>
+<span class="status-txt" id="top_live">在线</span>
+</div>
+<a class="link" href="http://ddzs.cc.cd" target="_blank" style="font-size:14px;font-weight:600;text-decoration:none;flex-shrink:0;color:var(--accent)">帮助</a>
+</div>
+
+<main class="main">
+
+<!-- ============ Pane 1: SIM 状态 ============ -->
+<section id="pane_status" class="pane on">
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+<h2>SIM 卡状态</h2>
+</div>
+<div class="card-bd">
+<div class="sim-grid">
+<div class="sim-card" id="sim1_card">
+<div class="sim-head">
+<span class="sim-title">SIM 1</span>
+<span class="sim-badge idle" id="sim1_badge">检测中</span>
+</div>
+<div class="signal" id="sim1_sig"><span></span><span></span><span></span><span></span></div>
+<div class="sim-info">
+<span class="op" id="sim1_op">—</span>
+<b>号码</b> <span class="num" id="sim1_num_disp">—</span><br>
+<b>ICCID</b> <span class="mono" id="sim1_iccid" style="font-size:11px">—</span>
+</div>
+</div>
+<div class="sim-card" id="sim2_card">
+<div class="sim-head">
+<span class="sim-title">SIM 2</span>
+<span class="sim-badge idle" id="sim2_badge">检测中</span>
+</div>
+<div class="signal" id="sim2_sig"><span></span><span></span><span></span><span></span></div>
+<div class="sim-info">
+<span class="op" id="sim2_op">—</span>
+<b>号码</b> <span class="num" id="sim2_num_disp">—</span><br>
+<b>ICCID</b> <span class="mono" id="sim2_iccid" style="font-size:11px">—</span>
+</div>
+</div>
+</div>
+
+<div class="eyebrow">号码与备注</div>
+<div class="sim-row">
+<div>
+<div class="fld">
+<label class="fld-lbl">SIM 1 号码</label>
+<div class="inp-row"><input class="inp" id="sim1_num" placeholder="自动读取或手动输入"><button class="btn btn-sm btn-primary" onclick="saveNum(1)">保存</button></div>
+</div>
+<div class="fld">
+<label class="fld-lbl">SIM 1 备注</label>
+<div class="inp-row"><input class="inp" id="sim1_remark" placeholder="如：工作号"><button class="btn btn-sm btn-ghost" onclick="saveConfig()">保存</button></div>
+</div>
+</div>
+<div>
+<div class="fld">
+<label class="fld-lbl">SIM 2 号码</label>
+<div class="inp-row"><input class="inp" id="sim2_num" placeholder="自动读取或手动输入"><button class="btn btn-sm btn-primary" onclick="saveNum(2)">保存</button></div>
+</div>
+<div class="fld">
+<label class="fld-lbl">SIM 2 备注</label>
+<div class="inp-row"><input class="inp" id="sim2_remark" placeholder="如：个人号"><button class="btn btn-sm btn-ghost" onclick="saveConfig()">保存</button></div>
+</div>
+</div>
+</div>
+
+<div class="eyebrow">PIN 码（选填）</div>
+<div class="sim-row">
+<div class="fld">
+<label class="fld-lbl" for="sim1_pin">SIM 1 PIN</label>
+<input class="inp" id="sim1_pin" type="password" inputmode="numeric" autocomplete="off" placeholder="仅 SIM 卡启用 PIN 锁时需要…">
+</div>
+<div class="fld">
+<label class="fld-lbl" for="sim2_pin">SIM 2 PIN</label>
+<input class="inp" id="sim2_pin" type="password" inputmode="numeric" autocomplete="off" placeholder="仅 SIM 卡启用 PIN 锁时需要…">
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ Pane 2: 转发通道 ============ -->
+<section id="pane_forward" class="pane">
+<div class="cols">
+<div>
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+<h2>转发通道</h2>
+<span class="meta" id="ch_meta">通道 1 / 5</span>
+</div>
+<div class="card-bd">
+<div class="fld">
+<label class="fld-lbl">编辑通道</label>
+<select id="ch_sel" onchange="cacheCh();renderCh(this.value)">
+<option value="0">通道 1</option><option value="1">通道 2</option><option value="2">通道 3</option><option value="3">通道 4</option><option value="4">通道 5</option>
+</select>
+</div>
+
+<div class="eyebrow">通道信息</div>
+<div class="fld">
+<label class="fld-lbl">名称</label>
+<input class="inp" id="ch_name" placeholder="如：钉钉告警">
+</div>
+<div class="fld">
+<label class="fld-lbl">推送平台</label>
+<select id="ch_type" onchange="showRec()">
+<option value="0">关闭</option>
+<option value="1">自定义 Webhook</option>
+<option value="2">Telegram</option>
+<option value="3">Bark</option>
+<option value="4">钉钉机器人</option>
+<option value="5">PushDeer</option>
+<option value="6">飞书机器人</option>
+<option value="7">企业微信机器人</option>
+<option value="8">企业微信应用</option>
+<option value="9">Gotify</option>
+<option value="10">Server 酱</option>
+<option value="11">PushPlus</option>
+<option value="12">WxPusher</option>
+<option value="13">PushOver</option>
+<option value="14">INotify</option>
+<option value="15">SMTP 邮件</option>
+</select>
+</div>
+
+<div class="eyebrow">连接</div>
+<div class="fld">
+<label class="fld-lbl">Webhook URL</label>
+<textarea id="ch_url" placeholder="平台提供的地址，多行可轮询"></textarea>
+</div>
+<div class="fld">
+<label class="fld-lbl">参数 1</label>
+<input class="inp" id="ch_key1" placeholder="Chat ID / Secret 等">
+</div>
+<div class="fld">
+<label class="fld-lbl">参数 2</label>
+<input class="inp" id="ch_key2" placeholder="Token / Secret 等">
+</div>
+
+<div class="eyebrow">消息模板</div>
+<div class="fld">
+<label class="fld-lbl">自定义模板</label>
+<textarea id="ch_body" placeholder="留空使用默认格式"></textarea>
+</div>
+
+<div class="eyebrow">录音上传</div>
+<div class="fld">
+<label class="fld-lbl">录音上传</label>
+<select id="ch_rec_up" onchange="showRec()">
+<option value="0">关闭</option>
+<option value="1">开启</option>
+</select>
+<div id="ch_rec_tip" class="rec-tip" style="display:none"></div>
+</div>
+<div class="fld" id="ch_rec_url_fld">
+<label class="fld-lbl">录音上传地址</label>
+<textarea id="ch_rec_url" placeholder="留空则复用推送 URL"></textarea>
+</div>
+
+<div class="btn-row">
+<button class="btn btn-primary" onclick="saveConfig()">保存通道配置</button>
+</div>
+</div>
+</div>
+</div>
+
+<div>
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+<h2>来电处理</h2>
+</div>
+<div class="card-bd">
+<div class="fld">
+<label class="fld-lbl">处理方式</label>
+<select id="call_mode">
+<option value="0">关闭</option>
+<option value="1">自动接听并录音</option>
+<option value="2">仅录音</option>
+</select>
+</div>
+<div class="fld">
+<label class="fld-lbl">挂断时间</label>
+<div class="inp-row">
+<input class="inp" id="call_sec" type="number" min="1" value="50">
+<span style="font-size:14px;color:var(--fg-muted);white-space:nowrap;padding-top:12px">秒</span>
+</div>
+</div>
+<div class="fld">
+<label class="fld-lbl">语音播报</label>
+<select id="call_play">
+<option value="0">关闭</option>
+<option value="1">开启</option>
+</select>
+</div>
+<div class="fld">
+<label class="fld-lbl">播报文件</label>
+<input class="inp" id="call_play_file" placeholder="默认：你好，机主托管，请留言">
+</div>
+<div class="divider"></div>
+<div class="note">
+<b>录音说明</b>：保存在 4G 模组 UFS，上传后自动删除。企微支持语音消息格式。
+</div>
+<div class="btn-row">
+<button class="btn" onclick="saveConfig()">保存来电设置</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ Pane 3: 短信 ============ -->
+<section id="pane_sms" class="pane">
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+<h2>发送短信</h2>
+</div>
+<div class="card-bd">
+<div class="fld">
+<label class="fld-lbl">使用卡槽</label>
+<select id="sms_slot">
+<option value="1" id="sms_opt1">SIM 1</option>
+<option value="2" id="sms_opt2">SIM 2</option>
+</select>
+</div>
+<div class="fld">
+<label class="fld-lbl">目标号码</label>
+<input class="inp" id="sms_phone" placeholder="接收方手机号">
+</div>
+<div class="fld">
+<label class="fld-lbl">短信内容</label>
+<textarea id="sms_content" placeholder="输入短信内容" style="min-height:80px"></textarea>
+</div>
+<div class="btn-row">
+<button class="btn btn-primary" onclick="sendSMS()">发送短信</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ Pane 4: 收件箱 ============ -->
+<section id="pane_inbox" class="pane">
+
+<!-- 消息中心列表 -->
+<div class="card card-full">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+<h2>消息中心 (<span id="inbox_count">0</span>)</h2>
+<div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<button class="btn btn-sm btn-ghost" onclick="loadInbox()" style="font-size:12px">刷新</button>
+</div>
+</div>
+<div class="card-bd">
+<div id="inbox_list" style="max-height:calc(100vh - 420px);overflow-y:auto;padding-right:2px"></div>
+</div>
+</div>
+</section>
+
+<!-- ============ Pane 5: 工具 ============ -->
+<section id="pane_tools" class="pane">
+<div class="tools-grid">
+
+<!-- 设备设置 + 定时重启（合并卡片） -->
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+<h2>设备设置</h2>
+</div>
+<div class="card-bd">
+<div class="tool-split">
+<div class="fld">
+<label class="fld-lbl">设备名称</label>
+<input class="inp" id="sys_device_name" placeholder="便于识别…">
+</div>
+<div class="fld">
+<label class="fld-lbl">网络模式</label>
+<select id="network_mode">
+<option value="0">自动</option>
+<option value="1">仅 WiFi</option>
+<option value="2">仅 4G</option>
+</select>
+</div>
+</div>
+
+<!-- 定时重启（子分区） -->
+<div class="card-section">
+<div class="eyebrow" style="margin-top:0">定时重启</div>
+<div class="tool-split">
+<div class="fld">
+<label class="fld-lbl">状态</label>
+<select id="reboot_enabled">
+<option value="0">关闭</option>
+<option value="1">启用</option>
+</select>
+</div>
+<div class="fld">
+<label class="fld-lbl">每日时间</label>
+<div class="inp-row">
+<input class="inp" id="reboot_hour" type="number" min="0" max="23" placeholder="时" style="max-width:60px">
+<span style="font-size:14px;color:var(--fg-muted);padding-top:12px">:</span>
+<input class="inp" id="reboot_minute" type="number" min="0" max="59" placeholder="分" style="max-width:60px">
+</div>
+</div>
+</div>
+<div class="fld-hint">24h 制，如 04:00。需模块时间已同步。</div>
+</div>
+
+<div class="btn-row">
+<button class="btn btn-primary" onclick="saveConfig()">保存设置</button>
+</div>
+
+<!-- 设备维护 -->
+<div class="card-section">
+<div class="eyebrow" style="margin-top:0">设备维护</div>
+<div class="note" style="background:var(--red-subtle);margin-bottom:8px;border:1px solid rgba(199,91,91,.15)">
+<b style="color:var(--red)">注意</b>：恢复出厂将清除所有配置，不可撤销。
+</div>
+<div class="btn-row">
+<button class="btn btn-warn" onclick="reboot()">重启设备</button>
+<button class="btn btn-danger" onclick="reset()">恢复出厂</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 固件升级 -->
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+<h2>固件升级</h2>
+</div>
+<div class="card-bd">
+<div id="ota_status" class="ota-box">点击下方按钮检查更新</div>
+<div class="btn-row">
+<button class="btn" onclick="checkOTA()">检查更新</button>
+<button id="btn_ota" class="btn btn-primary" style="display:none" onclick="startOTA()">在线升级</button>
+</div>
+<div id="ota_online_progress" style="display:none;margin-top:8px">
+<div style="background:var(--bg-input);border-radius:6px;height:8px;overflow:hidden;border:1px solid var(--border)">
+<div id="ota_online_bar" style="background:var(--accent);height:100%;width:0%;transition:width .3s;box-shadow:0 0 6px var(--accent-subtle)"></div>
+</div>
+<div style="font-size:12px;color:var(--fg-muted);margin-top:4px" id="ota_online_pct"></div>
+</div>
+<div class="divider"></div>
+<div class="fld">
+<label class="fld-lbl">上传固件文件</label>
+<input class="file-pick" type="file" id="ota_file" accept=".bin">
+<div class="fld-hint">选择编译好的 .bin 固件文件直接上传升级</div>
+</div>
+<div class="btn-row">
+<button id="btn_ota_upload" class="btn btn-primary" onclick="uploadOTA()">上传升级</button>
+</div>
+<div id="ota_upload_progress" style="display:none;margin-top:8px">
+<div style="background:var(--bg-input);border-radius:6px;height:8px;overflow:hidden;border:1px solid var(--border)">
+<div id="ota_upload_bar" style="background:var(--accent);height:100%;width:0%;transition:width .3s;box-shadow:0 0 6px var(--accent-subtle)"></div>
+</div>
+<div style="font-size:12px;color:var(--fg-muted);margin-top:4px" id="ota_upload_pct"></div>
+</div>
+</div>
+</div>
+
+<!-- MQTT 连接 -->
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z" stroke-width="0" fill="none"/><path d="M18 8h-2a4 4 0 0 0-4 4v8M2 8h6M6 4v8m10 6h2a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+<h2>MQTT 连接</h2>
+</div>
+<div class="card-bd">
+<div class="tool-split">
+<div class="fld">
+<label class="fld-lbl">状态</label>
+<select id="mqtt_enabled">
+<option value="1">启用</option>
+<option value="0">关闭</option>
+</select>
+</div>
+<div class="fld">
+<label class="fld-lbl">端口</label>
+<input class="inp" id="mqtt_port" type="number" value="1883">
+</div>
+</div>
+<div class="eyebrow">服务器</div>
+<div class="fld">
+<label class="fld-lbl">地址</label>
+<input class="inp" id="mqtt_broker" placeholder="mqtt.example.com…">
+</div>
+<div class="tool-split">
+<div class="fld">
+<label class="fld-lbl">用户名</label>
+<input class="inp" id="mqtt_user">
+</div>
+<div class="fld">
+<label class="fld-lbl">密码</label>
+<input class="inp" id="mqtt_pass" type="password">
+</div>
+</div>
+<div class="eyebrow">主题与心跳</div>
+<div class="tool-split">
+<div class="fld">
+<label class="fld-lbl">主题前缀</label>
+<input class="inp" id="mqtt_prefix" value="sms">
+</div>
+<div class="fld">
+<label class="fld-lbl">ClientID</label>
+<input class="inp" id="mqtt_clientid" placeholder="留空自动生成…">
+</div>
+</div>
+<div class="tool-split">
+<div class="fld">
+<label class="fld-lbl">心跳间隔</label>
+<div class="inp-row">
+<input class="inp" id="mqtt_keepalive" type="number" value="60">
+<span style="font-size:14px;color:var(--fg-muted);white-space:nowrap;padding-top:12px">秒</span>
+</div>
+</div>
+<div class="fld">
+<label class="fld-lbl">状态上报间隔</label>
+<div class="inp-row">
+<input class="inp" id="mqtt_statusint" type="number" value="60">
+<span style="font-size:14px;color:var(--fg-muted);white-space:nowrap;padding-top:12px">秒</span>
+</div>
+</div>
+</div>
+<div class="btn-row">
+<button class="btn btn-primary" onclick="saveConfig()">保存 MQTT 配置</button>
+</div>
+</div>
+</div>
+
+<!-- 短信控制 -->
+<div class="card">
+<div class="card-hd">
+<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+<h2>短信控制</h2>
+</div>
+<div class="card-bd">
+<div class="fld">
+<label class="fld-lbl">状态</label>
+<select id="sms_ctrl_enabled">
+<option value="0">关闭</option>
+<option value="1">启用</option>
+</select>
+</div>
+<div class="fld">
+<label class="fld-lbl">管理员号码</label>
+<input class="inp" id="admin_phones" placeholder="多个号码用逗号分隔">
+<div class="fld-hint">仅管理员号码发送的指令才会被执行，号码为唯一鉴权依据。</div>
+</div>
+<div class="fld">
+<label class="fld-lbl">指令格式</label>
+<div class="fld-hint" style="line-height:1.7">
+<code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">系统设置#WiFi账号#WiFi密码#设备编号#访问密码</code><br>
+<code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">修改WIFI#WiFi账号#WiFi密码</code><br>
+<code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">修改编号#新编号</code><br>
+<code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">修改密码#新密码</code><br>
+<code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">重启系统</code> · <code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">恢复出厂设置系统</code><br>
+<code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">发送短信#号码#内容</code><br>
+<code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">OTA升级#url</code> · <code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">状态</code> · <code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;color:var(--accent);border:1px solid var(--border)">帮助</code>
+</div>
+</div>
+<div class="btn-row">
+<button class="btn" onclick="saveConfig()">保存短信控制</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+
+<nav class="tabbar">
+<button class="tab on" data-t="status" onclick="tab('status')">
+<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>SIM</button>
+<button class="tab" data-t="forward" onclick="tab('forward')">
+<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>转发</button>
+<button class="tab" data-t="sms" onclick="tab('sms')">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>短信</button>
+<button class="tab" data-t="inbox" onclick="tab('inbox')">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-6l-2 3H10l-2-3H2M2 12l2.5-7h15L22 12"/><line x1="6" y1="12" x2="6" y2="19"/><line x1="18" y1="12" x2="18" y2="19"/></svg>收件</button>
+<button class="tab" data-t="tools" onclick="tab('tools')">
+<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>工具</button>
+</nav>
+
+</div>
+
+<script>
+// ===== Mock API 拦截 =====
+const MOCK = {
+  status: {
+    mac:"AA:BB:CC:DD:EE:FF",
+    wifi:{ssid:"T3-Office-5G",ip:"192.168.1.100"},
+    uptime:3725,
+    version:"V2.2.2a",
+    modem:{
+      sim1_present:true,sim1_cs_registered:true,sim1_ps_registered:true,
+      sim1_operator:"中国移动",sim1_number:"13800138000",sim1_iccid:"89860012345678901234",
+      sim2_present:true,sim2_cs_registered:true,sim2_ps_registered:true,
+      sim2_operator:"中国联通",sim2_number:"18600186000",sim2_iccid:"89860198765432109876",
+      signal_dbm:-75
+    }
+  },
+  config: {
+    deviceName:"T3-Gateway-01",
+    networkMode:0,
+    callRecordEnabled:true,callRecordAutoAnswer:true,callHangupSeconds:50,
+    callPlayEnabled:false,callPlayFile:"",
+    sim1Remark:"工作号",sim2Remark:"个人号",
+    rebootEnabled:true,rebootHour:4,rebootMinute:0,
+    smsControlEnabled:true,adminPhones:"13800138000",
+    pushChannels:[
+      {enabled:true,type:4,name:"钉钉告警",url:"https://oapi.dingtalk.com/robot/send?access_token=xxx",key1:"",key2:"",customBody:"",recordUploadEnabled:false,recordUrl:""},
+      {enabled:false,type:0,name:"",url:"",key1:"",key2:"",customBody:"",recordUploadEnabled:false,recordUrl:""},
+      {enabled:false,type:0,name:"",url:"",key1:"",key2:"",customBody:"",recordUploadEnabled:false,recordUrl:""},
+      {enabled:false,type:0,name:"",url:"",key1:"",key2:"",customBody:"",recordUploadEnabled:false,recordUrl:""},
+      {enabled:false,type:0,name:"",url:"",key1:"",key2:"",customBody:"",recordUploadEnabled:false,recordUrl:""}
+    ],
+    mqtt:{enabled:true,broker:"mqtt.example.com",port:1883,username:"t3",password:"",topicPrefix:"sms",clientId:"",keepAlive:60,statusInterval:60}
+  },
+  messages: [
+    {type:"sms",ts:"2026-07-03 14:23:15",sim:"SIM1",num:"13800138000",from:"13800138000",msg:"您的验证码为 6842，有效期5分钟，请勿泄露给他人。【中国移动】"},
+    {type:"sms",ts:"2026-07-03 14:18:42",sim:"SIM1",num:"13800138000",from:"95555",msg:"【招商银行】您尾号6688的信用卡07月03日14:18消费人民币128.00元，余额3,420.50元。"},
+    {type:"sms",ts:"2026-07-03 10:05:11",sim:"SIM2",num:"18600186000",from:"106901234567",msg:"【菜鸟驿站】您的快递已到小区南门丰巢柜，取件码8352，请24小时内取件。"},
+    {type:"sms",ts:"2026-07-03 09:32:08",sim:"SIM2",num:"18600186000",from:"18600186000",msg:"下午3点开会，别迟到。"},
+    {type:"sms",ts:"2026-07-02 18:45:33",sim:"SIM1",num:"13800138000",from:"10086",msg:"尊敬的客户，您的话费余额不足10元，为不影响正常使用，请及时充值。点击 http://10086.cn 充值。"}
+  ]
+};
+
+// 拦截 fetch：返回 mock 数据
+const origFetch = window.fetch;
+window.fetch = function(url, opts) {
+  let path = typeof url === 'string' ? url : url.url;
+  // 移除 query string
+  path = path.split('?')[0];
+
+  return new Promise(function(resolve) {
+    setTimeout(function() {
+      let body = null, status = 200;
+
+      if (path === '/api/status') {
+        body = JSON.stringify(MOCK.status);
+      } else if (path === '/api/config') {
+        if (opts && opts.method === 'POST') {
+          // 模拟保存成功
+          body = JSON.stringify({ok:true});
+        } else {
+          body = JSON.stringify(MOCK.config);
+        }
+      } else if (path === '/api/ota/check') {
+        body = JSON.stringify({update:true,url:"http://ota.example.com/firmware.bin",version:"V2.2.3",current_version:"V2.2.2a"});
+      } else if (path === '/api/ota/start') {
+        body = JSON.stringify({ok:true});
+      } else if (path === '/api/ota/progress') {
+        body = JSON.stringify({running:true,percent:45,total:1048576,loaded:471859,message:"下载中..."});
+      } else if (path === '/api/sim/number') {
+        body = JSON.stringify({ok:true});
+      } else if (path === '/api/sms/send') {
+        body = JSON.stringify({ok:true});
+      } else if (path === '/api/sms/purge') {
+        body = JSON.stringify({ok:true});
+      } else if (path === '/api/messages') {
+        body = JSON.stringify({messages:MOCK.messages,count:MOCK.messages.length});
+      } else {
+        body = JSON.stringify({ok:true});
+      }
+
+      resolve({
+        ok: true, status: status,
+        json: function() { return Promise.resolve(JSON.parse(body)); },
+        text: function() { return Promise.resolve(body); }
+      });
+    }, 150); // 模拟网络延迟
+  });
+};
+
+// ===== 业务逻辑（与 html_ui.h 完全一致）=====
+let cfg=null,idx=0,upUrl='',upVer='',otaPreVer='',currentTab='status',inboxLoading=false;
+const $=id=>document.getElementById(id);
+const api=async(u,o)=>{let r=await fetch(u,o);return r.json()};
+
+function tab(n){
+document.querySelectorAll('.pane,.tab').forEach(e=>e.classList.remove('on'));
+$('pane_'+n).classList.add('on');
+document.querySelector('[data-t="'+n+'"]').classList.add('on');
+if(n==='inbox')loadInbox();
+}
+
+function fmtUp(s){
+s=Number(s||0);
+if(s<60)return s+'s';
+if(s<3600)return Math.floor(s/60)+'m';
+return Math.floor(s/3600)+'h '+(Math.floor(s%3600/60))+'m';
+}
+
+function setBadge(id,st){
+let e=$(id);
+if(st==='ok'){e.className='sim-badge ok';e.textContent='正常'}
+else if(st==='err'){e.className='sim-badge err';e.textContent='未插卡'}
+else{e.className='sim-badge warn';e.textContent='注册中'}
+}
+
+function setSignal(el,dbm){
+if(!el)return;
+let v=parseInt(dbm)||-120;
+let n=v>=-70?4:v>=-85?3:v>=-100?2:v>=-110?1:0;
+let bars=el.querySelectorAll('span');
+bars.forEach((b,i)=>b.classList.toggle('on',i<n));
+}
+
+function sim(n,m){
+let p=m['sim'+n+'_present'],r=m['sim'+n+'_cs_registered']||m['sim'+n+'_ps_registered'];
+let num=m['sim'+n+'_number']||'';
+let card=$('sim'+n+'_card');
+if(document.activeElement!==$('sim'+n+'_num'))$('sim'+n+'_num').value=num;
+$('sim'+n+'_op').textContent=m['sim'+n+'_operator']||(p?'识别中…':'—');
+$('sim'+n+'_num_disp').textContent=num||'—';
+$('sim'+n+'_iccid').textContent=m['sim'+n+'_iccid']||'—';
+$('sms_opt'+n).textContent=num?'SIM '+n+'（'+num+'）':'SIM '+n;
+setBadge('sim'+n+'_badge',!p?'err':r?'ok':'reg');
+card.classList.toggle('off',!p||!r);
+setSignal($('sim'+n+'_sig'),m['signal_dbm']);
+}
+
+async function loadStatus(){
+try{
+let d=await api('/api/status'),m=d.modem||{};
+$('top_mac').textContent=d.mac||'—';
+$('top_wifi').textContent=d.wifi&&d.wifi.ssid?d.wifi.ssid:'—';
+$('top_ip').textContent=d.wifi&&d.wifi.ip?d.wifi.ip:'—';
+$('top_uptime').textContent=fmtUp(d.uptime);
+$('top_ver').textContent=d.version||'—';
+sim(1,m);sim(2,m);
+}catch(e){}
+}
+
+function defBody(){return'【{{设备名称}}】{{事件标题}}\n号码: {{号码}}\n内容: {{内容}}\n时间: {{时间}}\n来源: SIM{{卡槽}} {{卡号}}'}
+
+function renderCh(i){
+if(!cfg)return;
+idx=parseInt(i||0);
+let c=(cfg.pushChannels||[])[idx]||{};
+$('ch_meta').textContent='通道 '+(idx+1)+' / 5';
+$('ch_name').value=c.name||'';
+$('ch_type').value=c.type||0;
+$('ch_url').value=c.url||'';
+$('ch_key1').value=c.key1||'';
+$('ch_key2').value=c.key2||'';
+$('ch_body').value=c.customBody||defBody();
+$('ch_rec_up').value=c.recordUploadEnabled?'1':'0';
+$('ch_rec_url').value=c.recordUrl||'';
+showRec();
+}
+
+function showRec(){
+let t=parseInt($('ch_type').value);
+let isWecom=t===7||t===8;
+let tip=$('ch_rec_tip'),urlFld=$('ch_rec_url_fld');
+if(isWecom){
+tip.style.display='block';
+tip.textContent='企业微信通道录音会自动上传为语音消息';
+urlFld.style.display='none';
+}else{
+tip.style.display='none';
+urlFld.style.display='block';
+}
+}
+
+function cacheCh(){
+if(!cfg)return;
+if(!cfg.pushChannels)cfg.pushChannels=[{},{},{},{},{}];
+cfg.pushChannels[idx]={
+enabled:$('ch_type').value!=='0',
+type:parseInt($('ch_type').value||0),
+name:$('ch_name').value,
+url:$('ch_url').value,
+key1:$('ch_key1').value,
+key2:$('ch_key2').value,
+customBody:$('ch_body').value,
+recordUploadEnabled:$('ch_rec_up').value==='1',
+recordUrl:$('ch_rec_url').value
+};
+}
+
+async function loadConfig(){
+try{
+let d=await api('/api/config');
+if(!d.pushChannels)d.pushChannels=[{},{},{},{},{}];
+cfg=d;
+$('sim1_remark').value=d.sim1Remark||'';
+$('sim2_remark').value=d.sim2Remark||'';
+$('sim1_pin').value='';
+$('sim2_pin').value='';
+$('sys_device_name').value=d.deviceName||'';
+$('network_mode').value=d.networkMode||0;
+$('call_mode').value=d.callRecordEnabled?(d.callRecordAutoAnswer?1:2):0;
+$('call_sec').value=d.callHangupSeconds||50;
+$('call_play').value=d.callPlayEnabled?1:0;
+$('call_play_file').value=d.callPlayFile||'';
+let mq=d.mqtt||{};
+$('mqtt_enabled').value=mq.enabled!==false?'1':'0';
+$('mqtt_broker').value=mq.broker||'';
+$('mqtt_port').value=mq.port||1883;
+$('mqtt_user').value=mq.username||'';
+$('mqtt_pass').value=mq.password||'';
+$('mqtt_prefix').value=mq.topicPrefix||'sms';
+$('mqtt_clientid').value=mq.clientId||'';
+$('mqtt_keepalive').value=mq.keepAlive||60;
+$('mqtt_statusint').value=mq.statusInterval||60;
+$('reboot_enabled').value=d.rebootEnabled?1:0;
+$('reboot_hour').value=(d.rebootHour!=null)?d.rebootHour:4;
+$('reboot_minute').value=(d.rebootMinute!=null)?d.rebootMinute:0;
+$('sms_ctrl_enabled').value=d.smsControlEnabled?1:0;
+$('admin_phones').value=d.adminPhones||'';
+$('ch_sel').value='0';
+renderCh(0);
+}catch(e){}
+}
+
+function payload(){
+cacheCh();
+let m=parseInt($('call_mode').value||0);
+let p={
+deviceName:$('sys_device_name').value,
+networkMode:parseInt($('network_mode').value||0),
+callRecordEnabled:m>0,
+callRecordAutoAnswer:m===1,
+callHangupSeconds:parseInt($('call_sec').value||50),
+callPlayEnabled:$('call_play').value==='1',
+callPlayFile:$('call_play_file').value,
+sim1Remark:$('sim1_remark').value,
+sim2Remark:$('sim2_remark').value,
+rebootEnabled:$('reboot_enabled').value==='1',
+rebootHour:parseInt($('reboot_hour').value||0),
+rebootMinute:parseInt($('reboot_minute').value||0),
+smsControlEnabled:$('sms_ctrl_enabled').value==='1',
+adminPhones:$('admin_phones').value.trim(),
+pushChannels:cfg?cfg.pushChannels:[{},{},{},{},{}],
+mqtt:{
+enabled:$('mqtt_enabled').value==='1',
+broker:$('mqtt_broker').value.trim(),
+port:parseInt($('mqtt_port').value||1883),
+username:$('mqtt_user').value,
+password:$('mqtt_pass').value,
+topicPrefix:$('mqtt_prefix').value.trim()||'sms',
+clientId:$('mqtt_clientid').value.trim(),
+keepAlive:parseInt($('mqtt_keepalive').value||60),
+statusInterval:parseInt($('mqtt_statusint').value||60)
+}
+};
+let p1=$('sim1_pin').value.trim(),p2=$('sim2_pin').value.trim();
+if(p1)p.sim1Pin=p1;
+if(p2)p.sim2Pin=p2;
+return p;
+}
+
+async function postJson(u,b){return api(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)})}
+
+async function saveConfig(){
+try{
+await postJson('/api/config',payload());
+alert('已保存');
+await loadConfig();await loadStatus();
+}catch(e){alert('保存失败')}
+}
+
+async function saveNum(n){
+try{
+await postJson('/api/sim/number',{slot:n,number:$('sim'+n+'_num').value.trim()});
+await loadStatus();
+}catch(e){alert('保存失败')}
+}
+
+async function sendSMS(){
+let p=$('sms_phone').value.trim(),m=$('sms_content').value.trim();
+if(!p||!m){alert('请填写号码和内容');return}
+try{
+await postJson('/api/sms/send',{slot:parseInt($('sms_slot').value||1),phone:p,msg:m});
+alert('已发送（预览模式）');
+$('sms_content').value='';
+}catch(e){alert('发送失败')}
+}
+
+async function checkOTA(){
+try{
+let d=await api('/api/ota/check');
+if(d.update){
+upUrl=d.url;
+upVer=d.version||'';
+$('ota_status').innerHTML='<b style="color:var(--accent)">发现新版本 '+d.version+'</b>';
+$('btn_ota').style.display='inline-flex';
+}else{
+upUrl='';upVer='';
+if(d.error&&d.error!=='no_update'){
+$('ota_status').textContent='检查失败：'+d.error;
+}else{
+$('ota_status').textContent='已是最新版本 '+(d.current_version||$('top_ver').textContent);
+}
+$('btn_ota').style.display='none';
+}
+}catch(e){$('ota_status').textContent='检查失败'}
+}
+
+async function startOTA(){
+if(!upUrl||!confirm('确认升级？升级期间设备将重启。'))return;
+try{let s=await api('/api/status');otaPreVer=s.version||$('top_ver').textContent}catch(e){otaPreVer=$('top_ver').textContent}
+$('ota_status').textContent='升级请求已发送，等待设备开始下载…';
+$('btn_ota').disabled=true;
+$('ota_online_progress').style.display='block';
+$('ota_online_bar').style.width='0%';
+$('ota_online_pct').textContent='准备中…';
+// 预览模式：模拟进度
+simulateOtaProgress();
+}
+
+async function simulateOtaProgress(){
+let pct=0;
+let iv=setInterval(function(){
+pct+=Math.floor(Math.random()*15)+5;
+if(pct>=100){pct=100;clearInterval(iv);
+$('ota_online_bar').style.width='100%';
+$('ota_online_pct').textContent='刷写完成，设备正在重启…（预览模拟）';
+$('ota_status').textContent='刷写完成，等待设备重启…（预览模拟）';
+$('btn_ota').disabled=false;
+$('btn_ota').style.display='none';
+setTimeout(function(){$('ota_online_progress').style.display='none'},3000);
+return;
+}
+$('ota_online_bar').style.width=pct+'%';
+$('ota_online_pct').textContent='下载中… '+pct+'% (预览模拟)';
+$('ota_status').textContent='在线升级下载中… '+pct+'%';
+},800);
+}
+
+async function uploadOTA(){
+let fileInput=$('ota_file');
+if(!fileInput.files||!fileInput.files.length){alert('请先选择固件文件');return}
+let file=fileInput.files[0];
+if(!file.name.endsWith('.bin')){alert('请选择 .bin 固件文件');return}
+if(!confirm('确认上传升级？升级期间设备将重启。'))return;
+$('btn_ota_upload').disabled=true;
+$('ota_upload_progress').style.display='block';
+// 预览模式：模拟上传进度
+let pct=0;
+let iv=setInterval(function(){
+pct+=Math.floor(Math.random()*12)+5;
+if(pct>=100){pct=100;clearInterval(iv);
+$('ota_upload_bar').style.width='100%';
+$('ota_upload_pct').textContent='上传完成，设备正在重启…（预览模拟）';
+$('btn_ota_upload').disabled=false;
+setTimeout(function(){$('ota_upload_progress').style.display='none'},3000);
+return;
+}
+$('ota_upload_bar').style.width=pct+'%';
+$('ota_upload_pct').textContent='上传中… '+pct+'% (预览模拟)';
+},500);
+}
+
+async function reboot(){
+if(confirm('确认重启？约 30 秒恢复。')){alert('正在重启（预览模式）')}
+}
+
+// ===== 消息中心 =====
+// 消息中心架构：短信/来电记录统一写入 EC200M UFS 文件 messages.log
+// Web 端固定 30s 轮询 /api/messages 读取该日志显示，重启后记录依然保留
+async function loadInbox(){
+try{
+let d=await api('/api/messages');
+let list=d.messages||[],cnt=list.length;
+$('inbox_count').textContent=cnt;
+if(cnt===0){
+$('inbox_list').innerHTML='<div class="inbox-empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>暂无近期消息记录</p><p style="font-size:12px;margin-top:4px;opacity:.7">完整记录见服务端短信工作台</p></div>';
+return;
+}
+var sim1=list.filter(function(s){return s.sim!=='SIM2'});
+var sim2=list.filter(function(s){return s.sim==='SIM2'});
+var idx=0;
+function isCall(s){return s.type==='call'}
+function phoneOf(s){return isCall(s)?(s.msg||'').substring(5).trim():(s.from||'')}
+function renderCol(arr,label){
+var smsCnt=arr.filter(function(s){return!isCall(s)}).length;
+var callCnt=arr.length-smsCnt;
+var stats='短信'+smsCnt+' · 来电'+callCnt;
+if(arr.length===0)return '<div class="inbox-col"><div class="inbox-col-hd">'+escHtml(label)+' <span class="inbox-col-cnt">0</span><span class="inbox-col-stats">'+escHtml(stats)+'</span></div><div class="inbox-empty inbox-empty-sm"><p>暂无记录</p></div></div>';
+return '<div class="inbox-col"><div class="inbox-col-hd">'+escHtml(label)+' <span class="inbox-col-cnt">'+arr.length+'</span><span class="inbox-col-stats">'+escHtml(stats)+'</span></div>'+arr.map(function(sms){
+var i=idx++;
+var call=isCall(sms);
+var simSlot=sms.sim==='SIM2'?2:1;
+var phone=phoneOf(sms);
+var typeIcon=call?'<svg class="inbox-type-ic call" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>':'<svg class="inbox-type-ic sms" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+var typeCls=call?'is-call':'is-sms';
+var actions=call?'':'<button class="inbox-reply-btn" onclick="event.stopPropagation();showReply('+i+')">回复</button>';
+var replyForm=call?'':'<div class="inbox-reply-form" id="inbox_reply_'+i+'"><div class="fld"><label class="fld-lbl">卡槽</label><select class="inp" id="inbox_reply_slot_'+i+'"><option value="1"'+(simSlot===1?' selected':'')+'>SIM 1</option><option value="2"'+(simSlot===2?' selected':'')+'>SIM 2</option></select></div><div class="fld"><label class="fld-lbl">收件人</label><input class="inp" id="inbox_reply_to_'+i+'" value="'+escHtml(phone)+'" readonly></div><div class="fld"><label class="fld-lbl">内容</label><textarea class="inp" id="inbox_reply_msg_'+i+'" placeholder="输入回复内容"></textarea></div><div class="btn-row"><button class="btn btn-primary btn-sm" onclick="sendReply('+i+')">发送回复</button><button class="btn btn-sm btn-ghost" onclick="cancelReply('+i+')">取消</button></div></div>';
+var bodyText=call?('来电：'+escHtml(phone)):escHtml(sms.msg);
+return '<div class="inbox-item '+typeCls+'"><div class="inbox-hd" onclick="toggleSms('+i+')"><div class="inbox-hd-l">'+typeIcon+'<span class="inbox-phone">'+escHtml(phone)+'</span></div><span class="inbox-time">'+escHtml(sms.ts||'')+'</span></div><div class="inbox-body collapsed" id="inbox_body_'+i+'">'+bodyText+'</div><div class="inbox-actions">'+actions+'</div>'+replyForm+'</div>';
+}).join('')+'</div>';
+}
+$('inbox_list').innerHTML='<div class="inbox-cols">'+renderCol(sim1,'SIM 1')+renderCol(sim2,'SIM 2')+'</div>';
+}catch(e){$('inbox_list').innerHTML='<div class="inbox-empty"><p>加载失败: '+escHtml(e.message)+'</p></div>'}
+}
+
+function callBack(i,phone,slot){
+if(!confirm('确认通过 SIM'+slot+' 回拨给 '+phone+'？'))return;
+postJson('/api/sms/send',{slot:slot,phone:phone,msg:'回拨请求'}).then(()=>{alert('已发起回拨（通过短信通知）')}).catch(()=>{alert('回拨失败')});
+}
+
+// 切换实时/历史视图
+function switchMsgView(){
+loadInbox();
+}
+
+
+function toggleSms(i){
+let el=$('inbox_body_'+i);
+if(el)el.classList.toggle('collapsed');
+}
+
+async function clearInbox(){
+// 兼容旧调用：直接重新加载消息中心
+loadInbox();
+}
+
+function showReply(i){
+let el=$('inbox_reply_'+i);
+if(el)el.classList.toggle('on');
+}
+
+function cancelReply(i){
+let el=$('inbox_reply_'+i);
+if(el)el.classList.remove('on');
+}
+
+async function sendReply(i){
+let slot=parseInt($('inbox_reply_slot_'+i).value)||1;
+let phone=$('inbox_reply_to_'+i).value.trim();
+let msg=$('inbox_reply_msg_'+i).value.trim();
+if(!msg){alert('请输入回复内容');return}
+try{
+await postJson('/api/sms/send',{slot:slot,phone:phone,msg:msg});
+alert('回复已发送');
+$('inbox_reply_msg_'+i).value='';
+cancelReply(i);
+}catch(e){alert('发送失败')}
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+async function reset(){
+if(confirm('⚠️ 将清除所有配置！确认恢复出厂？')){alert('已恢复，设备将重启（预览模式）')}
+}
+
+async function init(){await loadStatus();await loadConfig()}
+init();setInterval(function(){if(currentTab==='inbox'&&!document.hidden)loadInbox(true)},30000);
+</script>
+</div></body></html>

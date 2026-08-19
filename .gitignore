@@ -1,5 +1,8 @@
-# 默认忽略工作区全部素材与缓存，仅收录单文件官网宣传页与说明
+# 默认忽略工作区全部素材与缓存，仅收录根目录的 5 个宣传/固件演示 HTML
 *
-!副卡宝官网宣传.html
-!README.md
+!docs.html
+!download.html
+!firmware-release.html
+!index.html
+!preview.html
 !.gitignore
