@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T3副卡宝 · 官网宣传 — 电商多店铺验证码管家</title>
+<meta name="description" content="T3副卡宝：单台带壳防尘 + 带壳组合供电（一根线管整组）+ WiFi 零流量。专为电商多店铺运营设计的智能短信转发器，验证码直接推送到钉钉/企微/飞书。">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-deep: #0B0E14;
+    --bg-surface: #131720;
+    --bg-elevated: #1A2030;
+    --bg-code: #11151D;
+    --coral: #FF5E5B;
+    --coral-dim: rgba(255, 94, 91, 0.12);
+    --coral-glow: rgba(255, 94, 91, 0.06);
+    --mint: #64FBD8;
+    --mint-dim: rgba(100, 251, 216, 0.12);
+    --text-primary: #E1E6ED;
+    --text-secondary: #8A929F;
+    --text-tertiary: #545D6A;
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-medium: rgba(255, 255, 255, 0.1);
+    --font-serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Helvetica Neue", sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Consolas", "Cascadia Code", monospace;
+  }
+  html { scroll-behavior: smooth; background: var(--bg-deep); color: var(--text-primary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+  body { line-height: 1.7; overflow-x: hidden; }
+  ::selection { background: var(--coral); color: #fff; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  h1, h2, h3 { font-family: var(--font-serif); font-weight: 700; }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.6rem); letter-spacing: -0.02em; line-height: 1.18; }
+  h2 { font-size: clamp(1.6rem, 3.5vw, 2.5rem); letter-spacing: -0.01em; line-height: 1.25; }
+  h3 { font-family: var(--font-sans); font-weight: 700; font-size: 1.05rem; letter-spacing: 0; }
+  a { color: inherit; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border-medium); }
+  .accent-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--coral); margin-right: 8px; }
+
+  /* NAV */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,14,20,0.85); backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--border-subtle); }
+  .nav-inner { max-width: 1180px; margin: 0 auto; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; text-decoration: none; color: var(--text-primary); }
+  .nav-logo-icon { width: 28px; height: 28px; background: var(--coral); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; font-family: var(--font-sans); }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a { font-size: 0.88rem; color: var(--text-secondary); text-decoration: none; transition: color .2s; }
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-cta { background: var(--coral); color: #fff; border: none; padding: 9px 22px; border-radius: 8px; font-family: var(--font-sans); font-size: 0.85rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: transform .2s, box-shadow .2s; }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,94,91,0.35); }
+
+  /* HERO */
+  .hero { padding: 150px 0 90px; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+  .hero-bg-line { position: absolute; height: 1px; background: var(--border-subtle); left: 0; right: 0; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; position: relative; z-index: 1; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--coral-dim); color: var(--coral); padding: 6px 16px; border-radius: 100px; font-size: 0.8rem; font-weight: 500; margin-bottom: 26px; }
+  .hero-desc { font-size: 1.08rem; color: var(--text-secondary); max-width: 480px; margin-top: 20px; line-height: 1.85; }
+  .hero-stat-row { display: flex; gap: 38px; margin-top: 38px; flex-wrap: wrap; }
+  .hero-stat-num { font-family: var(--font-serif); font-size: 2.6rem; font-weight: 700; color: var(--coral); line-height: 1; }
+  .hero-stat-unit { font-size: 1.1rem; color: var(--coral); font-weight: 400; }
+  .hero-stat-label { font-size: 0.78rem; color: var(--text-tertiary); margin-top: 4px; letter-spacing: 0.05em; }
+  .hero-visual { position: relative; width: 100%; height: 420px; }
+  .device-stack { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .device-card { width: 200px; height: 36px; border-radius: 8px; background: var(--bg-elevated); border: 1px solid var(--border-medium); position: relative; transition: transform .3s, border-color .3s, box-shadow .3s; }
+  .device-card.active { border-color: var(--coral); box-shadow: 0 0 30px rgba(255,94,91,0.15); transform: scale(1.05); }
+  .device-card:nth-child(2){ width: 192px; } .device-card:nth-child(3){ width: 184px; }
+  .device-card:nth-child(4){ width: 176px; } .device-card:nth-child(5){ width: 168px; }
+  .device-led { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--text-tertiary); }
+  .device-card.active .device-led { background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+  .signal-waves { position: absolute; right: -56px; top: 50%; transform: translateY(-50%); display: flex; gap: 16px; }
+  .signal-wave { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .signal-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text-tertiary); }
+  .signal-line { width: 2px; height: 40px; background: var(--border-medium); }
+  .signal-target { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-medium); font-size: 0.7rem; color: var(--text-tertiary); white-space: nowrap; transition: all .4s; }
+  .signal-wave.active .signal-dot { background: var(--mint); box-shadow: 0 0 12px rgba(100,251,216,0.5); }
+  .signal-wave.active .signal-line { background: var(--mint); opacity: .6; }
+  .signal-wave.active .signal-target { border-color: var(--mint); color: var(--mint); background: var(--mint-dim); }
+  .pulse-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 300px; height: 300px; border-radius: 50%; border: 1px solid var(--border-subtle); }
+  .pulse-ring::before { content: ''; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--coral); opacity: 0; animation: pulse 3s ease-out infinite; }
+  @keyframes pulse { 0% { inset: -1px; opacity: .5; } 100% { inset: 40px; opacity: 0; } }
+
+  /* SECTIONS */
+  .section { padding: 96px 0; }
+  .section-header { margin-bottom: 52px; }
+  .section-header h2 { margin-top: 4px; }
+  .lead { color: var(--text-secondary); font-size: 1rem; max-width: 620px; margin-top: 14px; }
+  .pill-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .pill { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); border: 1px solid var(--border-subtle); border-radius: 100px; padding: 6px 14px; }
+
+  /* BARRIERS */
+  .barrier-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .barrier-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 34px 30px; transition: border-color .3s, transform .3s; }
+  .barrier-card:hover { border-color: var(--coral); transform: translateY(-3px); }
+  .barrier-num { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; color: var(--coral); }
+  .barrier-card h3 { margin: 14px 0 10px; font-size: 1.25rem; }
+  .barrier-card p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8; }
+
+  /* PAIN */
+  .pain-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border-subtle); border-radius: 12px; overflow: hidden; }
+  .pain-card { background: var(--bg-surface); padding: 34px 26px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; transition: background .3s; }
+  .pain-card:hover { background: var(--bg-elevated); }
+  .pain-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--bg-code); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 1rem; color: var(--text-tertiary); border: 1px solid var(--border-subtle); }
+  .pain-card h3 { color: var(--text-primary); }
+  .pain-card p { color: var(--text-secondary); font-size: 0.86rem; line-height: 1.75; }
+
+  /* FEATURES */
+  .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+  .feature-card { background: var(--bg-surface); border-radius: 12px; padding: 30px; border: 1px solid var(--border-subtle); transition: border-color .3s; }
+  .feature-card:hover { border-color: var(--border-medium); }
+  .feature-card.highlight { border-color: var(--coral-dim); background: var(--bg-elevated); }
+  .feature-icon { width: 38px; height: 38px; border-radius: 9px; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+  .fc-teal { background: var(--mint-dim); color: var(--mint); }
+  .fc-coral { background: var(--coral-dim); color: var(--coral); }
+  .feature-card h3 { margin-bottom: 8px; }
+  .feature-card p { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.78; }
+
+  /* FIRMWARE / DEMO */
+  .demo-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .demo-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 30px; display: flex; flex-direction: column; gap: 12px; }
+  .demo-card h3 { font-size: 1.15rem; }
+  .demo-card p { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.75; flex: 1; }
+  .demo-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .link-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; text-decoration: none; color: var(--coral); border: 1px solid var(--border-medium); border-radius: 8px; padding: 8px 14px; transition: background .2s, color .2s; }
+  .link-btn:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+  .kbd { font-family: var(--font-mono); font-size: 0.72rem; background: var(--bg-code); border: 1px solid var(--border-medium); border-radius: 5px; padding: 2px 8px; color: var(--mint); }
+
+  /* TABLES */
+  .table-scroll { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-subtle); }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 720px; }
+  .compare-table thead th { text-align: left; padding: 16px 18px; background: var(--bg-elevated); color: var(--text-secondary); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-medium); }
+  .compare-table thead th:first-child { border-radius: 10px 0 0 0; }
+  .compare-table thead th:last-child { border-radius: 0 10px 0 0; }
+  .compare-table tbody td { padding: 16px 18px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); vertical-align: top; }
+  .compare-table tbody td:first-child { color: var(--text-primary); font-weight: 500; }
+  .compare-table .td-win { color: var(--mint); font-weight: 500; }
+  .compare-table .td-bad { color: var(--coral); }
+  .compare-table .td-neutral { color: var(--text-tertiary); }
+  .compare-table tbody tr:hover td { background: var(--bg-surface); }
+  .spec-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .spec-table td { padding: 14px 18px; border-bottom: 1px solid var(--border-subtle); }
+  .spec-table td:first-child { color: var(--text-secondary); width: 38%; }
+  .spec-table td:last-child { color: var(--text-primary); font-weight: 500; }
+  .spec-table tr:hover td { background: var(--bg-surface); }
+
+  /* SCENARIOS */
+  .scenario-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+  .scenario-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 30px; display: flex; gap: 22px; align-items: flex-start; transition: border-color .3s; }
+  .scenario-card:hover { border-color: var(--border-medium); }
+  .scenario-num { font-family: var(--font-mono); font-size: 0.7rem; color: var(--coral); letter-spacing: 0.12em; flex-shrink: 0; }
+  .scenario-content h3 { margin-bottom: 6px; }
+  .scenario-content p { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.75; }
+  .scenario-tag { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 0.7rem; letter-spacing: 0.05em; margin-top: 12px; background: var(--coral-dim); color: var(--coral); }
+
+  /* FAQ */
+  .faq { max-width: 860px; margin: 0 auto; }
+  .faq-item { border: 1px solid var(--border-subtle); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: var(--bg-surface); }
+  .faq-q { width: 100%; text-align: left; background: transparent; border: 0; color: var(--text-primary); font: inherit; font-size: 1rem; font-weight: 600; padding: 18px 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .faq-q .plus { color: var(--coral); font-family: var(--font-mono); transition: transform .25s; flex-shrink: 0; }
+  .faq-item.open .faq-q .plus { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8; }
+  .faq-a-inner { padding: 0 22px 20px; }
+
+  /* DOWNLOAD / DOCS */
+  .resource-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  .resource-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 24px; transition: border-color .3s, transform .3s; }
+  .resource-card:hover { border-color: var(--coral); transform: translateY(-3px); }
+  .resource-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
+  .resource-card p { color: var(--text-secondary); font-size: 0.84rem; line-height: 1.7; margin-bottom: 14px; }
+  .resource-card a { color: var(--coral); font-size: 0.84rem; font-weight: 600; text-decoration: none; }
+  .resource-card a:hover { text-decoration: underline; }
+
+  /* CTA */
+  .cta-section { padding: 110px 0; text-align: center; }
+  .cta-glare { position: relative; display: inline-block; padding: 56px 70px; background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 20px; overflow: hidden; }
+  .cta-glare::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, var(--coral-glow) 0%, transparent 50%); }
+  .cta-glare > * { position: relative; z-index: 1; }
+  .cta-glare h2 { margin-bottom: 12px; }
+  .cta-glare p { color: var(--text-secondary); margin-bottom: 30px; font-size: 1.02rem; }
+  .cta-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--coral); color: #fff; border: none; padding: 14px 40px; border-radius: 10px; font-size: 1rem; font-family: var(--font-sans); font-weight: 500; cursor: pointer; text-decoration: none; transition: transform .2s, box-shadow .2s; }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,94,91,0.4); }
+
+  /* FOOTER */
+  .footer { border-top: 1px solid var(--border-subtle); padding: 40px 0; }
+  .footer-inner { display: flex; justify-content: space-between; color: var(--text-tertiary); font-size: 0.82rem; gap: 16px; flex-wrap: wrap; }
+
+  @media (max-width: 960px) {
+    .nav-links { display: none; }
+    .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+    .hero-visual { height: 300px; }
+    .barrier-grid, .feature-grid, .resource-grid { grid-template-columns: repeat(2,1fr); }
+    .pain-grid { grid-template-columns: repeat(2,1fr); }
+    .scenario-grid { grid-template-columns: 1fr; }
+    .demo-wrap { grid-template-columns: 1fr; }
+    .cta-glare { padding: 40px 28px; }
+  }
+  @media (max-width: 600px) {
+    .section { padding: 60px 0; }
+    .hero { padding: 120px 0 50px; }
+    .barrier-grid, .feature-grid, .resource-grid, .pain-grid { grid-template-columns: 1fr; }
+    .compare-table thead { display: none; }
+    .compare-table tbody td { display: block; padding: 10px 16px; border: none; }
+    .compare-table tbody td:first-child { padding-top: 18px; font-weight: 700; }
+    .compare-table tbody td::before { content: attr(data-label); display: block; font-size: 0.7rem; color: var(--text-tertiary); margin-bottom: 4px; letter-spacing: 0.06em; }
+    .footer-inner { flex-direction: column; gap: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pulse-ring::before { animation: none; } * { transition-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-logo"><div class="nav-logo-icon">T3</div>T3副卡宝</a>
+    <div class="nav-links">
+      <a href="#barriers">核心壁垒</a>
+      <a href="#features">功能</a>
+      <a href="#firmware">固件演示</a>
+      <a href="#compare">对比</a>
+      <a href="#scenarios">场景</a>
+      <a href="#faq">FAQ</a>
+      <a href="#resources">资源</a>
+    </div>
+    <a href="#cta" class="nav-cta">立即咨询</a>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="hero-bg">
+    <div class="hero-bg-line" style="top:25%"></div>
+    <div class="hero-bg-line" style="top:50%"></div>
+    <div class="hero-bg-line" style="top:75%"></div>
+  </div>
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-tag"><span class="accent-dot"></span>WiFi + 4G 双模 · 电商多店铺验证码管家</div>
+        <h1>插一张卡，永不断电<br>连一个 WiFi，零花流量</h1>
+        <p class="hero-desc">单台双卡，5 台最多 10 张卡，30 张卡约 15 台。一根 Type-C 线为整组供电，WiFi 联网零流量，验证码直接推送到钉钉 / 企微 / 飞书，团队协作不漏一条。</p>
+        <div class="hero-stat-row">
+          <div><div class="hero-stat-num">0<span class="hero-stat-unit">次</span></div><div class="hero-stat-label">需要充电</div></div>
+          <div><div class="hero-stat-num">&lt;1<span class="hero-stat-unit">秒</span></div><div class="hero-stat-label">验证码延迟</div></div>
+          <div><div class="hero-stat-num">0<span class="hero-stat-unit">流量</span></div><div class="hero-stat-label">WiFi 模式数据消耗</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="pulse-ring"></div>
+        <div class="device-stack" id="deviceStack">
+          <div class="device-card active" data-idx="0"><div class="device-led"></div></div>
+          <div class="device-card active" data-idx="1"><div class="device-led"></div></div>
+          <div class="device-card active" data-idx="2"><div class="device-led"></div></div>
+          <div class="device-card active" data-idx="3"><div class="device-led"></div></div>
+          <div class="device-card" data-idx="4"><div class="device-led"></div></div>
+        </div>
+        <div class="signal-waves" id="signalWaves">
+          <div class="signal-wave active"><div class="signal-dot"></div><div class="signal-line"></div><div class="signal-target">钉钉群</div></div>
+          <div class="signal-wave active"><div class="signal-dot"></div><div class="signal-line"></div><div class="signal-target">企微群</div></div>
+          <div class="signal-wave"><div class="signal-dot"></div><div class="signal-line"></div><div class="signal-target">飞书群</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 核心壁垒 -->
+<section class="section" id="barriers">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Why T3</div>
+      <h2>三道行业独家壁垒</h2>
+      <p class="lead">不是裸板，不止于转发。T3副卡宝从单台成品形态到组合供电、零流量架构，重新定义了短信转发设备。</p>
+    </div>
+    <div class="barrier-grid">
+      <div class="barrier-card">
+        <div class="barrier-num">BARRIER_01</div>
+        <h3>单台带壳防尘</h3>
+        <p>不是裸板，也不是裸板叠加后套壳。每台独立使用就有完整外壳保护，不怕灰尘、静电和误碰，办公室 / 仓库 / 机柜长期在线部署更省心。</p>
+      </div>
+      <div class="barrier-card">
+        <div class="barrier-num">BARRIER_02</div>
+        <h3>带壳组合供电</h3>
+        <p>底部触点自动互通供电，叠多少台都只要一根 Type-C 线。5 台最多 10 张卡也只要 1 个 USB 口，30 张卡约 15 台仍可分组叠放、整洁省线。</p>
+      </div>
+      <div class="barrier-card">
+        <div class="barrier-num">BARRIER_03</div>
+        <h3>WiFi 零流量</h3>
+        <p>优先连 WiFi 转发验证码，0 字节手机卡流量消耗；WiFi 断了自动切 4G 备用，不掉线不漏码。一年省下的流量费够买好几台设备。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 痛点 -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Pain Points</div>
+      <h2>先戳痛，再给方案</h2>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">01</div>
+        <h3>30 部旧手机的充电地狱</h3>
+        <p>每张卡配一部旧机，堆满抽屉。每周挨个充电花半天，出差回来一半关机，验证码全丢了。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">02</div>
+        <h3>验证码到手，人不在跟前</h3>
+        <p>运营登录店铺要验证码，手机在仓库，人在办公室。等同事找到手机拍下来，登录窗口早超时了。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">03</div>
+        <h3>5 根线 5 个插口，盘丝洞</h3>
+        <p>别家一台一根线，5 台就是 5 根 USB 线，插排口永远不够用，线缠成一团。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">04</div>
+        <h3>设备偷偷烧流量</h3>
+        <p>4G 单模设备本身就在吃手机卡流量，一个月话费多出好几十，一年够再买一台。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 功能 -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Features</div>
+      <h2>为什么选 T3副卡宝</h2>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card highlight">
+        <div class="feature-icon fc-teal">🛡️</div>
+        <h3>单台带壳防尘</h3>
+        <p>每台独立使用就有完整外壳，不像裸板设备容易积灰、误碰，长期部署更可靠。</p>
+      </div>
+      <div class="feature-card highlight">
+        <div class="feature-icon fc-coral">📶</div>
+        <h3>WiFi + 4G 双模</h3>
+        <p>优先 WiFi 联网，0 流量零月租；没 WiFi 自动切 4G 备用，插上就能用。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fc-teal">📚</div>
+        <h3>多台叠加，整齐叠放</h3>
+        <p>单台双卡双待，多台垂直叠放扩展。5 台最多 10 张卡，30 张卡约 15 台，可按多组叠放。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fc-coral">🔔</div>
+        <h3>验证码秒级推送</h3>
+        <p>短信一到设备毫秒级转发，支持钉钉、企微、飞书、邮箱等 20+ 平台，每张卡独立规则。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fc-teal">🏷️</div>
+        <h3>SIM 卡备注管理</h3>
+        <p>每张 SIM 卡可添加备注，后台清晰标注用途，多人共享时一眼知道是哪张卡、哪个店铺。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fc-coral">↗</div>
+        <h3>直接转发通道</h3>
+        <p>短信由设备直接发送到你配置的钉钉 / 企微 / 飞书 / Webhook，不经第三方服务器中转 / 存储验证码。</p>
+      </div>
+      <div class="feature-card highlight">
+        <div class="feature-icon fc-teal">⚡</div>
+        <h3>插电即用，永不充电</h3>
+        <p>Type-C 5V 供电，功耗不到 1W。插在路由器 USB 口就能跑，告别 30 部手机的充电噩梦。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fc-coral">🔒</div>
+        <h3>安全不泄露</h3>
+        <p>设备独立运行，不连接内网。验证码直达你配置的通道，不留在中间平台。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fc-teal">🤝</div>
+        <h3>团队群共享</h3>
+        <p>群推送谁需要谁看，不用再 @ 人找码。活动高峰期多人协作不漏一条。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 固件 / MQTT 演示 -->
+<section class="section" id="firmware">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Firmware & Demo</div>
+      <h2>固件演示与 MQTT 能力</h2>
+      <p class="lead">T3 固件基于 PlatformIO + EC200M 模组开发，支持 eSIM 只读 / 管理、双卡短信转发、MQTT 上报与远程指令。以下为离线预览与配套文档。</p>
+      <div class="pill-row">
+        <span class="pill">PlatformIO</span>
+        <span class="pill">EC200M eSIM</span>
+        <span class="pill">MQTT 1883</span>
+        <span class="pill">双卡双待</span>
+        <span class="pill">WiFi + 4G 双模</span>
+      </div>
+    </div>
+    <div class="demo-wrap">
+      <div class="demo-card">
+        <h3>🖥️ T3 设备控制台 · 离线预览</h3>
+        <p>模拟设备后台：SIM 卡状态、转发通道、短信收发、消息中心、WiFi、设备工具。打开后可用键盘快捷键 <span class="kbd">1–6</span> 切换标签页、<span class="kbd">T</span> 切换主题、<span class="kbd">?</span> 查看帮助。</p>
+        <div class="demo-links">
+          <a class="link-btn" href="preview.html" target="_blank" rel="noopener">打开控制台预览 ↗</a>
+          <a class="link-btn" href="F:\代码开发\T3-MQTT版本\Lite\preview.html" target="_blank" rel="noopener">固件版预览(源) ↗</a>
+        </div>
+      </div>
+      <div class="demo-card">
+        <h3>🤖 本地助手演示</h3>
+        <p>配套 T3 本地工具演示，展示设备串口管理、日志分析与助手交互。与 eSIM 代码严格隔离，独立仓库维护。</p>
+        <div class="demo-links">
+          <a class="link-btn" href="t3-assistant-demo.html" target="_blank" rel="noopener">助手演示 v1 ↗</a>
+          <a class="link-btn" href="t3-assistant-demo-v2.html" target="_blank" rel="noopener">助手演示 v2 ↗</a>
+          <a class="link-btn" href="T3副卡宝_手机版动态演示.html" target="_blank" rel="noopener">手机版动态演示 ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 竞品对比 -->
+<section class="section" id="compare">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Compare</div>
+      <h2>一张表看清差距</h2>
+    </div>
+    <div class="table-scroll">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:16%"></th>
+            <th style="width:20%">T3副卡宝</th>
+            <th style="width:24%">旧手机 + 转发 APP</th>
+            <th style="width:20%">云手机 / 虚拟号</th>
+            <th style="width:20%">其他短信转发器</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>供电方式</td>
+            <td class="td-win" data-label="T3副卡宝">带壳组合供电，1 根线管全部</td>
+            <td class="td-bad" data-label="旧手机+转发APP">每台独立充电</td>
+            <td class="td-neutral" data-label="云手机/虚拟号">云端运行，无需充电</td>
+            <td class="td-bad" data-label="其他短信转发器">各插各的线</td>
+          </tr>
+          <tr>
+            <td>联网方式</td>
+            <td class="td-win" data-label="T3副卡宝">WiFi + 4G 双模</td>
+            <td class="td-neutral" data-label="旧手机+转发APP">WiFi</td>
+            <td class="td-neutral" data-label="云手机/虚拟号">云端</td>
+            <td class="td-bad" data-label="其他短信转发器">4G 单模</td>
+          </tr>
+          <tr>
+            <td>流量成本</td>
+            <td class="td-win" data-label="T3副卡宝">WiFi 模式 0 流量</td>
+            <td class="td-bad" data-label="旧手机+转发APP">每台都要开流量 / WiFi</td>
+            <td class="td-bad" data-label="云手机/虚拟号">按带宽或时长计费</td>
+            <td class="td-bad" data-label="其他短信转发器">烧手机卡流量</td>
+          </tr>
+          <tr>
+            <td>桌面整洁</td>
+            <td class="td-win" data-label="T3副卡宝">一根线，整整齐齐</td>
+            <td class="td-bad" data-label="旧手机+转发APP">满桌蜘蛛网</td>
+            <td class="td-win" data-label="云手机/虚拟号">零占用</td>
+            <td class="td-bad" data-label="其他短信转发器">N 台 = N 根线</td>
+          </tr>
+          <tr>
+            <td>外壳防护</td>
+            <td class="td-win" data-label="T3副卡宝">单台带壳，不裸板</td>
+            <td class="td-bad" data-label="旧手机+转发APP">旧机状态不可控</td>
+            <td class="td-neutral" data-label="云手机/虚拟号">无实体设备</td>
+            <td class="td-bad" data-label="其他短信转发器">裸板 / 裸板叠套壳</td>
+          </tr>
+          <tr>
+            <td>稳定性</td>
+            <td class="td-win" data-label="T3副卡宝">工业级芯片 7×24h</td>
+            <td class="td-bad" data-label="旧手机+转发APP">旧机卡顿闪退</td>
+            <td class="td-bad" data-label="云手机/虚拟号">虚拟号易黑号</td>
+            <td class="td-win" data-label="其他短信转发器">商业级稳定</td>
+          </tr>
+          <tr>
+            <td>多人协作</td>
+            <td class="td-win" data-label="T3副卡宝">群推送，团队实时共享</td>
+            <td class="td-bad" data-label="旧手机+转发APP">需手动转发，靠人吼</td>
+            <td class="td-bad" data-label="云手机/虚拟号">账号共享有封号风险</td>
+            <td class="td-win" data-label="其他短信转发器">支持团队管理</td>
+          </tr>
+          <tr>
+            <td>叠放扩展</td>
+            <td class="td-win" data-label="T3副卡宝">独创叠放 + 组合供电</td>
+            <td class="td-bad" data-label="旧手机+转发APP">占空间</td>
+            <td class="td-neutral" data-label="云手机/虚拟号">—</td>
+            <td class="td-neutral" data-label="其他短信转发器">可叠放但各自供电</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 使用场景 -->
+<section class="section" id="scenarios">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Scenarios</div>
+      <h2>谁在用 T3副卡宝</h2>
+    </div>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="scenario-num">A</div>
+        <div class="scenario-content">
+          <h3>店群卖家</h3>
+          <p>淘宝 8 店 + 拼多多 5 店 + 抖音 3 店，16 张卡。以前 16 部旧手机占满抽屉，现在 8 台 T3 副卡宝叠放在桌角，验证码全部自动推送到运营群。</p>
+          <span class="scenario-tag">最多人用</span>
+        </div>
+      </div>
+      <div class="scenario-card">
+        <div class="scenario-num">B</div>
+        <div class="scenario-content">
+          <h3>跨境 / 出海团队</h3>
+          <p>中国香港卡、印尼卡、美国卡各有用途。北京和深圳两地协作，所有卡插在 T3 里，验证码自动推钉钉，两地同步接收。</p>
+          <span class="scenario-tag">跨国协作</span>
+        </div>
+      </div>
+      <div class="scenario-card">
+        <div class="scenario-num">C</div>
+        <div class="scenario-content">
+          <h3>活动高峰期</h3>
+          <p>双 11 大促，运营需同时登录 10 个店铺后台改价。T3 把 10 张卡验证码全推到群，运营按需取用，零失误。</p>
+          <span class="scenario-tag">高并发</span>
+        </div>
+      </div>
+      <div class="scenario-card">
+        <div class="scenario-num">D</div>
+        <div class="scenario-content">
+          <h3>老板远程提现</h3>
+          <p>出差在外，店铺提现要验证码，绑定手机却在办公室。以前打电话找人帮忙，现在 T3 自动推到手机，远程一步搞定。</p>
+          <span class="scenario-tag">远程办公</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 产品参数 -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Specs</div>
+      <h2>产品参数</h2>
+    </div>
+    <div class="table-scroll">
+      <table class="spec-table">
+        <tr><td>卡槽数量</td><td>双卡双待（Nano SIM）</td></tr>
+        <tr><td>网络制式</td><td>WiFi + 4G 双模（WiFi 优先，4G 备用）</td></tr>
+        <tr><td>流量消耗</td><td>WiFi 模式：0 字节 / 4G 模式：极低功耗</td></tr>
+        <tr><td>供电方式</td><td>Type-C 5V / 带壳组合供电</td></tr>
+        <tr><td>供电特点</td><td>一根线为整组供电，叠 N 台 = 1 根线</td></tr>
+        <tr><td>设备尺寸</td><td>约 117 × 80 × 13 mm</td></tr>
+        <tr><td>设备重量</td><td>约 70 g</td></tr>
+        <tr><td>叠放设计</td><td>底部触点供电，叠放后互通供电</td></tr>
+        <tr><td>转发平台</td><td>钉钉 / 企业微信 / 飞书 / 邮箱 / Webhook 等 20+</td></tr>
+        <tr><td>管理方式</td><td>Web 后台 + APP</td></tr>
+        <tr><td>扩展能力</td><td>多台叠放，理论上无限扩展</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">FAQ</div>
+      <h2>常见问题</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item">
+        <button class="faq-q">带壳组合供电是什么意思？<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">每台设备底部有供电触点。多台垂直叠放时触点自动对接，只需给其中一台接 Type-C 线，整组设备全部通电。单台双卡，叠 5 台最多 10 张卡也只要 1 根线、1 个 USB 口；30 张卡则需 15 台，可按多组叠放。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">WiFi 零流量真的不消耗手机卡流量吗？<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">是的。设备优先连接 WiFi 网络进行短信转发，只要连上 WiFi，转发过程完全走宽带网络，手机卡套餐流量一分不扣。没 WiFi 时自动切 4G 作为备份。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">一台能管几张卡？<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">单台支持双卡双待。多台可叠加使用，3 台即可管理 6 张卡，按需扩展。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">需要每个月交费吗？<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">设备一次购买，无需月费。WiFi 模式下零流量成本，手机卡本身的运营商套餐由您自行承担。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">支持哪些运营商？<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">移动、联通、电信三大运营商全面支持，4G 全网通。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">WiFi 断了怎么办，稳定吗？<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">WiFi + 4G 双模互为备份。WiFi 断开自动切 4G，WiFi 恢复自动切回。工业级芯片，7×24 小时稳定运行。</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">安全吗？短信会不会泄露？<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">设备独立运行，不连接内网。短信由设备直接发送到你配置的转发通道（钉钉 / 企微 / 飞书 / Webhook），不经第三方服务器中转 / 存储验证码。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 资源下载 -->
+<section class="section" id="resources">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Resources</div>
+      <h2>资料与文档</h2>
+      <p class="lead">固件操作手册、MQTT 服务端开发手册、下载页与发布说明，集中汇总在此。</p>
+    </div>
+    <div class="resource-grid">
+      <div class="resource-card">
+        <h3>📘 固件操作说明</h3>
+        <p>T3-MQTT 固件烧录、配置与日常操作指南。</p>
+        <a href="T3-MQTT_固件操作说明.md" target="_blank" rel="noopener">查看文档 ↗</a>
+      </div>
+      <div class="resource-card">
+        <h3>🛠️ MQTT 服务端开发手册</h3>
+        <p>MQTT 主题、上报格式与远程指令协议详解。</p>
+        <a href="T3-MQTT_MQTT服务端开发手册.md" target="_blank" rel="noopener">查看文档 ↗</a>
+      </div>
+      <div class="resource-card">
+        <h3>📦 下载中心</h3>
+        <p>固件、工具与配套资源一键获取。</p>
+        <a href="download.html" target="_blank" rel="noopener">前往下载 ↗</a>
+      </div>
+      <div class="resource-card">
+        <h3>📄 开发文档</h3>
+        <p>接口、协议与二次开发参考。</p>
+        <a href="docs.html" target="_blank" rel="noopener">查看文档 ↗</a>
+      </div>
+      <div class="resource-card">
+        <h3>🚀 固件发布说明</h3>
+        <p>版本变更、更新内容与升级指引。</p>
+        <a href="firmware-release.html" target="_blank" rel="noopener">查看说明 ↗</a>
+      </div>
+      <div class="resource-card">
+        <h3>🎬 完整宣传展示</h3>
+        <p>产品完整动态演示与展示页。</p>
+        <a href="T3副卡宝_宣传展示.html" target="_blank" rel="noopener">观看演示 ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="container">
+    <div class="cta-glare">
+      <h2>准备好告别充电地狱了吗？</h2>
+      <p>T3副卡宝，让 30 张手机卡集中管理、分组叠放。</p>
+      <a href="#top" class="cta-btn">立即咨询
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>T3副卡宝 · WiFi+4G 双模 · 电商多店铺验证码管家</span>
+    <span>WiFi 0 流量 · 插电即用 · 永不充电 · 自动转发</span>
+  </div>
+</footer>
+
+<script>
+// ===== Hero 设备叠放动画 =====
+(function(){
+  const cards = Array.from(document.querySelectorAll('.device-card'));
+  const waves = Array.from(document.querySelectorAll('.signal-wave'));
+  function animate(){
+    const t = Date.now();
+    const cycle = t % 6000;
+    const cardCount = cards.length, waveCount = waves.length;
+    const activeCard = Math.floor((cycle/6000)*(cardCount+1)) % (cardCount+1);
+    cards.forEach((c,i)=> c.classList.toggle('active', i<activeCard || activeCard===cardCount));
+    const activeWave = Math.floor((cycle/6000)*(waveCount+1)) % (waveCount+1);
+    waves.forEach((w,i)=> w.classList.toggle('active', i<activeWave || activeWave===waveCount));
+  }
+  setInterval(animate, 200); animate();
+})();
+
+// ===== FAQ 折叠 =====
+document.querySelectorAll('.faq-q').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const item = btn.parentElement;
+    const ans = item.querySelector('.faq-a');
+    const open = item.classList.toggle('open');
+    ans.style.maxHeight = open ? (ans.scrollHeight + 'px') : '0px';
+  });
+});
+
+// ===== 导航高亮 =====
+(function(){
+  const links = Array.from(document.querySelectorAll('.nav-links a'));
+  const map = {};
+  links.forEach(l=>{ const id=l.getAttribute('href').slice(1); if(id) map[id]=l; });
+  const obs = new IntersectionObserver(function(entries){
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(l=>l.style.color='');
+        const l = map[e.target.id]; if(l) l.style.color='var(--coral)';
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  Object.keys(map).forEach(id=>{ const el=document.getElementById(id); if(el) obs.observe(el); });
+})();
+</script>
+</body>
+</html>
