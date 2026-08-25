@@ -49,5 +49,11 @@ document.getElementById('lightbox').addEventListener('click',e=>{if(e.target.id=
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
 
 </script>
+<script>
+const firmwareBanner=document.createElement('section');
+firmwareBanner.className='section';
+firmwareBanner.innerHTML='<div class="container"><div class="section-head reveal"><div><div class="tag">Firmware v4.0</div><h2>4.0 已发布</h2></div><p>修复 4G 流量兜底，重构分区，保障设备长时间运行。4.0 以上版本不能 OTA，请使用全量更新。</p></div><div class="hero-actions reveal"><a class="btn btn-primary" href="firmware-release.html">查看更新记录</a><a class="btn btn-ghost" href="https://s.dkb.cc.cd/" target="_blank" rel="noopener">打开全量更新 ↗</a></div></div>';
+document.querySelector('main').prepend(firmwareBanner);
+</script>
 </body>
 </html>

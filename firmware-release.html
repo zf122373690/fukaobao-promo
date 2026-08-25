@@ -67,14 +67,14 @@ footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 <section class="hero">
 <span class="tag">FIRMWARE RELEASE</span>
 <h1>固件发布 · 更新记录</h1>
-<p>这里集中维护 T3 固件的版本历史与升级说明。新版本发布后，请同步更新「工具下载」页的下载链接。</p>
+<p>这里集中维护 T3 固件的版本历史与升级说明。4.0 以上版本需要通过全量更新安装。</p>
 
 <!-- ⬇️ 最新版本高亮，发布后替换此处版本号 / 日期 / 说明 / 下载链接 -->
 <div class="latest">
 <div class="badge">🚀</div>
 <div class="info">
-<h3><span class="ver">v2.8</span>当前最新版本</h3>
-<p>优化 MQTT 链接，改善弱网下的连接稳定性与自动重连策略，消息上报更及时可靠。</p>
+<h3><span class="ver">v4.0</span>当前最新版本</h3>
+<p>修复 4G 流量兜底，重构系统分区，提升设备长时间运行的稳定性。</p>
 </div>
 <div class="dl">
 <a class="btn btn-primary" href="download.html">下载固件 ↓</a>
@@ -83,6 +83,16 @@ footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 </div>
 
 <div class="timeline">
+<div class="entry">
+<div class="e-head"><span class="e-ver">v4.0</span><span class="e-date">2026-08-25</span><span class="e-type t-new">重要更新</span></div>
+<ul>
+<li>修复 4G 流量兜底逻辑，WiFi 异常时的网络切换更可靠。</li>
+<li>重构固件分区，提升存储布局与升级后的运行稳定性。</li>
+<li>增强长时间运行保障，适合持续在线部署。</li>
+<li>4.0 以上版本不支持 OTA，请使用全量更新完成升级。</li>
+</ul>
+<a class="e-link" href="https://s.dkb.cc.cd/" target="_blank" rel="noopener">前往全量更新 →</a>
+</div>
 <div class="entry">
 <div class="e-head"><span class="e-ver">v2.8</span><span class="e-date">2026-07-15</span><span class="e-type t-opt">优化</span></div>
 <ul>

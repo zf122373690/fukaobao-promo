@@ -1019,12 +1019,12 @@ body{font-size:14px}
 <span class="firmware-status-state is-offline" id="ota_device_status">设备离线</span>
 </div>
 <div class="ota-panel">
-<div class="ota-panel-head"><span class="ota-panel-index mono">01</span><div><div class="ota-panel-title">在线更新</div><div class="ota-panel-desc">从更新服务器检测并安装正式固件</div></div></div>
+<div class="ota-panel-head"><span class="ota-panel-index mono">01</span><div><div class="ota-panel-title">在线更新</div><div class="ota-panel-desc">4.0 以上版本不能 OTA，请使用全量更新</div></div></div>
 <div class="ota-panel-main">
 <div id="ota_status" class="ota-box">尚未检查更新</div>
 <div class="btn-row ota-panel-actions">
-<button class="btn" onclick="checkOTA()">检查更新</button>
-<button id="btn_ota" class="btn btn-primary" style="display:none" onclick="startOTA()">在线升级</button>
+<button class="btn" onclick="checkOTA()">查看更新规则</button>
+<a class="btn btn-primary" href="https://s.dkb.cc.cd/" target="_blank" rel="noopener">全量更新 ↗</a>
 </div>
 <div id="ota_online_progress" class="ota-progress" style="display:none">
 <div class="ota-progress-track"><div id="ota_online_bar" class="ota-progress-bar"></div></div>
@@ -1052,7 +1052,7 @@ body{font-size:14px}
 <div class="ota-footer">
 <div class="info-panel">
 <div class="info-title">升级须知</div>
-<ul class="info-list"><li>升级期间保持设备供电和网络稳定</li><li>仅上传适配当前设备的 .bin 固件</li><li>完成刷写后设备会自动重启</li></ul>
+<ul class="info-list"><li>当前最新固件为 v4.0</li><li>4.0 以上版本不能 OTA，必须全量更新</li><li>全量更新地址：s.dkb.cc.cd</li><li>升级期间保持设备供电和网络稳定</li></ul>
 </div>
 <div class="maintenance-danger">
 <div class="eyebrow">设备维护</div>
@@ -1414,7 +1414,7 @@ const VIRTUAL_STATUS = {
     ipv6: '2408:8214:3a15:1a2b::1a2b'
   },
   uptime: 277200,
-  version: 'V2.9.7T',
+  version: 'V4.0',
   businessNetwork: 'wifi',
   businessDataSlot: 1,
   mqtt: {enabled:true,configured:true,connected:true,transport:'wifi'},
@@ -1842,8 +1842,7 @@ async function sendSMS(){
   btn.disabled=false;
 }
 async function checkOTA(){
-  $('ota_status').textContent='已是最新版本 V2.9.7T';
-  $('btn_ota').style.display='none';
+  $('ota_status').textContent='4.0 以上版本不支持 OTA，请使用全量更新：s.dkb.cc.cd';
 }
 async function startOTA(){ alert('预览模式：OTA 在线升级不可用'); }
 async function uploadOTA(){ alert('预览模式：OTA 本地上传不可用'); }

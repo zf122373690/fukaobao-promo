@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>T3 本地助手 · 交互演示</title>
+<style>
+  :root {
+    --background: #ffffff;
+    --bg-muted: #f4f4f5;
+    --surface: #ffffff;
+    --surface-2: #fafafa;
+    --border: #e4e4e7;
+    --text: #18181b;
+    --muted: #71717a;
+    --primary: #18181b;
+    --primary-fg: #ffffff;
+    --accent: #2563eb;
+    --accent-soft: rgba(37,99,235,.12);
+    --success: #22c55e;
+    --success-soft: rgba(34,197,94,.12);
+    --warning: #f59e0b;
+    --warning-soft: rgba(245,158,11,.12);
+    --danger: #ef4444;
+    --danger-soft: rgba(239,68,68,.12);
+    --brand-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    --brand-gradient-soft: linear-gradient(135deg, rgba(37,99,235,.14), rgba(124,58,237,.14));
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -2px rgba(0,0,0,.05);
+    --radius: 10px;
+    --radius-sm: 8px;
+    --ring: rgba(24,24,27,.08);
+    color-scheme: light;
+  }
+  [data-theme="dark"] {
+    --background: #0b0f17;
+    --bg-muted: #161d2b;
+    --surface: #121826;
+    --surface-2: #0e1420;
+    --border: #232c3d;
+    --text: #e7ebf3;
+    --muted: #97a1b3;
+    --primary: #e7ebf3;
+    --primary-fg: #0b0f17;
+    --accent: #3b82f6;
+    --accent-soft: rgba(59,130,246,.16);
+    --success: #22c55e;
+    --success-soft: rgba(34,197,94,.16);
+    --warning: #f59e0b;
+    --warning-soft: rgba(245,158,11,.16);
+    --danger: #ef4444;
+    --danger-soft: rgba(239,68,68,.18);
+    --ring: rgba(231,235,243,.12);
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.4);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.6), 0 2px 4px -2px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea {
+    font-family: inherit; font-size: 13px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 7px 10px; outline: none; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--muted); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+
+  /* Buttons */
+  .btn-primary, .primary-action, .primary-button {
+    border: 0; border-radius: var(--radius-sm); color: #fff;
+    background: var(--brand-gradient); font-size: 13px; font-weight: 600;
+    padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary:hover:not(:disabled), .primary-action:hover:not(:disabled), .primary-button:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn-secondary, .secondary-button {
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text); font-size: 13px;
+    padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-secondary:hover:not(:disabled), .secondary-button:hover:not(:disabled) { background: var(--bg-muted); }
+  .btn-action {
+    border: 1px solid var(--border); border-radius: 7px; background: var(--surface);
+    color: var(--text); font-size: 12px; padding: 5px 9px;
+  }
+  .btn-action:hover { background: var(--bg-muted); }
+  .btn-danger { color: var(--danger); border-color: var(--danger-soft); }
+  .btn-danger:hover { background: var(--danger-soft); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .small-action, .icon-btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    border-radius: 7px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  /* Demo hint banner */
+  .demo-banner {
+    position: sticky; top: 0; z-index: 200;
+    background: var(--brand-gradient); color: #fff;
+    font-size: 12px; padding: 5px 16px; display: flex; align-items: center; gap: 8px;
+    box-shadow: var(--shadow);
+  }
+  .demo-banner .pill { background: rgba(255,255,255,.2); border-radius: 999px; padding: 1px 9px; font-weight: 600; }
+
+  /* Login */
+  .login-wrap { min-height: 100vh; display: grid; place-items: center; background: radial-gradient(1200px 600px at 50% -10%, var(--brand-gradient-soft), transparent), var(--background); }
+  .login-card { width: 340px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); }
+  .login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .brand-mark { width: 40px; height: 40px; border-radius: 11px; background: var(--brand-gradient); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 16px; }
+  .brand-mark-sm { width: 26px; height: 26px; border-radius: 8px; background: var(--brand-gradient); color: #fff; display: inline-grid; place-items: center; font-weight: 800; font-size: 12px; }
+  .login-card h1 { font-size: 18px; margin: 0; }
+  .login-card .sub { color: var(--muted); font-size: 12px; margin: 2px 0 18px; }
+  .login-field { margin-bottom: 12px; }
+  .login-error { color: var(--danger); font-size: 12px; margin-top: 6px; min-height: 16px; }
+  .orbital { font-family: ui-monospace, monospace; letter-spacing: 2px; color: var(--accent); font-size: 12px; }
+
+  /* Mode select */
+  .mode-wrap { min-height: 100vh; display: grid; place-items: center; background: var(--background); }
+  .mode-grid { display: flex; gap: 18px; }
+  .mode-card { width: 260px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; box-shadow: var(--shadow); transition: .15s; }
+  .mode-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--accent); }
+  .mode-icon { font-size: 30px; }
+  .mode-card h3 { margin: 10px 0 4px; }
+  .mode-card p { color: var(--muted); font-size: 12px; min-height: 32px; }
+
+  /* Top nav (LAN) */
+  .app-shell-topnav { min-height: 100vh; display: flex; flex-direction: column; }
+  .top-nav-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px; background: var(--surface); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .top-nav-bar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--brand-gradient); }
+  .top-nav-left { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+  .top-nav-tabs { display: flex; gap: 4px; }
+  .top-nav-tab { border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 6px 14px; border-radius: 8px; font-size: 13px; }
+  .top-nav-tab.active { background: var(--brand-gradient); color: #fff; border-color: transparent; }
+  .top-nav-right { display: flex; align-items: center; gap: 8px; }
+  .top-nav-icon-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 9px; color: var(--text); font-size: 13px; }
+  .top-nav-serial-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 11px; color: var(--text); font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
+  .top-nav-logout { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 11px; color: var(--text); font-size: 13px; }
+  .content-topnav { padding: 20px; flex: 1; }
+
+  /* Sidebar (Serial) */
+  .app-shell { display: flex; min-height: 100vh; }
+  .sidebar { width: 230px; background: var(--surface); border-right: 1px solid var(--border); padding: 16px 14px; display: flex; flex-direction: column; }
+  .sidebar-brand { position: relative; display: flex; align-items: center; gap: 10px; padding: 0 0 14px; border-bottom: 1px solid var(--border); color: inherit; text-decoration: none; }
+  .sidebar-brand-text strong { display: block; font-size: 14px; color: var(--text); }
+  .sidebar-brand-text span { font-size: 11px; color: var(--muted); }
+  .sidebar-brand::after { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 3px; background: var(--brand-gradient); border-radius: 2px; }
+  .sidebar-nav { margin-top: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .sidebar-nav-item { padding: 9px 12px; border-radius: 8px; color: var(--muted); font-size: 13px; text-decoration: none; }
+  .sidebar-nav-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .sidebar-footer { margin-top: auto; }
+  .sidebar-logout { width: 100%; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 9px; color: var(--text); display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 13px; }
+  .content { flex: 1; padding: 20px; }
+
+  /* Page hero */
+  .page-hero { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 12px; }
+  .page-hero .eyebrow { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .page-hero h1 { font-size: 20px; margin: 4px 0 4px; }
+  .page-hero p { color: var(--muted); font-size: 12px; margin: 0; }
+
+  /* Stats bar */
+  .stats-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .stat-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 13px; box-shadow: var(--shadow); }
+  .stat-online { color: var(--success); font-weight: 700; }
+  .stat-nosim { color: var(--danger); }
+  .stat-sim { color: var(--warning); }
+  .stat-registered { color: var(--success); }
+
+  /* Scan control panel (Devices) */
+  .scan-control-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  .scan-inputs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .scan-inputs label { flex: 1; min-width: 130px; }
+  .scan-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Search bar */
+  .search-bar, .toolbar, .search-field { display: flex; align-items: center; gap: 8px; }
+  .search-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .search-bar input { border: 0; background: transparent; padding: 0; }
+  .search-icon { color: var(--muted); }
+  .toolbar { margin-bottom: 12px; }
+  .search-field { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; }
+  .search-field input { border: 0; background: transparent; padding: 0; flex: 1; }
+
+  /* Tables */
+  .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; padding: 10px 12px; background: var(--bg-muted); color: var(--muted); font-weight: 600; font-size: 12px; border-bottom: 1px solid var(--border); }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: 0; }
+  .empty { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 13px; }
+  .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+  .text-muted { color: var(--muted); font-size: 12px; }
+  .status-badge { padding: 3px 9px; border-radius: 999px; font-size: 12px; }
+  .status-online { background: var(--success-soft); color: var(--success); }
+  .status-offline { background: var(--bg-muted); color: var(--muted); }
+
+  /* Error / notice */
+  .inline-error { padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; }
+  .error { background: var(--danger-soft); color: var(--danger); }
+  .success { background: var(--success-soft); color: var(--success); }
+
+  /* Modal */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 300; padding: 20px; }
+  .modal-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 440px; max-width: 100%; max-height: 90vh; overflow: auto; box-shadow: var(--shadow-md); }
+  .modal-large { width: 760px; }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .modal-header h2 { font-size: 16px; margin: 0; }
+  .modal-header button { border: 0; background: transparent; color: var(--muted); font-size: 18px; }
+  .form-grid { display: grid; gap: 12px; padding: 18px; }
+  .form-grid .full-field { grid-column: 1 / -1; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); }
+
+  /* Takeover */
+  .takeover-content { padding: 16px 18px; }
+  .takeover-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+  .takeover-metrics > div { background: var(--bg-muted); border-radius: 10px; padding: 10px; }
+  .takeover-metrics span { display: block; font-size: 11px; color: var(--muted); }
+  .takeover-metrics strong { font-size: 14px; }
+  .save-config-bar { margin: 10px 0; }
+  .takeover-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .takeover-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .takeover-card.wide { grid-column: 1 / -1; }
+  .takeover-card h3 { margin: 0; font-size: 14px; }
+  .takeover-card.accent-blue { border-top: 3px solid var(--accent); }
+  .takeover-card.accent-green { border-top: 3px solid var(--success); }
+  .takeover-card.accent-amber { border-top: 3px solid var(--warning); }
+  .takeover-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .channel-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .channel-tabs button { border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 5px 11px; border-radius: 7px; font-size: 12px; }
+  .channel-tabs button.active { background: var(--brand-gradient); color: #fff; border-color: transparent; }
+  .serial-command { display: flex; gap: 8px; }
+  .serial-command input { flex: 1; }
+  .at-response { background: #0b0f17; color: #d6f5d6; padding: 10px; border-radius: 8px; font-family: ui-monospace, monospace; font-size: 12px; white-space: pre-wrap; margin-top: 8px; }
+
+  /* Scan page */
+  .scan-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end; box-shadow: var(--shadow); margin-bottom: 14px; }
+  .scan-status { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  .status-line { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .progress { height: 8px; background: var(--bg-muted); border-radius: 999px; overflow: hidden; }
+  .progress > div { height: 100%; background: var(--brand-gradient); transition: width .3s; }
+
+  /* Messages */
+  .record-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .record-tabs button { border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 7px 14px; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+  .record-tabs button.active { background: var(--brand-gradient); color: #fff; border-color: transparent; }
+  .messages-conversations { display: flex; flex-direction: column; gap: 8px; }
+  .messages-conversation-card { display: flex; align-items: center; gap: 12px; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); }
+  .messages-conversation-card:hover { border-color: var(--accent); }
+  .messages-conversation-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+  .messages-conversation-main { flex: 1; min-width: 0; }
+  .messages-conversation-main strong { display: block; font-size: 14px; }
+  .messages-conversation-preview { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .messages-conversation-meta { text-align: right; font-size: 11px; color: var(--muted); }
+  .messages-chat-view { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
+  .messages-chat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .messages-chat-title { display: flex; align-items: center; gap: 6px; font-size: 15px; }
+  .messages-chat-body { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow: auto; padding: 4px; }
+  .messages-bubble { max-width: 72%; padding: 9px 12px; border-radius: 12px; font-size: 13px; }
+  .messages-bubble-meta { display: flex; gap: 8px; font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+  .bubble-in { background: var(--bg-muted); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .bubble-out { background: var(--brand-gradient); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+  .call-bubble { background: var(--warning-soft); color: var(--warning); align-self: center; text-align: center; }
+  .messages-bubble-actions { text-align: right; }
+  .row-actions { display: flex; gap: 6px; }
+
+  /* Serial workbench */
+  .serial-hero { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .serial-hero .eyebrow { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .serial-hero h1 { font-size: 20px; margin: 4px 0; }
+  .serial-hero p { color: var(--muted); font-size: 12px; margin: 0; max-width: 640px; }
+  .multi-serial-layout { display: grid; grid-template-columns: 280px 1fr; gap: 14px; margin-bottom: 14px; }
+  .serial-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
+  .panel-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .panel-title h2 { font-size: 15px; margin: 0; display: flex; align-items: center; gap: 7px; }
+  .panel-title p { margin: 2px 0 0; font-size: 11px; color: var(--muted); }
+  .multi-port-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .multi-port-card { display: flex; flex-direction: column; gap: 2px; text-align: left; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; position: relative; }
+  .multi-port-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .multi-port-card.connected { border-left: 3px solid var(--success); }
+  .multi-port-card strong { font-size: 13px; }
+  .multi-port-card small { color: var(--muted); font-size: 11px; }
+  .multi-port-card em { font-style: normal; font-size: 11px; color: var(--muted); }
+  .multi-port-dot { position: absolute; right: 10px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .multi-port-card.connected .multi-port-dot { background: var(--success); }
+  .compact-connect-box { display: flex; flex-direction: column; gap: 8px; }
+  .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .compact-grid .full-field { grid-column: 1 / -1; }
+  .mini-channel-shell { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .serial-channel-tabs { margin-bottom: 10px; }
+  .compact-footer-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .compact-actions { display: flex; gap: 6px; }
+  .danger-button { color: var(--danger); }
+  .serial-log-bottom { margin-top: 0; }
+  .terminal-surface { background: #0b0f17; border-radius: 10px; padding: 10px; height: 240px; overflow: auto; font-family: ui-monospace, monospace; font-size: 12px; }
+  .terminal-row { display: flex; gap: 10px; padding: 2px 0; color: #c8d0dd; }
+  .terminal-level { width: 34px; color: #7b8494; flex-shrink: 0; }
+  .terminal-row-rx .terminal-level { color: #6ee7b7; }
+  .terminal-row-tx .terminal-level { color: #93c5fd; }
+  .terminal-row-error .terminal-level { color: #fca5a5; }
+  .terminal-row-system .terminal-level { color: #fcd34d; }
+  .terminal-time { margin-left: auto; color: #5b6472; }
+  .terminal-empty { color: #5b6472; text-align: center; padding: 40px; }
+
+  /* Toast */
+  #toast-root { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .toast { background: var(--text); color: var(--background); padding: 10px 16px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow-md); animation: toast-in .2s ease; }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="demo-banner">🛰️ T3 本地助手 · 交互演示 <span class="pill">模拟数据</span> 本页面为产品功能演示，所有数据均为虚构，无真实设备连接。</div>
+<div id="app"></div>
+<div id="toast-root"></div>
+<div id="modal-root"></div>
+
+<script>
+/* ============================ 模拟数据 ============================ */
+const CHANNEL_TYPES = ['关闭','Webhook/POST','Telegram','Bark','钉钉','PushDeer','飞书','企微机器人','企微应用','Gotify','ServerChan','PushPlus','WxPusher','Pushover','Inotify','Next SMTP Proxy'];
+
+const DEVICES = [
+  { id: 1, name: 'Node-A1', group: '办公室', ip: '192.168.123.21', status: 'online', version: '4.0',
+    sim1: { present: true, number: '13800001111', operator: '中国移动', registered: true, signal: -67 },
+    sim2: { present: true, number: '13900002222', operator: '中国联通', registered: true, signal: -73 },
+    wifi: { name: 'Office-5G' } },
+  { id: 2, name: 'Node-B2', group: '仓库', ip: '192.168.123.22', status: 'online', version: '4.0',
+    sim1: { present: true, number: '13700003333', operator: '中国电信', registered: true, signal: -71 },
+    sim2: { present: false, number: '', operator: '', registered: false, signal: 0 },
+    wifi: { name: 'WH-2.4G' } },
+  { id: 3, name: 'Node-C3', group: '门店', ip: '192.168.123.23', status: 'offline', version: '4.0',
+    sim1: { present: true, number: '13600004444', operator: '中国移动', registered: false, signal: -85 },
+    sim2: { present: true, number: '13500005555', operator: '中国联通', registered: true, signal: -69 },
+    wifi: { name: 'Shop-WiFi' } },
+  { id: 4, name: 'Node-D4', group: '家庭', ip: '192.168.123.24', status: 'online', version: '4.0',
+    sim1: { present: false, number: '', operator: '', registered: false, signal: 0 },
+    sim2: { present: false, number: '', operator: '', registered: false, signal: 0 },
+    wifi: { name: 'Home' } },
+];
+
+// 短信 / 通话会话（按号码分组）
+const CONVERSATIONS = [
+  { phone: '13800001111', items: [
+    { id: 1, direction: 'in', content: '您的验证码是 482913，请勿告知他人。', createdAt: Date.now()/1000 - 3600 },
+    { id: 2, direction: 'out', content: '好的，已收到，谢谢。', createdAt: Date.now()/1000 - 3500 },
+    { id: 3, direction: 'call', content: '', createdAt: Date.now()/1000 - 1800 },
+  ]},
+  { phone: '13900002222', items: [
+    { id: 4, direction: 'in', content: '会议改到明天下午三点。', createdAt: Date.now()/1000 - 7200 },
+    { id: 5, direction: 'call', content: '', createdAt: Date.now()/1000 - 5400 },
+  ]},
+  { phone: '13700003333', items: [
+    { id: 6, direction: 'out', content: '快递已放前台，请查收。', createdAt: Date.now()/1000 - 9000 },
+  ]},
+];
+
+const CALLS = [
+  { id: 101, phone: '13800001111', duration: 42, createdAt: Date.now()/1000 - 1800 },
+  { id: 102, phone: '13900002222', duration: 0, createdAt: Date.now()/1000 - 5400 },
+  { id: 103, phone: '13600004444', duration: 128, createdAt: Date.now()/1000 - 12000 },
+];
+
+const PORTS = [
+  { name: 'COM3', description: 'USB-SERIAL CH340', connected: true, baudrate: 115200, logCount: 12 },
+  { name: 'COM5', description: 'CP2102 USB to UART', connected: false, baudrate: 0, logCount: 0 },
+  { name: 'COM7', description: 'ESP32-S3 Native USB', connected: true, baudrate: 115200, logCount: 7 },
+];
+
+let SERIAL_LOGS = [
+  { id: 1, level: 'system', content: '[boot] T3 Serial bridge ready', time: Date.now()/1000 - 20 },
+  { id: 2, level: 'rx', content: 'AT', time: Date.now()/1000 - 15 },
+  { id: 3, level: 'tx', content: 'OK', time: Date.now()/1000 - 14 },
+  { id: 4, level: 'rx', content: 'AT+CSQ', time: Date.now()/1000 - 10 },
+  { id: 5, level: 'tx', content: '+CSQ: 23,0', time: Date.now()/1000 - 9 },
+];
+
+/* ============================ 状态 ============================ */
+const S = {
+  view: 'login',          // login | mode | lan | serial
+  theme: localStorage.getItem('t3-theme') || 'light',
+  mode: localStorage.getItem('t3-work-mode') || null, // lan | serial
+  lanTab: 'devices',      // devices | messages
+  token: localStorage.getItem('token') || null,
+  // devices
+  devices: DEVICES.slice(),
+  searchQuery: '',
+  scanPrefix: '192.168.123.', scanStart: '1', scanEnd: '254', scanPass: '',
+  smsDevice: null, smsPhone: '', smsContent: '', smsSlot: 1,
+  takeoverDevice: null, takeover: null, config: null, configReady: false, activeChannel: 0,
+  wifiSsid: '', wifiPass: '', atCmd: 'AT', atResp: '',
+  otaUrl: '', busyId: null, error: '', notice: '',
+  // scan page
+  cidr: '', scanUser: 'admin', scanPass2: 'admin123',
+  scanStatus: null, scanRunning: false, scanTimer: null,
+  // messages
+  msgMode: 'all', msgSearch: '', chatPhone: null,
+  // serial
+  ports: PORTS.slice(), activePort: 'COM3', baudrate: 115200,
+  serialMode: 'cdc', dtr: false, rts: false, streamMode: 'poll',
+  deviceName: 'Node-A1', wifiSsid2: 'Office-5G', wifiPass2: '', netMode: 0,
+  sim1Pin: '', sim2Pin: '', channels: Array.from({length:5}, (_,i)=>({enabled:false,type:0,name:'通道 '+(i+1),url:'',key1:'',key2:'',customBody:''})),
+  activeSerialChannel: 0, serialLogs: SERIAL_LOGS.slice(), serialTimer: null,
+};
+
+/* ============================ 工具 ============================ */
+const $ = (sel) => document.querySelector(sel);
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtTime(v){ return v ? new Date(v*1000).toLocaleString('zh-CN') : '-'; }
+function fmtTimeShort(v){ return v ? new Date(v*1000).toLocaleTimeString('zh-CN',{hour12:false}) : '--:--:--'; }
+function fmtDuration(s){ if(!s||s<=0) return '-'; const m=Math.floor(s/60), x=s%60; return m>0?`${m} 分 ${x} 秒`:`${x} 秒`; }
+function toast(msg){ const r=$('#toast-root'); const t=document.createElement('div'); t.className='toast'; t.textContent=msg; r.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 2200); }
+function closeModal(){ $('#modal-root').innerHTML=''; }
+function openModal(html){ $('#modal-root').innerHTML = `<div class="modal-backdrop" onclick="if(event.target===this)closeModal()"><div class="modal-panel ${html.includes('modal-large')?'modal-large':''}" onclick="event.stopPropagation()">${html}</div></div>`; }
+
+/* ============================ 渲染入口 ============================ */
+function render(){
+  applyTheme();
+  const app = $('#app');
+  if (S.view === 'login') return app.innerHTML = renderLogin();
+  if (S.view === 'mode') return app.innerHTML = renderMode();
+  if (S.view === 'lan') return app.innerHTML = renderLan();
+  if (S.view === 'serial') return app.innerHTML = renderSerial();
+}
+function applyTheme(){ document.documentElement.dataset.theme = S.theme; }
+
+/* ----- 登录 ----- */
+function renderLogin(){
+  return `
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-brand"><div class="brand-mark">T3</div><div><h1>T3 本地助手</h1><div class="orbital">ORBITAL LINK</div></div></div>
+      <div class="sub">短信转发器本地管理控制台 · 演示</div>
+      <div class="login-field"><label>用户名</label><input id="li-user" value="admin" autofocus></div>
+      <div class="login-field"><label>密码</label><input id="li-pass" type="password" value="admin123"></div>
+      <div class="login-error" id="li-err"></div>
+      <button class="primary-button" style="width:100%" onclick="doLogin()">登录</button>
+      <p class="sub" style="margin-top:14px;text-align:center">演示账号 admin / admin123</p>
+    </div>
+  </div>`;
+}
+function doLogin(){
+  const u = $('#li-user').value.trim(), p = $('#li-pass').value;
+  if (u==='admin' && p==='admin123'){ S.token='demo-token'; localStorage.setItem('token','demo-token'); S.view='mode'; render(); toast('登录成功'); }
+  else { $('#li-err').textContent = '用户名或密码错误（演示账号 admin/admin123）'; }
+}
+
+/* ----- 模式选择 ----- */
+function renderMode(){
+  return `
+  <div class="mode-wrap">
+    <div>
+      <div class="login-brand" style="justify-content:center;margin-bottom:18px"><div class="brand-mark">T3</div><h1 style="margin:0">选择工作模式</h1></div>
+      <div class="mode-grid">
+        <div class="mode-card" onclick="enterMode('lan')">
+          <div class="mode-icon">📡</div>
+          <h3>局域网模式</h3>
+          <p>通过 LAN 密钥发现并接管同一局域网内的短信转发设备，支持设备列表、扫描、短信与通话记录。</p>
+          <button class="primary-button" style="margin-top:8px">进入 →</button>
+        </div>
+        <div class="mode-card" onclick="enterMode('serial')">
+          <div class="mode-icon">🔌</div>
+          <h3>串口模式</h3>
+          <p>通过 USB/串口直连设备，进行多串口管理、离线配置读写、配置复刻、诊断与实时日志。</p>
+          <button class="primary-button" style="margin-top:8px">进入 →</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function enterMode(m){ S.mode=m; localStorage.setItem('t3-work-mode', m); S.view=m; render(); }
+
+/* ----- 顶栏（LAN） ----- */
+function topNav(){
+  const active = S.lanTab;
+  return `
+  <header class="top-nav-bar">
+    <div class="top-nav-left"><span class="brand-mark-sm">T3</span><span>📡 T3短信转发器控制台</span></div>
+    <nav class="top-nav-tabs">
+      <button class="top-nav-tab ${active==='devices'?'active':''}" onclick="switchLan('devices')">📱 设备管理</button>
+      <button class="top-nav-tab ${active==='messages'?'active':''}" onclick="switchLan('messages')">💬 短信记录</button>
+    </nav>
+    <div class="top-nav-right">
+      <button class="top-nav-icon-btn" onclick="toggleTheme()" title="切换主题">${S.theme==='dark'?'☀️':'🌙'}</button>
+      <button class="top-nav-serial-btn" onclick="switchToSerial()">← 串口模式</button>
+      <button class="top-nav-logout" onclick="doLogout()">🚪 退出</button>
+    </div>
+  </header>`;
+}
+function switchLan(tab){ S.lanTab=tab; render(); }
+function toggleTheme(){ S.theme = S.theme==='dark'?'light':'dark'; localStorage.setItem('t3-theme', S.theme); render(); }
+function switchToSerial(){ localStorage.removeItem('t3-work-mode'); S.mode='serial'; S.view='serial'; render(); }
+function doLogout(){ S.token=null; localStorage.removeItem('token'); localStorage.removeItem('t3-work-mode'); S.mode=null; S.view='login'; render(); toast('已退出'); }
+
+/* ----- LAN 容器 ----- */
+function renderLan(){
+  const content = S.lanTab==='devices' ? renderDevices() : renderMessages();
+  // 扫描页作为设备页“开始扫描”的跳转目标，单独渲染
+  if (S.lanTab==='scan') return renderScanPage();
+  return `<div class="app-shell-topnav">${topNav()}<main class="content-topnav">${content}</main></div>`;
+}
+function renderScanPage(){
+  return `<div class="app-shell-topnav">${topNav()}<main class="content-topnav">${renderScan()}</main></div>`;
+}
+
+/* ----- 设备管理 ----- */
+function statsBar(){
+  const items=S.devices, total=items.length;
+  const online=items.filter(i=>i.status==='online').length;
+  const simSlots=total*2;
+  const sim1=items.filter(i=>i.sim1&&(i.sim1.present||i.sim1.number)).length;
+  const sim2=items.filter(i=>i.sim2&&(i.sim2.present||i.sim2.number)).length;
+  const withSim=sim1+sim2, noSim=items.filter(i=>!(i.sim1&&(i.sim1.present||i.sim1.number))&&!(i.sim2&&(i.sim2.present||i.sim2.number))).length;
+  const registered=items.filter(i=>(i.sim1&&i.sim1.registered)||(i.sim2&&i.sim2.registered)).length;
+  return `<div class="stats-bar">
+    <span class="stat-item">设备 ${total}</span>
+    <span class="stat-item stat-online">🟢 ${online}</span>
+    <span class="stat-item">卡槽 ${simSlots}</span>
+    <span class="stat-item stat-nosim">❌ 无卡 ${noSim}</span>
+    <span class="stat-item stat-sim">🟡 插卡 ${withSim}</span>
+    <span class="stat-item stat-registered">✅ 已注册 ${registered}</span>
+  </div>`;
+}
+function filteredDevices(){
+  const q=S.searchQuery.trim().toLowerCase();
+  if(!q) return S.devices;
+  return S.devices.filter(d=> d.name.toLowerCase().includes(q) || d.ip.includes(q) || (d.sim1&&d.sim1.number||'').includes(q) || (d.sim2&&d.sim2.number||'').includes(q) || (d.group||'').toLowerCase().includes(q));
+}
+function renderDevices(){
+  const items=filteredDevices();
+  return `
+  ${statsBar()}
+  <div class="scan-control-panel">
+    <div class="scan-inputs">
+      <label><span>网段前缀</span><input value="${esc(S.scanPrefix)}" onchange="S.scanPrefix=this.value"></label>
+      <label><span>起始IP</span><input value="${esc(S.scanStart)}" onchange="S.scanStart=this.value"></label>
+      <label><span>结束IP</span><input value="${esc(S.scanEnd)}" onchange="S.scanEnd=this.value"></label>
+      <label><span>设备密码</span><input type="password" value="${esc(S.scanPass)}" onchange="S.scanPass=this.value" placeholder="后台密码"></label>
+    </div>
+    <div class="scan-actions">
+      <button class="btn-primary" onclick="gotoScan()">🔍 开始扫描</button>
+      <button class="btn-secondary" onclick="refreshAll()">🔄 刷新全部</button>
+      <button class="btn-secondary" onclick="addDevice()">➕ 添加设备</button>
+      <button class="btn-secondary" onclick="clearAll()">🗑️ 清空列表</button>
+      <button class="btn-secondary" onclick="toast('统一设置：请逐台在“配置”中调整')">⚙️ 统一设置</button>
+    </div>
+  </div>
+  <div class="search-bar"><span class="search-icon">🔎</span><input placeholder="搜索编号/号码/IP/备注..." value="${esc(S.searchQuery)}" oninput="S.searchQuery=this.value;render()"></div>
+  ${S.error?`<div class="inline-error error">${esc(S.error)}</div>`:''}
+  ${S.notice?`<div class="inline-error success">${esc(S.notice)}</div>`:''}
+  <div class="table-card"><table>
+    <thead><tr><th>设备编号</th><th>IP地址</th><th>状态</th><th>版本号</th><th>SIM卡1</th><th>SIM卡2</th><th>操作</th></tr></thead>
+    <tbody>
+      ${items.length===0?`<tr><td colspan="7" class="empty">暂无设备，请先扫描或手动添加。</td></tr>`:items.map(d=>`
+        <tr>
+          <td><strong>${esc(d.name||d.ip)}</strong><br><small class="text-muted">${esc(d.group||'')}</small></td>
+          <td><code>${esc(d.ip)}</code></td>
+          <td><span class="status-badge ${d.status==='online'?'status-online':'status-offline'}">${d.status==='online'?'🟢 在线':'⚫ 离线'}</span></td>
+          <td>${esc(d.version||'-')}</td>
+          <td>${simCell(d.sim1)}</td>
+          <td>${simCell(d.sim2)}</td>
+          <td class="action-buttons">
+            <button class="btn-action" onclick="refreshDev(${d.id})">🔄 刷新</button>
+            <button class="btn-action" onclick="openTakeover(${d.id})">⚙️ 配置</button>
+            <button class="btn-action" onclick="openSms(${d.id})">💬 短信</button>
+            <button class="btn-action" onclick="rebootDev(${d.id})">⚡ 重启</button>
+            <button class="btn-action" onclick="window.open('http://${esc(d.ip)}')">🖥️ 后台</button>
+            <button class="btn-action btn-danger" onclick="removeDev(${d.id})">🗑️ 删除</button>
+          </td>
+        </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+function simCell(sim){
+  if(sim&&(sim.present||sim.number)) return `<div>${esc(sim.number||'未设置号码')}</div><small class="text-muted">${esc(sim.operator||'')}${sim.registered?' · ✅已注册':' · ❌未注册'}</small>`;
+  return `<span class="text-muted">❌ 无卡</span>`;
+}
+// device actions
+function refreshAll(){ S.notice=`已刷新 ${S.devices.length} 台设备`; S.error=''; render(); }
+function addDevice(){ const ip=`${S.scanPrefix}${S.scanStart}`; S.devices.push({id:Date.now(),name:ip,group:'手动添加',ip,status:'online',version:'4.0',sim1:{present:false,number:'',operator:'',registered:false,signal:0},sim2:{present:false,number:'',operator:'',registered:false,signal:0},wifi:{name:''}}); S.notice=`设备 ${ip} 已添加`; render(); }
+function clearAll(){ if(confirm('确认清空所有设备？')){ S.devices=[]; render(); } }
+function refreshDev(id){ toast('设备信息已刷新'); }
+function rebootDev(id){ toast('重启指令已下发'); }
+function removeDev(id){ if(confirm('删除该设备？')){ S.devices=S.devices.filter(d=>d.id!==id); render(); } }
+function gotoScan(){ S.lanTab='scan'; S.scanStatus=null; render(); }
+
+/* ----- 短信弹窗 ----- */
+function openSms(id){ S.smsDevice=S.devices.find(d=>d.id===id); S.smsPhone=''; S.smsContent=''; S.smsSlot=1;
+  openModal(`<div class="modal-header"><h2>发送短信</h2><button onclick="closeModal()">✕</button></div>
+  <div class="form-grid">
+    <label>目标号码<input id="sms-phone" placeholder="手机号" autofocus></label>
+    <label>SIM 卡槽<select id="sms-slot"><option value="1">SIM 1</option><option value="2">SIM 2</option></select></label>
+    <label class="full-field">短信内容<textarea id="sms-content" rows="5" placeholder="输入要发送的短信内容"></textarea></label>
+  </div>
+  <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">取消</button><button class="btn-primary" onclick="sendSms()">💬 发送</button></div>`);
+}
+function sendSms(){ const phone=$('#sms-phone').value.trim(), content=$('#sms-content').value.trim(), slot=$('#sms-slot').value;
+  if(!phone||!content){ toast('请填写号码与内容'); return; }
+  closeModal(); toast(`已通过 SIM ${slot} 向 ${phone} 发送`); }
+
+/* ----- 接管配置弹窗 ----- */
+function defaultConfig(){
+  return { deviceName:'', callRecordEnabled:false, callRecordAutoAnswer:false, callHangupSeconds:10, callPlayFile:'',
+    recordUploadType:0, recordUploadUrl:'', mqttEnabled:false, mqttServer:'', mqttPort:1883, mqttTopic:'t3/events',
+    mqttUser:'', mqttPass:'', mqttClientId:'', networkMode:0, webUser:'', webPass:'', sim1Remark:'', sim2Remark:'',
+    pushChannels: Array.from({length:5},(_,i)=>({enabled:false,type:0,name:'通道 '+(i+1),url:'',key1:'',key2:'',customBody:''})) };
+}
+function openTakeover(id){
+  const d=S.devices.find(x=>x.id===id); S.takeoverDevice=d; S.configReady=true; S.atResp=''; S.otaUrl=''; S.activeChannel=0;
+  S.config=defaultConfig(); S.config.deviceName=d.name; S.config.webUser='admin'; S.wifiSsid=d.wifi?.name||'';
+  openModal(renderTakeover());
+}
+function renderTakeover(){
+  const d=S.takeoverDevice, c=S.config, ac=S.activeChannel;
+  const ch=c.pushChannels[ac]||{};
+  return `
+  <div class="modal-header"><h2>${esc(d.name||d.ip)}</h2><button onclick="closeModal()">✕</button></div>
+  <div class="takeover-content">
+    <div class="takeover-metrics">
+      <div><span>运行</span><strong>3 时 12 分</strong></div>
+      <div><span>堆内存</span><strong>182040 B</strong></div>
+      <div><span>WiFi</span><strong>${esc(S.wifiSsid||d.wifi?.name||'-')}</strong></div>
+      <div><span>信号</span><strong>-67 dBm</strong></div>
+    </div>
+    <div class="save-config-bar"><button class="btn-primary" onclick="saveConfig()">💾 保存固件配置</button></div>
+    <div class="takeover-grid">
+      <section class="takeover-card accent-blue"><h3>📱 设备身份</h3>
+        <label>设备名称<input value="${esc(c.deviceName)}" onchange="S.config.deviceName=this.value"></label>
+        <label>Web 用户<input value="${esc(c.webUser)}" onchange="S.config.webUser=this.value"></label>
+        <label>Web 密码<input type="password" value="${esc(c.webPass||'')}" onchange="S.config.webPass=this.value"></label>
+      </section>
+      <section class="takeover-card accent-green"><h3>📶 WiFi 热点接管</h3>
+        <label>热点名称<input value="${esc(S.wifiSsid)}" onchange="S.wifiSsid=this.value"></label>
+        <label>热点密码<input type="password" value="${esc(S.wifiPass)}" onchange="S.wifiPass=this.value" placeholder="留空不修改"></label>
+        <button class="btn-secondary" onclick="toast('WiFi 已保存并重连')">保存 WiFi 并重连</button>
+      </section>
+      <section class="takeover-card accent-amber"><h3>📶 SIM 与网络</h3>
+        <label>SIM1 号码<input value="${esc(d.sim1?.number||'')}" onchange="toast('SIM1 号码已写入')"></label>
+        <label>SIM1 PIN 码<input type="password" value="" placeholder="未设置" onchange="toast('SIM1 PIN 已更新')"></label>
+        <label>SIM2 号码<input value="${esc(d.sim2?.number||'')}" onchange="toast('SIM2 号码已写入')"></label>
+        <label>SIM2 PIN 码<input type="password" value="" placeholder="未设置" onchange="toast('SIM2 PIN 已更新')"></label>
+        <label>网络模式<select value="${c.networkMode}" onchange="S.config.networkMode=Number(this.value)"><option value="0">自动</option><option value="1">WiFi only</option><option value="2">4G only</option></select></label>
+      </section>
+      <section class="takeover-card"><h3>📞 通话/录音</h3>
+        <label>来电处理<select onchange="const v=this.value;S.config.callRecordEnabled=v!=='0';S.config.callRecordAutoAnswer=v==='1'"><option value="0">关闭</option><option value="1">自动接听录音</option><option value="2">仅记录</option></select></label>
+        <label>挂断秒数<input type="number" value="${c.callHangupSeconds}" onchange="S.config.callHangupSeconds=Number(this.value)"></label>
+        <label>TTS 内容<input value="${esc(c.callPlayFile)}" onchange="S.config.callPlayFile=this.value" placeholder="播报内容"></label>
+      </section>
+      <section class="takeover-card wide"><h3>📤 转发通道</h3>
+        <div class="channel-tabs">${[0,1,2,3,4].map(i=>`<button class="${ac===i?'active':''}" onclick="S.activeChannel=${i};refreshTakeover()">通道 ${i+1}</button>`).join('')}</div>
+        <div class="takeover-two">
+          <label>名称<input value="${esc(ch.name)}" onchange="patchCh('name',this.value)"></label>
+          <label>类型<select onchange="patchCh('type',Number(this.value))">${CHANNEL_TYPES.map((n,i)=>`<option value="${i}" ${ch.type===i?'selected':''}>${n}</option>`).join('')}</select></label>
+        </div>
+        <label>URL<textarea onchange="patchCh('url',this.value)">${esc(ch.url)}</textarea></label>
+        <div class="takeover-two">
+          <label>参数1<input value="${esc(ch.key1)}" onchange="patchCh('key1',this.value)"></label>
+          <label>参数2<input value="${esc(ch.key2)}" onchange="patchCh('key2',this.value)"></label>
+        </div>
+        <label>模板<textarea onchange="patchCh('customBody',this.value)">${esc(ch.customBody)}</textarea></label>
+      </section>
+      <section class="takeover-card wide"><h3>📊 MQTT 上报</h3>
+        <div class="takeover-two">
+          <label>MQTT 开关<select onchange="S.config.mqttEnabled=this.value==='1'"><option value="0">关闭</option><option value="1" ${c.mqttEnabled?'selected':''}>开启</option></select></label>
+          <label>Broker 地址<input value="${esc(c.mqttServer)}" onchange="S.config.mqttServer=this.value" placeholder="mqtt.example.com"></label>
+        </div>
+        <div class="takeover-two">
+          <label>端口<input type="number" value="${c.mqttPort}" onchange="S.config.mqttPort=Number(this.value)"></label>
+          <label>主题前缀<input value="${esc(c.mqttTopic)}" onchange="S.config.mqttTopic=this.value" placeholder="sms"></label>
+        </div>
+        <div class="takeover-two">
+          <label>用户名<input value="${esc(c.mqttUser)}" onchange="S.config.mqttUser=this.value"></label>
+          <label>密码<input type="password" value="${esc(c.mqttPass)}" onchange="S.config.mqttPass=this.value"></label>
+        </div>
+        <div class="takeover-two">
+          <label>心跳(秒)<input type="number" value="60" onchange="toast('心跳已更新')"></label>
+          <label>状态间隔(秒)<input type="number" value="60" onchange="toast('状态间隔已更新')"></label>
+        </div>
+        <label>Client ID<input value="${esc(c.mqttClientId)}" onchange="S.config.mqttClientId=this.value" placeholder="留空自动生成"></label>
+      </section>
+      <section class="takeover-card wide"><h3>⚙️ AT / OTA / 系统</h3>
+        <div class="serial-command"><input value="${esc(S.atCmd)}" onchange="S.atCmd=this.value"><button class="btn-secondary" onclick="runAt()">执行 AT</button></div>
+        ${S.atResp?`<pre class="at-response">${esc(S.atResp)}</pre>`:''}
+        <div class="serial-command"><input value="${esc(S.otaUrl)}" onchange="S.otaUrl=this.value" placeholder="4.0以上请使用全量更新"><button class="btn-secondary" onclick="checkOta()">查看更新规则</button><button class="btn-secondary" onclick="window.open('https://s.dkb.cc.cd/','_blank')">全量更新</button></div>
+        <div class="modal-actions" style="padding:0;border:0;justify-content:flex-start">
+          <button class="btn-secondary btn-danger" onclick="toast('已发送恢复出厂指令')">🔄 恢复出厂</button>
+          <button class="btn-secondary btn-danger" onclick="toast('已清空设备日志')">🗑️ 清空设备日志</button>
+          <button class="btn-secondary btn-danger" onclick="toast('重启指令已下发')">⚡ 重启</button>
+        </div>
+      </section>
+    </div>
+    <div class="save-config-bar"><button class="btn-primary" onclick="saveConfig()">💾 保存固件配置</button></div>
+  </div>`;
+}
+function refreshTakeover(){ openModal(renderTakeover()); }
+function patchCh(k,v){ const i=S.activeChannel; S.config.pushChannels[i]={...S.config.pushChannels[i],[k]:v, enabled: k==='type'?(v!==0):S.config.pushChannels[i].enabled}; }
+function saveConfig(){ toast('固件配置已保存'); }
+function runAt(){ const cmd=S.atCmd.trim();
+  const map={ 'AT':'OK', 'AT+CSQ':'+CSQ: 23,0', 'ATI':'T3-MQTT v4.0', 'AT+CGMR':'4.0' };
+  S.atResp = map[cmd] || ('[' + cmd + ']\nOK'); refreshTakeover(); }
+function checkOta(){ S.otaUrl='https://s.dkb.cc.cd/'; refreshTakeover(); toast('4.0以上版本不能 OTA，请使用全量更新'); }
+
+/* ----- 星域扫描页 ----- */
+function renderScan(){
+  const st=S.scanStatus;
+  return `
+  <div class="page-hero"><div><span class="eyebrow">Sector Scan</span><h1>星域扫描</h1><p>只识别带 LAN 密钥发现接口的短信转发节点，识别成功后自动加入节点列表。</p></div></div>
+  <div class="scan-panel">
+    <label><span>CIDR 网段</span><input value="${esc(S.cidr)}" onchange="S.cidr=this.value" placeholder="留空自动识别，或 192.168.1.0/24"></label>
+    <label><span>设备用户名</span><input value="${esc(S.scanUser)}" onchange="S.scanUser=this.value"></label>
+    <label><span>设备密码</span><input type="password" value="${esc(S.scanPass2)}" onchange="S.scanPass2=this.value"></label>
+    <button class="primary-action" onclick="startScanDemo()" ${S.scanRunning?'disabled':''}>🛰️ ${S.scanRunning?'扫描中...':'开始扫描'}</button>
+  </div>
+  ${S.error?`<div class="inline-error error">${esc(S.error)}</div>`:''}
+  ${st?`<div class="scan-status">
+    <div class="status-line"><strong>${esc(st.cidr)}</strong><span>${st.auto?'自动识别 · ':''}${st.progress}% · 发现 ${st.found} · 剩余 ${st.pending}</span></div>
+    <div class="progress"><div style="width:${st.progress}%"></div></div>
+  </div>`:''}
+  <div class="table-card"><table>
+    <thead><tr><th>IP</th><th>结果</th><th>状态 / 操作</th></tr></thead>
+    <tbody>
+      ${!st||st.results.length===0?`<tr><td colspan="3" class="empty">暂无扫描结果。输入网段后点击“开始扫描”。</td></tr>`:st.results.map(r=>`
+        <tr><td><code>${esc(r.ip)}</code></td>
+        <td>${r.success?'已识别设备':(r.httpOpen?'未识别或未升级固件':'未开放 HTTP')}</td>
+        <td>${r.auto?'<span class="text-muted">✅ 已自动加入</span>':`<button class="small-action" onclick="claimIp('${esc(r.ip)}')">+ 重新接管</button>`}</td></tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+function startScanDemo(){
+  if(S.scanRunning) return;
+  S.scanRunning=true; S.error='';
+  const cidr=S.cidr.trim()||'192.168.123.0/24'; const auto=!S.cidr.trim();
+  const ips=['192.168.123.21','192.168.123.22','192.168.123.23','192.168.123.24','192.168.123.50'];
+  S.scanStatus={cidr, auto, total:ips.length, pending:ips.length, found:0, progress:0, results:ips.map(ip=>({ip, success:false, httpOpen:true, auto:false}))};
+  render();
+  let i=0;
+  S.scanTimer=setInterval(()=>{
+    if(i>=ips.length){ clearInterval(S.scanTimer); S.scanRunning=false; S.scanStatus.pending=0; S.scanStatus.progress=100; render(); return; }
+    const r=S.scanStatus.results[i]; r.success=true; r.auto=true;
+    S.scanStatus.found++; S.scanStatus.pending--; S.scanStatus.progress=Math.round((i+1)/ips.length*100);
+    i++; render();
+  }, 600);
+}
+function claimIp(ip){ const r=S.scanStatus.results.find(x=>x.ip===ip); if(r){ r.auto=true; render(); toast(`已将 ${ip} 加入节点列表`); } }
+
+/* ----- 短信/通话记录 ----- */
+function renderMessages(){
+  const convs = CONVERSATIONS.filter(g=>{
+    if(S.msgMode==='sms' && g.items.some(it=>it.direction==='call')) { /* keep if has sms */ }
+    if(S.msgMode==='call') return g.items.some(it=>it.direction==='call');
+    if(S.msgMode==='sms') return g.items.some(it=>it.direction!=='call');
+    return true;
+  }).map(g=>({...g, items: g.items.filter(it=> S.msgMode==='all'?true : S.msgMode==='call'? it.direction==='call' : it.direction!=='call')}))
+    .sort((a,b)=> (b.items[b.items.length-1]?.createdAt||0) - (a.items[a.items.length-1]?.createdAt||0));
+  const q=S.msgSearch.toLowerCase();
+  if(q) convs.forEach(g=>{}); // search handled below
+  const filtered = q? CONVERSATIONS.filter(g=> g.phone.toLowerCase().includes(q) || g.items.some(it=>(it.content||'').toLowerCase().includes(q))).map(g=>({...g, items:g.items.filter(it=> S.msgMode==='all'?true : S.msgMode==='call'? it.direction==='call' : it.direction!=='call')})) : convs;
+
+  if(S.chatPhone){ return renderChat(S.chatPhone); }
+  return `
+  <div class="page-hero"><div><span class="eyebrow">Signal Archive</span><h1>${S.msgMode==='all'?'短信和通话记录':S.msgMode==='sms'?'短信记录':'通话记录'}</h1><p>共 ${filtered.length} 个会话。</p></div>
+    <button class="secondary-button" onclick="loadMsgs()">🔄 刷新</button></div>
+  <div class="record-tabs">
+    <button class="${S.msgMode==='all'?'active':''}" onclick="S.msgMode='all';S.chatPhone=null;render()">💬 全部</button>
+    <button class="${S.msgMode==='sms'?'active':''}" onclick="S.msgMode='sms';S.chatPhone=null;render()">📩 短信</button>
+    <button class="${S.msgMode==='call'?'active':''}" onclick="S.msgMode='call';S.chatPhone=null;render()">📞 通话</button>
+  </div>
+  <div class="toolbar">
+    <div class="search-field">🔎<input placeholder="搜索号码或内容" value="${esc(S.msgSearch)}" oninput="S.msgSearch=this.value;render()"></div>
+    <button class="primary-action" onclick="loadMsgs()">搜索</button>
+    <button class="secondary-button" onclick="toast('记录已清空')">🗑️ 清空</button>
+  </div>
+  <div class="messages-conversations">
+    ${filtered.length===0?`<div class="empty">暂无记录。</div>`:filtered.map(g=>{
+      const latest=g.items[g.items.length-1]; const call=g.items.some(it=>it.direction==='call');
+      return `<button class="messages-conversation-card" onclick="S.chatPhone='${esc(g.phone)}';render()">
+        <div class="messages-conversation-icon">${call?'📞':'💬'}</div>
+        <div class="messages-conversation-main"><strong>${esc(g.phone)}</strong><span class="messages-conversation-preview">${call?'来电':esc(latest.content.slice(0,40))}</span></div>
+        <div class="messages-conversation-meta"><span>${fmtTime(latest.createdAt)}</span><span>${g.items.length} 条</span></div>
+      </button>`;
+    }).join('')}
+  </div>`;
+}
+function renderChat(phone){
+  const g=CONVERSATIONS.find(x=>x.phone===phone); if(!g) return renderMessages();
+  const items=g.items.filter(it=> S.msgMode==='all'?true : S.msgMode==='call'? it.direction==='call' : it.direction!=='call').sort((a,b)=>a.createdAt-b.createdAt);
+  return `
+  <div class="page-hero"><div><span class="eyebrow">Signal Archive</span><h1>会话详情</h1></div>
+    <button class="secondary-button" onclick="S.chatPhone=null;render()">← 返回</button></div>
+  <div class="messages-chat-view">
+    <div class="messages-chat-header"><button class="secondary-button" onclick="S.chatPhone=null;render()">← 返回</button>
+      <div class="messages-chat-title">${items.some(i=>i.direction==='call')?'📞':'💬'} <strong>${esc(phone)}</strong></div></div>
+    <div class="messages-chat-body">
+      ${items.map(m=> m.direction==='call'
+        ? `<div class="messages-bubble call-bubble"><div class="messages-bubble-meta"><span class="messages-bubble-time">${fmtTime(m.createdAt)}</span><span class="messages-bubble-call">来电</span></div><div class="messages-bubble-call-content">通话记录</div></div>`
+        : `<div class="messages-bubble ${m.direction==='in'?'bubble-in':'bubble-out'}"><div class="messages-bubble-meta"><span class="messages-bubble-time">${fmtTime(m.createdAt)}</span><span>${m.direction==='in'?'接收':'发出'}</span></div><div class="messages-bubble-content">${esc(m.content)}</div></div>`
+      ).join('')}
+    </div>
+  </div>`;
+}
+function loadMsgs(){ toast('记录已刷新'); }
+
+/* ============================ 串口工作台 ============================ */
+function startSerialLogFeed(){
+  if(S.serialTimer) clearInterval(S.serialTimer);
+  const samples=['AT','AT+CSQ','+CSQ: 22,0','AT+COPS?','+COPS: 0,0,"CMCC"','OK','> ','SMS sent','state: connected'];
+  let n=0;
+  S.serialTimer=setInterval(()=>{
+    n++; const lvl = n%3===0?'rx':(n%3===1?'tx':'system');
+    const content = samples[n%samples.length];
+    S.serialLogs.push({id:Date.now()+n, level:lvl, content, time:Date.now()/1000});
+    if(S.serialLogs.length>300) S.serialLogs=S.serialLogs.slice(-300);
+    if(S.view==='serial') render();
+  }, 2600);
+}
+function renderSerial(){
+  if(!S.serialTimer) startSerialLogFeed();
+  const port=S.ports.find(p=>p.name===S.activePort)||S.ports[0];
+  const connected=Boolean(port&&port.connected);
+  const ch=S.channels[S.activeSerialChannel]||{};
+  const logs=[...S.serialLogs].reverse().slice(0,200);
+  const rx=S.serialLogs.filter(l=>l.level==='rx').length, tx=S.serialLogs.filter(l=>l.level==='tx').length;
+  return `
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="javascript:void(0)"><div class="sidebar-brand-mark">T3</div><div class="sidebar-brand-text"><strong>T3短信转发器控制台</strong><span>SMS Forwarder</span></div></a>
+      <nav class="sidebar-nav"><a class="sidebar-nav-item active" href="javascript:void(0)">串口配置</a></nav>
+      <div class="sidebar-footer"><button class="sidebar-logout" onclick="doLogout()">🚪 退出登录</button></div>
+    </aside>
+    <main class="content">
+      <div class="serial-hero"><div><span class="eyebrow">Serial Desk</span><h1>串口工作台</h1><p>集中处理多串口连接、设备配置读写、配置复刻、导入导出、诊断、DTR/RTS 控制与底部实时日志。</p></div>
+        <div class="serial-hero-actions"><button class="secondary-button" onclick="refreshSerial()">🔄 刷新</button><button class="primary-action" onclick="${connected?'disconnectSerial()':'connectSerial()'}">${connected?'⏏ 断开当前':'🔌 连接当前'}</button></div>
+      </div>
+      ${S.error?`<div class="inline-error error">${esc(S.error)}</div>`:''}
+      ${S.notice?`<div class="inline-error success">${esc(S.notice)}</div>`:''}
+      <div class="multi-serial-layout">
+        <aside class="serial-panel">
+          <div class="panel-title"><div><h2>🔌 串口列表</h2><p>${S.ports.filter(p=>p.connected).length} 个已连接</p></div></div>
+          <div class="multi-port-list">${S.ports.map(p=>`<button class="multi-port-card ${p.name===S.activePort?'active':''} ${p.connected?'connected':''}" onclick="selectPort('${p.name}')"><span class="multi-port-dot"></span><strong>${esc(p.name)}</strong><small>${esc(p.description)}</small><em>${p.connected?`${p.baudrate} · ${p.logCount} 条`:'未连接'}</em></button>`).join('')}</div>
+          <div class="compact-connect-box">
+            <label><span>波特率</span><input type="number" value="${S.baudrate}" onchange="S.baudrate=Number(this.value)||115200" ${connected?'disabled':''}></label>
+            <label><span>模式</span><select onchange="S.serialMode=this.value" ${connected?'disabled':''}><option value="cdc" ${S.serialMode==='cdc'?'selected':''}>稳定连接</option><option value="safe" ${S.serialMode==='safe'?'selected':''}>防复位</option><option value="normal" ${S.serialMode==='normal'?'selected':''}>标准</option></select></label>
+            <div class="compact-button-row">
+              ${connected?`<button class="secondary-button danger-button" onclick="disconnectSerial()">⏏ 断开</button>`:`<button class="secondary-button" onclick="connectSerial()">🔌 连接</button>`}
+              <button class="secondary-button" onclick="readSerialConfig()">⬇️ 读取</button>
+              <button class="secondary-button" onclick="toast('固件版本检测请在 LAN 设备页执行')">💾 版本说明</button>
+            </div>
+          </div>
+        </aside>
+        <main class="serial-panel">
+          <div class="panel-title"><div><h2>📶 配置编辑</h2><p>${esc(S.activePort)} · ${connected?'已连接':'未连接'}</p></div>
+            <div class="compact-actions"><button class="secondary-button" onclick="exportConfig()">⬇️ 导出</button><button class="secondary-button" onclick="importConfig()">⬆️ 导入</button><button class="secondary-button" onclick="cloneConfig()" ${S.ports.filter(p=>p.connected).length<2?'disabled':''}>📋 复刻</button></div>
+          </div>
+          <div class="compact-grid">
+            <label><span>设备名称</span><input value="${esc(S.deviceName)}" onchange="S.deviceName=this.value"></label>
+            <label><span>WiFi 名称</span><input value="${esc(S.wifiSsid2)}" onchange="S.wifiSsid2=this.value"></label>
+            <label><span>WiFi 密码</span><input type="password" value="${esc(S.wifiPass2)}" onchange="S.wifiPass2=this.value" placeholder="留空则不改"></label>
+            <label><span>网络模式</span><select onchange="S.netMode=Number(this.value)"><option value="0" ${S.netMode===0?'selected':''}>自动</option><option value="1" ${S.netMode===1?'selected':''}>WiFi only</option><option value="2" ${S.netMode===2?'selected':''}>4G only</option></select></label>
+            <label><span>SIM1 PIN</span><input type="password" value="${esc(S.sim1Pin)}" onchange="S.sim1Pin=this.value" placeholder="未设置"></label>
+            <label><span>SIM2 PIN</span><input type="password" value="${esc(S.sim2Pin)}" onchange="S.sim2Pin=this.value" placeholder="未设置"></label>
+          </div>
+          <div class="mini-channel-shell">
+            <div class="channel-tabs serial-channel-tabs">${S.channels.map((_,i)=>`<button class="${S.activeSerialChannel===i?'active':''}" onclick="S.activeSerialChannel=${i};renderSerial()">通道 ${i+1}</button>`).join('')}</div>
+            <div class="compact-grid channel-compact-grid">
+              <label><span>名称</span><input value="${esc(ch.name)}" onchange="patchSerCh('name',this.value)"></label>
+              <label><span>类型</span><select onchange="patchSerCh('type',Number(this.value))">${CHANNEL_TYPES.map((n,i)=>`<option value="${i}" ${ch.type===i?'selected':''}>${n}</option>`).join('')}</select></label>
+              <label class="full-field"><span>URL</span><textarea onchange="patchSerCh('url',this.value)">${esc(ch.url)}</textarea></label>
+              <label><span>参数1</span><input value="${esc(ch.key1)}" onchange="patchSerCh('key1',this.value)"></label>
+              <label><span>参数2</span><input value="${esc(ch.key2)}" onchange="patchSerCh('key2',this.value)"></label>
+              <label class="full-field"><span>模板</span><textarea onchange="patchSerCh('customBody',this.value)">${esc(ch.customBody)}</textarea></label>
+            </div>
+          </div>
+          <div class="compact-footer-actions">
+            <button class="primary-action" onclick="saveOfflineConfig()" ${connected?'':'disabled'}>💾 写入当前串口</button>
+            <button class="secondary-button" onclick="runProbe()" ${connected?'':'disabled'}>📡 诊断</button>
+            <button class="secondary-button" onclick="toggleLine('dtr')" ${connected?'':'disabled'}>DTR</button>
+            <button class="secondary-button" onclick="toggleLine('rts')" ${connected?'':'disabled'}>RTS</button>
+            <button class="secondary-button danger-button" onclick="resetDevice()" ${connected?'':'disabled'}>♻️ 复位</button>
+          </div>
+        </main>
+      </div>
+      <section class="serial-panel serial-log-bottom">
+        <div class="panel-title"><div><h2>📟 串口日志</h2><p>${esc(S.activePort)} · ${S.streamMode==='ws'?'实时流':'轮询'} · RX ${rx} / TX ${tx}</p></div><span class="log-count">${S.serialLogs.length}</span></div>
+        <div class="terminal-surface">${logs.length===0?`<div class="terminal-empty">连接后显示日志</div>`:logs.map(l=>`<div class="terminal-row terminal-row-${l.level}"><span class="terminal-level">${l.level==='rx'?'接收':l.level==='tx'?'发送':l.level==='error'?'错误':'系统'}</span><code>${esc(l.content)}</code><span class="terminal-time">${fmtTimeShort(l.time)}</span></div>`).join('')}</div>
+      </section>
+    </main>
+  </div>`;
+}
+// serial helpers
+function selectPort(name){ S.activePort=name; renderSerial(); }
+function connectSerial(){ const p=S.ports.find(x=>x.name===S.activePort); if(p){ p.connected=true; p.baudrate=S.baudrate; p.logCount=S.serialLogs.length; } S.notice=`${S.activePort} 已连接`; renderSerial(); }
+function disconnectSerial(){ const p=S.ports.find(x=>x.name===S.activePort); if(p){ p.connected=false; p.baudrate=0; } S.notice=`${S.activePort} 已断开`; renderSerial(); }
+function refreshSerial(){ S.notice='已刷新串口状态'; renderSerial(); }
+function readSerialConfig(){ S.notice=`已读取 ${S.activePort} 的配置`; renderSerial(); }
+function saveOfflineConfig(){ S.notice=`${S.activePort}: 配置已发送`; renderSerial(); }
+function cloneConfig(){ const targets=S.ports.filter(p=>p.connected&&p.name!==S.activePort); if(!targets.length){ S.error='没有其它已连接串口可复刻'; renderSerial(); return;} S.notice=`已复刻到 ${targets.length} 个串口`; renderSerial(); }
+function exportConfig(){ toast('已导出 t3-config.json'); }
+function importConfig(){ toast('配置文件已导入，可写入或复刻'); }
+function runProbe(){ S.notice='诊断完成，已收到若干字节'; renderSerial(); }
+function toggleLine(which){ if(which==='dtr') S.dtr=!S.dtr; else S.rts=!S.rts; S.notice=`${which.toUpperCase()} 已切换`; renderSerial(); }
+function resetDevice(){ S.notice='复位脉冲已发送'; renderSerial(); }
+function patchSerCh(k,v){ const i=S.activeSerialChannel; S.channels[i]={...S.channels[i],[k]:v, enabled: k==='type'?(v!==0):S.channels[i].enabled}; }
+
+/* ============================ 启动 ============================ */
+render();
+</script>
+</body>
+</html>
