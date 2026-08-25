@@ -690,7 +690,7 @@ function renderTakeover(){
       <section class="takeover-card wide"><h3>⚙️ AT / OTA / 系统</h3>
         <div class="serial-command"><input value="${esc(S.atCmd)}" onchange="S.atCmd=this.value"><button class="btn-secondary" onclick="runAt()">执行 AT</button></div>
         ${S.atResp?`<pre class="at-response">${esc(S.atResp)}</pre>`:''}
-        <div class="serial-command"><input value="${esc(S.otaUrl)}" onchange="S.otaUrl=this.value" placeholder="4.0以上请使用全量更新"><button class="btn-secondary" onclick="checkOta()">查看更新规则</button><button class="btn-secondary" onclick="window.open('https://s.dkb.cc.cd/','_blank')">全量更新</button></div>
+        <div class="serial-command"><input value="${esc(S.otaUrl)}" onchange="S.otaUrl=this.value" placeholder="3.x升级4.0请全量更新"><button class="btn-secondary" onclick="checkOta()">查看更新规则</button><button class="btn-secondary" onclick="window.open('https://s.dkb.cc.cd/','_blank')">全量更新</button></div>
         <div class="modal-actions" style="padding:0;border:0;justify-content:flex-start">
           <button class="btn-secondary btn-danger" onclick="toast('已发送恢复出厂指令')">🔄 恢复出厂</button>
           <button class="btn-secondary btn-danger" onclick="toast('已清空设备日志')">🗑️ 清空设备日志</button>
@@ -707,7 +707,7 @@ function saveConfig(){ toast('固件配置已保存'); }
 function runAt(){ const cmd=S.atCmd.trim();
   const map={ 'AT':'OK', 'AT+CSQ':'+CSQ: 23,0', 'ATI':'T3-MQTT v4.0', 'AT+CGMR':'4.0' };
   S.atResp = map[cmd] || ('[' + cmd + ']\nOK'); refreshTakeover(); }
-function checkOta(){ S.otaUrl='https://s.dkb.cc.cd/'; refreshTakeover(); toast('4.0以上版本不能 OTA，请使用全量更新'); }
+function checkOta(){ S.otaUrl='https://s.dkb.cc.cd/'; refreshTakeover(); toast('3.x升级4.0需全量更新，4.0以上支持正常 OTA'); }
 
 /* ----- 星域扫描页 ----- */
 function renderScan(){

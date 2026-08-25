@@ -1019,7 +1019,7 @@ body{font-size:14px}
 <span class="firmware-status-state is-offline" id="ota_device_status">设备离线</span>
 </div>
 <div class="ota-panel">
-<div class="ota-panel-head"><span class="ota-panel-index mono">01</span><div><div class="ota-panel-title">在线更新</div><div class="ota-panel-desc">4.0 以上版本不能 OTA，请使用全量更新</div></div></div>
+<div class="ota-panel-head"><span class="ota-panel-index mono">01</span><div><div class="ota-panel-title">在线更新</div><div class="ota-panel-desc">4.0 以上版本支持正常 OTA；3.x 升级到 4.0 请先全量更新</div></div></div>
 <div class="ota-panel-main">
 <div id="ota_status" class="ota-box">尚未检查更新</div>
 <div class="btn-row ota-panel-actions">
@@ -1052,7 +1052,7 @@ body{font-size:14px}
 <div class="ota-footer">
 <div class="info-panel">
 <div class="info-title">升级须知</div>
-<ul class="info-list"><li>当前最新固件为 v4.0</li><li>4.0 以上版本不能 OTA，必须全量更新</li><li>全量更新地址：s.dkb.cc.cd</li><li>升级期间保持设备供电和网络稳定</li></ul>
+<ul class="info-list"><li>当前最新固件为 v4.0</li><li>3.x 升级到 4.0 不支持 OTA，必须全量更新</li><li>4.0 以上版本支持正常 OTA 升级</li><li>全量更新地址：s.dkb.cc.cd</li><li>升级期间保持设备供电和网络稳定</li></ul>
 </div>
 <div class="maintenance-danger">
 <div class="eyebrow">设备维护</div>
@@ -1842,7 +1842,7 @@ async function sendSMS(){
   btn.disabled=false;
 }
 async function checkOTA(){
-  $('ota_status').textContent='4.0 以上版本不支持 OTA，请使用全量更新：s.dkb.cc.cd';
+  $('ota_status').textContent='当前规则：4.0 以上版本支持正常 OTA；3.x 升级到 4.0 请使用全量更新：s.dkb.cc.cd';
 }
 async function startOTA(){ alert('预览模式：OTA 在线升级不可用'); }
 async function uploadOTA(){ alert('预览模式：OTA 本地上传不可用'); }
