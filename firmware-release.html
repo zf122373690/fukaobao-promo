@@ -73,8 +73,8 @@ footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 <div class="latest">
 <div class="badge">🚀</div>
 <div class="info">
-<h3><span class="ver">v4.0</span>当前最新版本</h3>
-<p>修复 4G 流量兜底，重构系统分区，提升设备长时间运行的稳定性。</p>
+<h3><span class="ver">v4.6</span>当前最新版本</h3>
+<p>新增设备编号与 .local 局域网访问、网页公告等能力，优化录音上传队列与联通卡注册稳定性。</p>
 </div>
 <div class="dl">
 <a class="btn btn-primary" href="download.html">下载固件 ↓</a>
@@ -83,6 +83,19 @@ footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 </div>
 
 <div class="timeline">
+<div class="entry">
+<div class="e-head"><span class="e-ver">v4.6</span><span class="e-date">2026-09-16</span><span class="e-type t-new">功能更新</span></div>
+<ul>
+<li>新增设备编号配置，支持通过 <code>http://设备编号.local</code> 访问控制面板。</li>
+<li>AP 配网页面支持读取和设置设备编号，修改后自动重启生效。</li>
+<li>开机通知增加本地域名地址，并保留 IP 地址作为备用访问方式。</li>
+<li>新增网页公告悬浮提示，公告加载不再依赖状态接口完成。</li>
+<li>录音上传队列持久化保留，设备重启或 OTA 后可继续上传未完成录音。</li>
+<li>优化联通卡注册恢复逻辑，减少频繁搜网、切卡和模组重启。</li>
+<li>关闭详细及诊断日志，减少框架内部输出，提升长期运行体验。</li>
+</ul>
+<a class="e-link" href="download.html">前往下载 →</a>
+</div>
 <div class="entry">
 <div class="e-head"><span class="e-ver">v4.0</span><span class="e-date">2026-08-25</span><span class="e-type t-new">重要更新</span></div>
 <ul>

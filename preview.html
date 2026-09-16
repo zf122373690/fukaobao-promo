@@ -1,7 +1,7 @@
 <!doctype html><html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b1113">
+<meta name="theme-color" content="#171512">
 <title>T3 设备控制台</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -109,7 +109,9 @@ body{
 
 /* ===== App 容器 ===== */
 .app{width:100%;min-height:100vh;position:relative;z-index:1}
-.app.is-locked{display:none}
+.app.is-locked{display:block}.auth-screen{display:none!important}
+.ota-announcement{position:fixed;right:18px;top:76px;z-index:80;max-width:min(420px,calc(100vw - 36px));padding:14px 38px 14px 16px;background:var(--bg-card);border:1px solid var(--accent);box-shadow:0 8px 28px rgba(0,0,0,.28);border-radius:6px;color:var(--fg);line-height:1.6;white-space:pre-wrap}
+.ota-announcement button{position:absolute;right:8px;top:6px;border:0;background:transparent;color:var(--fg-muted);font-size:22px;cursor:pointer}
 .auth-screen{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--auth-bg)}
 .auth-screen[hidden]{display:none}
 .auth-panel{width:min(100%,380px);background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:0 18px 60px rgba(0,0,0,.32)}
@@ -204,7 +206,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.55}
 .wecom-free-panel{border:1px solid var(--accent-border);border-radius:var(--radius-sm);padding:14px;background:var(--accent-subtle)}
 .wecom-free-row{display:grid;grid-template-columns:68px minmax(120px,1fr) auto auto;gap:8px;align-items:end}
 .wecom-free-row .fld{margin-bottom:0}.wecom-free-row .btn{min-width:54px;padding-left:12px;padding-right:12px}
-@media(max-width:480px){.wecom-free-row{grid-template-columns:58px minmax(90px,1fr) auto auto;gap:6px}.wecom-free-row .btn{min-width:46px;padding-left:8px;padding-right:8px}}
+@media(max-width:480px){.wecom-free-row{grid-template-columns:74px minmax(90px,1fr) auto auto;gap:6px}.wecom-free-row .fld select{min-width:74px}.wecom-free-row .btn{min-width:46px;padding-left:8px;padding-right:8px}}
 .call-config-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px;align-items:start}
 .call-config-panel{min-width:0}
 .call-config-panel+.call-config-panel{padding-left:18px;border-left:1px solid var(--border-subtle)}
@@ -444,23 +446,23 @@ select option{background:var(--bg-card);color:var(--fg)}
 @media(max-width:620px){.maintenance-danger .btn-row{flex-direction:column}}
 
 /* ===== 消息中心 ===== */
-.inbox-item{padding:14px;margin:0 0 8px;background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .2s}
+.inbox-item{display:grid;grid-template-columns:minmax(170px,240px) minmax(0,1fr) auto;align-items:start;gap:10px;padding:12px 14px;margin:0 0 8px;background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:border-color .2s}
 .inbox-item:hover{border-color:var(--accent)}
 .inbox-item.is-call{border-left:3px solid var(--orange,#f59e0b)}
 .inbox-item.is-sms{border-left:3px solid var(--accent)}
-.inbox-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.inbox-cols{display:block}
 .inbox-col{min-width:0}
 .inbox-col-hd{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg-card);z-index:1;display:flex;align-items:center;gap:8px}
 .inbox-col-cnt{font-size:12px;color:var(--fg-muted);font-weight:400}
 .inbox-col-stats{font-size:11px;color:var(--fg-muted);font-weight:400;margin-left:auto}
 .inbox-empty-sm{padding:20px 10px;font-size:13px}
-@media(max-width:500px){.inbox-cols{grid-template-columns:1fr}}
-.inbox-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.inbox-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;min-width:0;margin:0}
 .inbox-hd-l{display:flex;align-items:center;gap:6px;min-width:0;flex:1}
 .inbox-type-ic{width:18px;height:18px;flex-shrink:0;opacity:.7}
 .inbox-type-ic.sms{stroke:var(--accent);fill:none;stroke-width:2}
 .inbox-type-ic.call{stroke:var(--orange,#f59e0b);fill:none;stroke-width:2}
 .inbox-phone{font-size:15px;font-weight:600;color:var(--fg);font-family:monospace,Consolas,monospace}
+.inbox-sim{display:inline-flex;align-items:center;flex-shrink:0;padding:2px 6px;border:1px solid var(--accent-border);border-radius:4px;color:var(--accent);font-size:11px;font-weight:700;line-height:1.2}
 .inbox-time{font-size:11px;color:var(--fg-muted);white-space:nowrap;flex-shrink:0}
 .inbox-body{font-size:14px;color:var(--fg);line-height:1.6;overflow-wrap:anywhere;word-break:normal;white-space:pre-wrap}
 .inbox-body.collapsed{max-height:120px;overflow:hidden;position:relative}
@@ -469,16 +471,17 @@ select option{background:var(--bg-card);color:var(--fg)}
 .inbox-empty svg{width:48px;height:48px;margin-bottom:12px;opacity:.3;stroke:var(--fg-muted)}
 
 /* ===== 收件箱回复 ===== */
-.inbox-actions{display:flex;gap:8px;margin-top:12px}
+.inbox-actions{display:flex;gap:8px;justify-content:flex-end;margin:0;white-space:nowrap}
 .inbox-reply-btn{font-size:12px;padding:4px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-input);color:var(--fg-dim);cursor:pointer;transition:border-color .2s,color .2s}
 .inbox-reply-btn:hover{border-color:var(--accent);color:var(--accent)}
-.inbox-reply-form{display:none;margin-top:12px;padding:14px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.inbox-reply-form{display:none;grid-column:1 / -1;margin-top:2px;padding:14px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm)}
 .inbox-reply-form.on{display:block}
 .inbox-reply-form .fld{margin-bottom:10px}
 .inbox-reply-form .fld:last-child{margin-bottom:0}
 .inbox-reply-form .inp-row{display:flex;gap:6px}
 .inbox-reply-form .inp{flex:1}
 .inbox-reply-form textarea.inp{min-height:70px;resize:vertical}
+@media(max-width:700px){.inbox-item{display:block}.inbox-hd{margin-bottom:6px}.inbox-actions{justify-content:flex-start;margin-top:10px}.inbox-reply-form{margin-top:12px}}
 .diag-grid{display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
 .diag-cmds{display:flex;flex-direction:column;gap:8px}
 .diag-btn{justify-content:flex-start;text-align:left;display:flex;flex-direction:column;align-items:flex-start;line-height:1.3;padding:10px 14px;min-height:36px;gap:2px}
@@ -571,7 +574,7 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 @media(max-width:760px){.topbar{display:flex;flex-wrap:wrap}.topbar .brand{display:flex;flex:1 1 0;min-width:0}.topbar .chips{flex-basis:100%}}
 .tools-workbench{grid-template-columns:220px minmax(0,1fr);gap:34px;align-items:start;width:100%}.tools-nav{position:sticky;top:86px;display:grid;gap:8px;padding:18px 14px 16px;background:var(--bg-card2);border:1px solid var(--border);border-top:3px solid var(--accent);box-shadow:0 8px 24px rgba(0,0,0,.08)}.tools-nav-title{padding:0 10px 12px;color:var(--fg);font-size:15px;line-height:1.3;font-weight:750;letter-spacing:.04em;text-transform:none;border-bottom:1px solid var(--border-subtle)}.tools-nav a{grid-template-columns:38px minmax(0,1fr);gap:10px;min-height:48px;padding:9px 10px;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0;background:transparent;color:var(--fg-dim);font-size:14px;font-weight:650;transition:border-color .16s,background .16s,color .16s,transform .16s}.tools-nav a:hover,.tools-nav a:focus-visible{border-color:var(--accent);border-left-color:var(--accent);background:var(--accent-subtle);color:var(--fg);transform:translateX(2px)}.tools-nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.tools-nav-index{color:var(--accent);font-size:16px!important;font-weight:800;letter-spacing:.03em}.tools-content{border-left:0}.tool-section{padding-left:0;padding-right:0}.tool-section-hd{min-height:54px;margin-bottom:22px;padding:12px 16px;border:1px solid var(--border);border-left:4px solid var(--accent);background:var(--bg-card2);box-shadow:0 6px 18px rgba(0,0,0,.06)}.tool-section-hd::before{width:auto;font-size:16px}.tool-section-hd h2{font-size:22px;line-height:1.25;font-weight:750}.tool-section+.tool-section{padding-top:38px;border-top:0}@media(min-width:761px) and (max-width:1099px){.tools-workbench{grid-template-columns:1fr;gap:22px}.tools-nav{position:relative;top:auto;display:flex;align-items:stretch;gap:8px;padding:12px;overflow-x:auto}.tools-nav-title{flex:0 0 auto;display:flex;align-items:center;padding:0 14px 0 4px;border-bottom:0;border-right:1px solid var(--border-subtle)}.tools-nav a{flex:1 0 142px;min-height:46px}.tools-content{width:100%}}@media(max-width:760px){.tools-workbench{grid-template-columns:1fr;gap:16px}.tools-nav{position:relative;top:auto;display:grid;grid-template-rows:repeat(2,minmax(42px,auto));grid-auto-flow:column;grid-auto-columns:minmax(142px,1fr);gap:6px;padding:10px;overflow-x:auto;overscroll-behavior-x:contain}.tools-nav-title{display:none}.tools-nav a{min-height:42px;padding:7px 9px;grid-template-columns:30px minmax(0,1fr);gap:7px;font-size:13px}.tools-nav-index{font-size:14px!important}.tool-section-hd{min-height:48px;margin-bottom:16px;padding:10px 12px}.tool-section-hd h2{font-size:19px}.tool-section{scroll-margin-top:122px}.tool-split{grid-template-columns:1fr}}@media(max-width:480px){.tools-nav{grid-template-rows:1fr;grid-auto-flow:column;grid-auto-columns:max-content}.tools-nav a{min-width:130px}.tool-section-hd h2{font-size:18px}}
 </style>
-<script>try{var _mode=localStorage.getItem('t3_theme_mode')||'auto';var _t;if(_mode==='light')_t='light';else if(_mode==='dark')_t='dark';else{var _h=new Date().getHours();_t=(_h>=22||_h<7)?'dark':'light';}document.documentElement.dataset.theme=_t;var _m=document.querySelector('meta[name="theme-color"]');if(_m)_m.setAttribute('content',_t==='light'?'#f3f0e9':'#0b1113')}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<script>try{var _mode=localStorage.getItem('t3_theme_mode')||'auto';var _t;if(_mode==='light')_t='light';else if(_mode==='dark')_t='dark';else{var _h=new Date().getHours();_t=(_h>=22||_h<7)?'dark':'light';}document.documentElement.dataset.theme=_t;var _m=document.querySelector('meta[name="theme-color"]');if(_m)_m.setAttribute('content',_t==='light'?'#f7f0e5':'#171512')}catch(e){document.documentElement.dataset.theme='dark'}</script>
 </head><body>
 <section class="auth-screen" id="auth_screen" hidden>
 <form class="auth-panel" id="auth_form">
@@ -581,7 +584,7 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 <button class="btn btn-primary auth-submit" id="auth_submit" type="submit">登录</button>
 </form>
 </section>
-<div class="app is-locked" id="app">
+<div class="app" id="app">
 
 <!-- ===== 顶栏 ===== -->
 <div class="topbar">
@@ -604,14 +607,8 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 <span class="dot-live"></span>
 <span class="status-txt" id="top_live">在线</span>
 </div>
-<button class="theme-toggle locate-toggle" id="btn_locate" onclick="locateDevice()" aria-label="定位设备" title="定位设备：闪烁全部指示灯">
-<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
-</button>
-<button class="theme-toggle" id="theme_toggle" data-mode="auto" onclick="toggleTheme()" aria-label="切换主题" title="切换主题（自动/白天/黑夜）">
-<svg class="ic ic-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-<svg class="ic ic-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-<svg class="ic ic-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>
-</button>
+<button class="theme-toggle locate-toggle text-action" id="btn_locate" onclick="locateDevice()" aria-label="定位设备" title="定位设备：闪烁全部指示灯"><span id="btn_locate_label">定位</span></button>
+<button class="theme-toggle text-action" id="theme_toggle" data-mode="auto" onclick="toggleTheme()" aria-label="切换主题" title="切换主题（自动/白天/黑夜）"><span id="theme_toggle_label">自动</span></button>
 <a class="link" href="http://dkb.cc.cd" target="_blank" style="font-size:14px;font-weight:600;text-decoration:none;flex-shrink:0;color:var(--accent)">帮助</a>
 </div>
 </div>
@@ -858,7 +855,7 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 </div>
 </div>
 <div class="note">
-<b>录音说明</b>：保存在 4G 模组 UFS，上传后自动删除。企微支持语音消息格式。
+<b>录音说明</b>：<code>call_notice=CALL:13800138000</code>、<code>call_time=2026-09-15 10:26:05</code>、<code>sim_slot=SIM1</code>、<code>sim_number=13800138000</code>。
 </div>
 <div class="btn-row">
 <button class="btn" onclick="saveConfig()">保存来电设置</button>
@@ -955,19 +952,28 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 <div id="inbox_list" style="max-height:calc(100vh - 420px);overflow-y:auto;padding-right:2px"></div>
 </div>
 </div>
+<div class="inbox-dialog" id="inbox_dialog" hidden aria-hidden="true">
+<div class="inbox-dialog-backdrop" onclick="closeInboxDialog()"></div>
+<div class="inbox-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="inbox_dialog_title">
+<div class="inbox-dialog-hd">
+<div class="inbox-dialog-title-wrap"><span class="inbox-dialog-type" id="inbox_dialog_type">短信</span><h3 id="inbox_dialog_title">消息详情</h3></div>
+<button class="inbox-dialog-close" type="button" aria-label="关闭" onclick="closeInboxDialog()">×</button>
+</div>
+<div class="inbox-dialog-meta" id="inbox_dialog_meta"></div>
+<div class="inbox-dialog-body" id="inbox_dialog_body"></div>
+<div class="inbox-dialog-reply" id="inbox_dialog_reply" hidden>
+<div class="fld"><label class="fld-lbl" for="inbox_dialog_slot">卡槽</label><select class="inp" id="inbox_dialog_slot"><option value="1">SIM 1</option><option value="2">SIM 2</option></select></div>
+<div class="fld"><label class="fld-lbl" for="inbox_dialog_to">收件人</label><input class="inp" id="inbox_dialog_to" readonly></div>
+<div class="fld"><label class="fld-lbl" for="inbox_dialog_msg">回复内容</label><textarea class="inp" id="inbox_dialog_msg" rows="4" placeholder="输入回复内容"></textarea></div>
+</div>
+<div class="inbox-dialog-ft" id="inbox_dialog_ft"></div>
+</div>
+</div>
 </section>
 
 <!-- ============ Pane 5: 工具 ============ -->
 <section id="pane_tools" class="pane">
 <div class="tools-workbench">
-<nav class="tools-nav" aria-label="工具分组目录">
-<div class="tools-nav-title">工作台目录</div>
-<a href="#tool_device"><span class="tools-nav-index">01</span><span>设备设置</span></a>
-<a href="#tool_boot"><span class="tools-nav-index">02</span><span>通知模板</span></a>
-<a href="#tool_firmware"><span class="tools-nav-index">03</span><span>固件维护</span></a>
-<a href="#tool_mqtt"><span class="tools-nav-index">04</span><span>MQTT 连接</span></a>
-<a href="#tool_diagnostic"><span class="tools-nav-index">05</span><span>原始诊断</span></a>
-</nav>
 <div class="tools-content">
 
 <!-- 设备设置 + 定时重启（合并分区） -->
@@ -979,8 +985,9 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 <div class="tool-section-bd">
 <div class="tool-split">
 <div class="fld">
-<label class="fld-lbl">设备名称</label>
-<input class="inp" id="sys_device_name" placeholder="便于识别…">
+<label class="fld-lbl">设备编号</label>
+<input class="inp" id="sys_device_name" maxlength="15" pattern="[A-Za-z0-9-]{1,15}" placeholder="请输入字母、数字或连字符">
+<div class="fld-hint">编号.local 可用于局域网内访问，方便区分设备</div>
 </div>
 <div class="fld">
 <label class="fld-lbl">网络模式</label>
@@ -1087,7 +1094,7 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 <span class="firmware-status-state is-offline" id="ota_device_status">设备离线</span>
 </div>
 <div class="ota-panel">
-<div class="ota-panel-head"><span class="ota-panel-index mono">01</span><div><div class="ota-panel-title">在线更新</div><div class="ota-panel-desc">从更新服务器检测并安装正式固件</div></div></div>
+<div class="ota-panel-head"><span class="ota-panel-index mono">01</span><div><div class="ota-panel-title">在线更新</div><div class="ota-panel-desc">从更新服务器检测并安装正式固件</div><div class="ota-panel-desc">提示：OTA 检测服务器托管于 Cloudflare，检测偶尔会有延迟，请耐心等待。</div></div></div>
 <div class="ota-panel-main">
 <div id="ota_status" class="ota-box">尚未检查更新</div>
 <div class="btn-row ota-panel-actions">
@@ -1362,7 +1369,7 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 </section>
 
 </main>
-<div id="ota_announcement" class="ota-announcement" style="display:none"><button type="button" onclick="this.parentElement.style.display='none'">×</button><div id="ota_announcement_text"></div></div>
+<div id="ota_announcement" class="ota-announcement" style="display:none"><button type="button" onclick="closeOtaAnnouncement()">×</button><div id="ota_announcement_text"></div></div>
 
 <!-- ===== 主导航：桌面侧栏 / 移动底栏 ===== -->
 <nav class="tabbar">
@@ -1385,93 +1392,9 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 </div>
 
 <script>
-/* =========================================================================
- *  T3 设备控制台 · 预览模式
- *  本文件为离线静态预览，所有 fetch('/api/...') 调用均替换为虚拟数据
- * ========================================================================= */
-
-let cfg=null, idx=0, currentTab='status', inboxLoading=false, currentWifiSsid='', channelTypeDrafts={}, activePushType=0;
-let simNumBusy={1:false,2:false};
-const $=id=>document.getElementById(id);
-
-/* ===== Tab 切换 ===== */
-function tab(n){
-  currentTab=n;
-  document.querySelectorAll('.pane,.tab').forEach(e=>e.classList.remove('on'));
-  $('pane_'+n).classList.add('on');
-  document.querySelector('[data-t="'+n+'"]').classList.add('on');
-  if(n==='inbox')loadInbox();
-}
-
-/* ===== 运行时间格式化 ===== */
-function fmtUp(s){
-  s=Number(s||0);
-  if(s<60)return s+'s';
-  if(s<3600)return Math.floor(s/60)+'m';
-  return Math.floor(s/3600)+'h '+(Math.floor(s%3600/60))+'m';
-}
-
-/* ===== 按钮式开关 ===== */
-function syncSwitch(id){
-  let select=$(id),btn=document.querySelector('[data-switch="'+id+'"]');
-  if(!select||!btn)return;
-  let on=(select.value==='1'||select.value==='true');
-  btn.classList.toggle('is-on',on);
-  btn.classList.toggle('is-off',!on);
-  btn.setAttribute('aria-pressed',on?'true':'false');
-  btn.setAttribute('title',on?'点击关闭':'点击开启');
-}
-function toggleSwitch(id){
-  let select=$(id);if(!select)return;
-  let on=(select.value==='1'||select.value==='true');
-  let onVal=[...select.options].some(o=>o.value==='1')?'1':'true';
-  let offVal=[...select.options].some(o=>o.value==='0')?'0':'false';
-  select.value=on?offVal:onVal;
-  select.dispatchEvent(new Event('change'));
-  syncSwitch(id);
-}
-function syncAllSwitches(){
-  ['sim1_call_answer','sim2_call_answer','ch_rec_up','call_play','reboot_enabled','mqtt_enabled','sms_ctrl_enabled','sms_ka1_enabled','sms_ka2_enabled','ddns_enabled'].forEach(syncSwitch);
-}
-
-/* ===== SIM 卡状态徽章与信号 ===== */
-function setBadge(id,st){
-  let e=$(id);
-  if(st==='ok'){e.className='sim-badge ok';e.textContent='正常'}
-  else if(st==='err'){e.className='sim-badge err';e.textContent='未插卡'}
-  else{e.className='sim-badge warn';e.textContent='注册中'}
-}
-function setSignal(el,dbm){
-  if(!el)return;
-  let v=parseInt(dbm)||-120;
-  let n=v>=-70?4:v>=-85?3:v>=-100?2:v>=-110?1:0;
-  let bars=el.querySelectorAll('span');
-  bars.forEach((b,i)=>b.classList.toggle('on',i<n));
-}
-function sim(n,m){
-  let p=m['sim'+n+'_present'];
-  let r=m['sim'+n+'_cs_registered']||m['sim'+n+'_ps_registered']||m['sim'+n+'_eps_registered'];
-  let roaming=!!m['sim'+n+'_roaming'];
-  let num=m['sim'+n+'_number']||'';
-  let currentOperator=m['sim'+n+'_operator']||'';
-  let homeOperator=m['sim'+n+'_home_operator']||'';
-  let isEsim=!!m['sim'+n+'_esim'];
-  let card=$('sim'+n+'_card');
-  if(!simNumBusy[n]&&document.activeElement!==$('sim'+n+'_num'))$('sim'+n+'_num').value=num;
-  $('sim'+n+'_op').textContent=homeOperator&&homeOperator!=='未知'?homeOperator:(currentOperator||(p?'识别中…':'—'));
-  $('sim'+n+'_num_disp').textContent=num||'—';
-  $('sim'+n+'_iccid').textContent=m['sim'+n+'_iccid']||'—';
-  $('sms_opt'+n).textContent=num?'SIM '+n+'（'+num+'）':'SIM '+n;
-  setBadge('sim'+n+'_badge',!p?'err':r?'ok':'reg');
-  let se=$('sim'+n+'_esim');if(se)se.classList.toggle('show',isEsim);
-  let sr=$('sim'+n+'_roam');if(sr)sr.classList.toggle('show', r && roaming);
-  card.classList.toggle('off',!p||!r);
-  setSignal($('sim'+n+'_sig'),m['sim'+n+'_signal_dbm']||m['signal_dbm']);
-}
-
-/* =========================================================================
- *  虚拟数据（替代 /api/* 调用）
- * ========================================================================= */
+let otaAnnouncementLoaded=false,otaAnnouncementTimer=0;
+function closeOtaAnnouncement(){let el=$('ota_announcement');if(otaAnnouncementTimer){clearTimeout(otaAnnouncementTimer);otaAnnouncementTimer=0}if(el)el.style.display='none'}
+async function loadOtaAnnouncement(){if(otaAnnouncementLoaded)return;try{let r=await fetch('https://ota.dkb.cc.cd/announcement',{cache:'no-store'});if(!r.ok)return;let d=await r.json(),text=String(d.announcement||'').trim();if(text){$('ota_announcement_text').textContent=text;$('ota_announcement').style.display='block';if(otaAnnouncementTimer)clearTimeout(otaAnnouncementTimer);otaAnnouncementTimer=setTimeout(closeOtaAnnouncement,10000)}otaAnnouncementLoaded=true}catch(e){}}
 const VIRTUAL_STATUS = {
   mac: '24A1B2C3D4E5',
   wifi: {
@@ -1485,7 +1408,7 @@ const VIRTUAL_STATUS = {
     ipv6: '2408:8214:3a15:1a2b::1a2b'
   },
   uptime: 277200,
-  version: 'V2.9.7T',
+  version: 'V4.6',
   businessNetwork: 'wifi',
   businessDataSlot: 1,
   mqtt: {enabled:true,configured:true,connected:true,transport:'wifi'},
@@ -1550,18 +1473,18 @@ const VIRTUAL_CONFIG = {
     broker: 'mqtt.example.com',
     port: 1883,
     username: 't3user',
-    password: 't3pass123',
+    password: '',
     topicPrefix: 'sms',
     clientId: 'T3-24A1B2',
     keepAlive: 60,
     statusInterval: 60
   },
-  wifi: { ssid: 'T3-Home-5G', password: 'mywifipassword' },
+  wifi: { ssid: 'T3-Home-5G', password: '' },
   rebootEnabled: true,
   rebootHour: 4,
   rebootMinute: 0,
   webPort: 80,
-  ddns: { enabled:true, apiToken:'cf-api-token-xxxx', subDomain:'t3.example.com', interval:30 }
+  ddns: { enabled:true, apiToken:'', subDomain:'t3.example.com', interval:30 }
 };
 
 const VIRTUAL_MESSAGES = [
@@ -1581,510 +1504,1108 @@ const VIRTUAL_DIAG = {
   CEER:    'No error'
 };
 
-/* ===== 状态加载（虚拟） ===== */
-function loadStatus(){
-  let d=VIRTUAL_STATUS, m=d.modem||{};
-  $('top_live').textContent=d.businessNetwork==='4g'?'在线-4G（卡'+(d.businessDataSlot||1)+'）':'在线-WiFi';
-  let mqttState=d.mqtt||{},mqttLive=$('mqtt_live');
-  if(mqttLive)mqttLive.textContent=mqttState.connected?'已连接 · WiFi':'未连接 · WiFi';
-  $('top_mac').textContent=d.mac||'—';
-  $('top_wifi').textContent=(d.wifi&&d.wifi.ssid)?(d.wifi.ssid+' ('+d.wifi.rssi+'dBm)'):'—';
-  $('top_ip').textContent=(d.wifi&&d.wifi.ip)?d.wifi.ip:'—';
-  if($('wifi_current'))$('wifi_current').textContent=(d.wifi&&d.wifi.connected)?(d.wifi.ssid+' · '+d.wifi.ip+' · '+d.wifi.rssi+' dBm'):'未连接';
-  let w=d.wifi||{},connected=w.connected;
-  if($('wifi_net_info'))$('wifi_net_info').style.display=connected?'':'none';
-  $('net_ipv4').textContent=w.ip||'—';
-  $('net_mask').textContent=w.subnet||'—';
-  $('net_gateway').textContent=w.gateway||'—';
-  $('net_dns').textContent=w.dns||'—';
-  $('net_ipv6').textContent=w.ipv6||'—';
-  $('top_uptime').textContent='3天5时';
-  $('top_ver').textContent=d.version||'—';
-  $('ota_current_ver').textContent=d.version||'—';
-  $('ota_device_status').textContent='设备在线';
-  $('ota_device_status').classList.remove('is-offline');
-  sim(1,m);sim(2,m);
-  let ddnsInfo=$('ddns_info');
-  if(ddnsInfo){
-    let hasDdnsConfig=VIRTUAL_CONFIG.ddns && VIRTUAL_CONFIG.ddns.subDomain && VIRTUAL_CONFIG.ddns.apiToken;
-    ddnsInfo.style.display=hasDdnsConfig?'':'none';
-    if(hasDdnsConfig){
-      $('ddns_last_ipv6').textContent='2408:8214:3a15:1a2b::1a2b';
-      $('ddns_last_updated').textContent='2026-07-25 09:18:42';
-      $('ddns_last_error').textContent='—';
-    }
-  }
+
+let cfg=null,idx=0,upUrl='',upVer='',otaPreVer='',currentTab='status',inboxLoading=false,inboxCache=[],currentWifiSsid='',channelTypeDrafts={},activePushType=0,inboxReplyOpen=false,inboxReplySending=false;
+let esimSlot=1,esimBusy=false,esimCache={1:null,2:null},esimDetected={1:false,2:false},simIccidSeen={1:'',2:''},simNumBusy={1:false,2:false};
+let authPass=sessionStorage.getItem('t3_admin_pass')||'';
+const $=id=>document.getElementById(id);
+function authValue(pass){return'Basic '+btoa(unescape(encodeURIComponent('admin:'+pass)))}
+function withAuth(options){
+let o=options||{},h=new Headers(o.headers||{});
+if(authPass)h.set('Authorization',authValue(authPass));
+return Object.assign({},o,{headers:h});
+}
+function showLogin(message){
+$('app').classList.add('is-locked');
+$('auth_screen').hidden=false;
+$('auth_error').textContent=message||'';
+$('auth_pass').value='';
+setTimeout(()=>$('auth_pass').focus(),0);
+}
+function showApp(){
+$('auth_screen').hidden=true;
+$('app').classList.remove('is-locked');
+$('auth_error').textContent='';
+}
+const api=async(u,o)=>{
+if(u==="/api/status")return VIRTUAL_STATUS;
+if(u==="/api/config")return VIRTUAL_CONFIG;
+if(u==="/api/messages"||u==="/api/messages/pending")return {messages:u.endsWith("/pending")?[]:VIRTUAL_MESSAGES,partial:u.endsWith("/pending")};
+if(u==="/api/diag")return {results:VIRTUAL_DIAG};
+if(o&&o.method&&o.method!=="GET")return {success:true,message:"演示模式：操作仅在本地展示"};
+let r=await fetch(u,withAuth(o));
+if(r.status===401){showLogin('密码错误，请重新输入');throw new Error('AUTH')}
+let t=await r.text();
+let d=null;
+try{d=t?JSON.parse(t):null}catch(e){console.error('JSON parse failed:',t.substring(0,200))}
+if(!r.ok){
+let reason=d&&(d.error||d.message);
+if(reason==='mac_unauthorized')reason='设备 MAC 尚未授权，请在 OTA 管理后台加入白名单';
+throw new Error(reason||'HTTP '+r.status)
+}
+if(d!==null)return d;
+throw new Error('响应格式错误')
+};
+async function login(pass){
+authPass=pass;
+let r=await fetch('/api/status',withAuth({cache:'no-store'}));
+if(!r.ok){authPass='';throw new Error('AUTH')}
+sessionStorage.setItem('t3_admin_pass',authPass);
+showApp();
+await init();
+}
+$('auth_form').addEventListener('submit',async e=>{
+e.preventDefault();
+let btn=$('auth_submit'),pass=$('auth_pass').value;
+if(!pass)return;
+btn.disabled=true;$('auth_error').textContent='正在验证…';
+try{await login(pass)}catch(err){showLogin('密码错误，请重试')}
+finally{btn.disabled=false}
+});
+
+function tab(n){
+currentTab=n;
+document.querySelectorAll('.pane,.tab').forEach(e=>e.classList.remove('on'));
+$('pane_'+n).classList.add('on');
+document.querySelector('[data-t="'+n+'"]').classList.add('on');
+if(n==='inbox')loadInbox();
 }
 
-/* ===== 通道模板默认值 ===== */
+function fmtUp(s){
+s=Number(s||0);
+if(s<60)return s+'s';
+if(s<3600)return Math.floor(s/60)+'m';
+return Math.floor(s/3600)+'h '+(Math.floor(s%3600/60))+'m';
+}
+function syncSwitch(id){
+let select=$(id),btn=document.querySelector('[data-switch="'+id+'"]');
+if(!select||!btn)return;
+let on=(select.value==='1'||select.value==='true');
+btn.classList.toggle('is-on',on);
+btn.classList.toggle('is-off',!on);
+btn.setAttribute('aria-pressed',on?'true':'false');
+btn.setAttribute('title',on?'点击关闭':'点击开启');
+}
+function toggleSwitch(id){
+let select=$(id);if(!select)return;
+let on=(select.value==='1'||select.value==='true');
+let onVal=[...select.options].some(o=>o.value==='1')?'1':'true';
+let offVal=[...select.options].some(o=>o.value==='0')?'0':'false';
+select.value=on?offVal:onVal;
+select.dispatchEvent(new Event('change'));
+syncSwitch(id);
+}
+function syncAllSwitches(){['sim1_call_answer','sim2_call_answer','ch_rec_up','call_play','reboot_enabled','mqtt_enabled','sms_ctrl_enabled','sms_ka1_enabled','sms_ka2_enabled'].forEach(syncSwitch)}
+function syncKeepAliveMode(slot){let call=$('sms_ka'+slot+'_mode').value==='call';$('sms_ka'+slot+'_sms').style.display=call?'none':'';$('sms_ka'+slot+'_call').style.display=call?'':'none'}
+async function testKeepAlive(slot){
+let mode=$('sms_ka'+slot+'_mode').value,call=mode==='call';
+let phone=call?$('sms_ka'+slot+'_call_num').value:$('sms_ka'+slot+'_num').value.trim();
+let message=call?'':$('sms_ka'+slot+'_msg').value.trim();
+let btn=$('sms_ka'+slot+'_test');btn.disabled=true;btn.textContent='测试中…';
+try{
+let d=await postJson('/api/keepalive/test',{slot:slot,mode:mode,phone:phone,message:message});
+for(let i=0;i<35;i++){
+await new Promise(r=>setTimeout(r,1000));
+let s=await api('/api/keepalive/test/status');
+if(!s.running){alert(s.message||(s.success?'保活测试成功':'保活测试失败'));return}
+}
+alert('测试仍在执行，请稍后查看日志');
+}catch(e){alert('保活测试失败：'+(e.message||'请求失败'))}
+finally{btn.disabled=false;btn.textContent='测试保活'}
+}
+
+function setBadge(id,st){
+let e=$(id);
+if(st==='ok'){e.className='sim-badge ok';e.textContent='正常'}
+else if(st==='err'){e.className='sim-badge err';e.textContent='未插卡'}
+else{e.className='sim-badge warn';e.textContent='注册中'}
+}
+
+function setSignal(el,dbm){
+if(!el)return;
+let v=parseInt(dbm)||-120;
+let n=v>=-70?4:v>=-85?3:v>=-100?2:v>=-110?1:0;
+let bars=el.querySelectorAll('span');
+bars.forEach((b,i)=>b.classList.toggle('on',i<n));
+}
+
+function esimStoreKey(n){return't3_esim_iccid_'+n}
+function cachedEsim(n,iccid){try{return!!iccid&&localStorage.getItem(esimStoreKey(n))===iccid}catch(e){return false}}
+function markSimEsim(n,isEsim){
+esimDetected[n]=!!isEsim;let iccid=$('sim'+n+'_iccid').textContent;if(iccid==='—')iccid='';
+try{if(isEsim&&iccid)localStorage.setItem(esimStoreKey(n),iccid);else localStorage.removeItem(esimStoreKey(n))}catch(e){}
+let badge=$('sim'+n+'_esim');if(badge)badge.classList.toggle('show',!!isEsim);
+}
+
+function sim(n,m){
+let p=m['sim'+n+'_present'];
+let r=m['sim'+n+'_cs_registered']||m['sim'+n+'_ps_registered']||m['sim'+n+'_eps_registered'];
+let roaming=!!m['sim'+n+'_roaming'];
+let num=m['sim'+n+'_number']||'';
+let iccid=m['sim'+n+'_iccid']||'';
+let currentOperator=m['sim'+n+'_operator']||'';
+let homeOperator=m['sim'+n+'_home_operator']||'';
+let card=$('sim'+n+'_card');
+if(simIccidSeen[n]&&iccid&&simIccidSeen[n]!==iccid)esimDetected[n]=false;
+if(iccid)simIccidSeen[n]=iccid;
+let serverEsimKnown=!!m['sim'+n+'_esim_known'];
+if(serverEsimKnown)esimDetected[n]=!!m['sim'+n+'_esim'];
+let isEsim=serverEsimKnown?!!m['sim'+n+'_esim']:!!esimDetected[n];
+if(!simNumBusy[n]&&document.activeElement!==$('sim'+n+'_num'))$('sim'+n+'_num').value=num;
+$('sim'+n+'_op').textContent=homeOperator&&homeOperator!=='未知'?(roaming&&currentOperator&&currentOperator!==homeOperator?homeOperator+'（漫游：'+currentOperator+'）':homeOperator):(currentOperator||(p?'识别中…':'—'));
+$('sim'+n+'_num_disp').textContent=num||'—';
+$('sim'+n+'_iccid').textContent=iccid||'—';
+$('sms_opt'+n).textContent=num?'SIM '+n+'（'+num+'）':'SIM '+n;
+  setBadge('sim'+n+'_badge',!p?'err':r?'ok':'reg');
+  let se=$('sim'+n+'_esim');if(se)se.classList.toggle('show',isEsim);
+  let sr=$('sim'+n+'_roam');if(sr)sr.classList.toggle('show', r && roaming);
+  card.classList.toggle('off',!p||!r);
+setSignal($('sim'+n+'_sig'),m['sim'+n+'_signal_dbm']);
+}
+
+let statusLoading=false;
+async function loadStatus(){
+if(statusLoading)return;
+statusLoading=true;
+try{
+let d=await api('/api/status'),m=d.modem||{};
+$('top_live').textContent=d.businessNetwork==='4g'?'4G（卡'+(d.businessDataSlot||1)+'）':'WiFi';
+let mqttState=d.mqtt||{},mqttLive=$('mqtt_live');
+if(mqttLive){mqttLive.textContent=!mqttState.enabled?'已关闭':mqttState.configured===false?'未配置服务器地址':mqttState.connected?('已连接 · '+(mqttState.transport==='4g'?'4G':'WiFi')):('未连接 · '+(mqttState.transport==='4g'?'4G':'WiFi'));mqttLive.style.color=mqttState.connected?'var(--green)':mqttState.enabled?'var(--red)':'var(--fg-muted)'}
+$('top_mac').textContent=d.mac||'—';
+$('top_wifi').textContent=d.wifi&&d.wifi.ssid?d.wifi.ssid:'—';
+$('top_ip').textContent=d.wifi&&d.wifi.ip?d.wifi.ip:'—';
+if($('wifi_current'))$('wifi_current').textContent=d.wifi&&d.wifi.connected?(d.wifi.ssid+' · '+d.wifi.ip+' · '+d.wifi.rssi+' dBm'):'未连接';
+let w=d.wifi||{},connected=w.connected;
+if($('wifi_net_info'))$('wifi_net_info').style.display=connected?'':'none';
+$('net_ipv4').textContent=w.ip||'—';
+$('net_mask').textContent=w.subnet||'—';
+$('net_gateway').textContent=w.gateway||'—';
+$('net_dns').textContent=w.dns||'—';
+$('net_ipv6').textContent=w.ipv6||'—';
+$('top_uptime').textContent=fmtUp(d.uptime);
+$('top_ver').textContent=d.version||'—';
+$('ota_current_ver').textContent=d.version||'—';
+$('ota_device_status').textContent='设备在线';
+$('ota_device_status').classList.remove('is-offline');
+sim(1,m);sim(2,m);
+let ddnsInfo=$('ddns_info');
+if(ddnsInfo){
+let hasDdnsConfig=w.ddnsSubDomain&&w.ddnsApiToken;
+ddnsInfo.style.display=hasDdnsConfig?'':'none';
+if(hasDdnsConfig){
+$('ddns_last_ipv6').textContent=w.ddnsLastIpv6||'—';
+$('ddns_last_updated').textContent=w.ddnsLastUpdated||'—';
+$('ddns_last_error').textContent=w.ddnsLastError||'—';
+}
+}
+}catch(e){
+$('top_live').textContent='离线';
+$('ota_device_status').textContent='设备离线';
+$('ota_device_status').classList.add('is-offline');
+}finally{statusLoading=false}
+}
+
 function defBody(){return'{{短信内容}}\n号码:{{号码}}\n时间:{{时间}}\n来源: SIM{{卡槽}} {{卡号}}\n运行时间: {{运行时间}}\n{{备注}}\n【{{设备名称}}】{{事件标题}}'}
-function defBootBody(){return'【{{设备名称}}】开机提醒\n{{内容}}\n运行时间: {{运行时间}}'}
+function defBootBody(){return'【{{设备名称}}】开机提醒\n{{内容}}\n时间: {{时间}}'}
 function defCallBody(){return'【{{设备名称}}】来电提醒\n来电号码: {{来电号码}}\n时间: {{时间}}\n来源: SIM{{卡槽}} {{卡号}}\n{{备注}}'}
 function insertPlaceholder(value,targetId='ch_body'){
-  let el=$(targetId),start=el.selectionStart||0,end=el.selectionEnd||0,text=el.value;
-  el.value=text.slice(0,start)+value+text.slice(end);
-  el.focus();el.selectionStart=el.selectionEnd=start+value.length;
+let el=$(targetId),start=el.selectionStart||0,end=el.selectionEnd||0,text=el.value;
+el.value=text.slice(0,start)+value+text.slice(end);
+el.focus();el.selectionStart=el.selectionEnd=start+value.length;
 }
 
-/* ===== 通道选择与渲染 ===== */
-function selectChannel(i){ cacheCh(); $('ch_sel').value=String(i); renderCh(i); }
+function selectChannel(i){
+cacheCh();$('ch_sel').value=String(i);renderCh(i);
+}
 function syncFreeWeCom(){
-  if(!cfg)return;
-  if(!cfg.pushChannels)cfg.pushChannels=[];
-  while(cfg.pushChannels.length<6)cfg.pushChannels.push({});
-  let free=cfg.pushChannels[5]||{};
-  for(let i=0;i<5;i++){if((cfg.pushChannels[i]||{}).type===16){if(!free.type)free=cfg.pushChannels[i];cfg.pushChannels[i]={};}}
-  free.type=16;free.url='';free.key1='';free.recordUploadEnabled=false;free.recordUrl='';cfg.pushChannels[5]=free;
-  $('wecom_free_enabled').value=free.enabled?'1':'0';$('wecom_free_recipient').value=free.key2||'';
+if(!cfg)return;
+if(!cfg.pushChannels)cfg.pushChannels=[];
+while(cfg.pushChannels.length<6)cfg.pushChannels.push({});
+let free=cfg.pushChannels[5]||{};
+for(let i=0;i<5;i++){
+if((cfg.pushChannels[i]||{}).type===16){if(!free.type)free=cfg.pushChannels[i];cfg.pushChannels[i]={};}
+}
+free.type=16;free.url='';free.key1='';free.recordUploadEnabled=false;free.recordUrl='';
+cfg.pushChannels[5]=free;
+$('wecom_free_enabled').value=free.enabled?'1':'0';
+$('wecom_free_recipient').value=free.key2||'';
 }
 async function saveFreeWeCom(test){
-  if(!cfg)return;
-  let recipient=$('wecom_free_recipient').value.trim(),enabled=$('wecom_free_enabled').value==='1';
-  if(enabled&&!recipient){alert('请填写接收人成员账号');$('wecom_free_recipient').focus();return}
-  cacheCh();while(cfg.pushChannels.length<6)cfg.pushChannels.push({});
-  cfg.pushChannels[5]={enabled:enabled,type:16,name:'T3专属企业微信应用（专属免费通道）',url:'',key1:'',key2:recipient,customBody:'',recordUploadEnabled:false,recordUrl:''};
-  if(test){let b=$('wecom_free_test_btn');b.disabled=true;b.textContent='测试中…'}
-  try{if(test)alert('演示：免费通道测试消息已发送');else alert('免费通道已保存');loadConfig();}
-  finally{if(test){let b=$('wecom_free_test_btn');b.disabled=false;b.textContent='测试'}}
+if(!cfg)return;
+let recipient=$('wecom_free_recipient').value.trim(),enabled=$('wecom_free_enabled').value==='1';
+if(enabled&&!recipient){alert('请填写接收人成员账号');$('wecom_free_recipient').focus();return}
+cacheCh();
+while(cfg.pushChannels.length<6)cfg.pushChannels.push({});
+cfg.pushChannels[5]={enabled:enabled,type:16,name:'T3专属企业微信应用（专属免费通道）',url:'',key1:'',key2:recipient,customBody:'',recordUploadEnabled:false,recordUrl:''};
+let btn=$('wecom_free_test_btn');if(test){btn.disabled=true;btn.textContent='测试中…'}
+try{
+await postJson('/api/config',payload());
+if(test){let d=await postJson('/api/push/test',{channel:5});alert(d.message||'测试消息发送成功')}else alert('免费通道已保存');
+await loadConfig();
+}catch(e){alert((test?'测试失败：':'保存失败：')+(e.message||'请求失败'))}
+finally{if(test){btn.disabled=false;btn.textContent='测试'}}
 }
 function refreshChannelBlocks(){
-  let channels=(cfg&&cfg.pushChannels)||[];
-  document.querySelectorAll('.channel-block').forEach((button,i)=>{
-    let c=channels[i]||{}, status=(c.type||0)>0?'已启用':'未配置';
-    button.classList.toggle('active',i===idx);
-    let label=$('ch_block_name_'+i); if(label)label.textContent=status;
-  });
+let channels=(cfg&&cfg.pushChannels)||[];
+document.querySelectorAll('.channel-block').forEach((button,i)=>{
+let c=channels[i]||{},status=(c.type||0)>0?'已启用':'未配置';
+button.classList.toggle('active',i===idx);
+let label=$('ch_block_name_'+i);if(label)label.textContent=status;
+});
 }
 function renderCh(i){
-  if(!cfg)return;
-  idx=parseInt(i||0);
-  $('ch_sel').value=String(idx);
-  let c=(cfg.pushChannels||[])[idx]||{};
-  activePushType=Number(c.type||0);
-  $('ch_meta').textContent='通道 '+(idx+1)+' / 5';
-  $('ch_type').value=c.type||0;
-  $('ch_url').value=c.url||'';
-  $('ch_key1').value=c.key1||'';
-  $('ch_key2').value=c.key2||'';
-  $('ch_wecom_corp').value=c.wecomCorpId||'';
-  $('ch_wecom_secret').value=c.wecomSecret||'';
-  $('ch_wecom_agent').value=c.wecomAgentId||'';
-  $('ch_body').value=c.customBody||defBody();
-  $('ch_rec_up').value=c.recordUploadEnabled?'1':'0';
-  $('ch_rec_url').value=c.recordUrl||'';
-  syncSwitch('ch_rec_up');
-  showRec();
-  refreshChannelBlocks();
+if(!cfg)return;
+idx=parseInt(i||0);
+$('ch_sel').value=String(idx);
+let c=(cfg.pushChannels||[])[idx]||{};
+activePushType=Number(c.type||0);
+$('ch_meta').textContent='通道 '+(idx+1)+' / 5';
+$('ch_type').value=c.type||0;
+$('ch_url').value=c.url||'';
+$('ch_key1').value=c.key1||'';
+$('ch_key2').value=c.key2||'';
+$('ch_wecom_corp').value=c.wecomCorpId||'';
+$('ch_wecom_secret').value=c.wecomSecret||'';
+$('ch_wecom_agent').value=c.wecomAgentId||'';
+$('ch_body').value=c.customBody||defBody();
+$('ch_rec_up').value=c.recordUploadEnabled?'1':'0';
+$('ch_rec_url').value=c.recordUrl||'';
+syncSwitch('ch_rec_up');
+showRec();
+refreshChannelBlocks();
 }
+
 function showRec(){
-  let t=parseInt($('ch_type').value);
-  let isWecom=t===7||t===8||t===16;
-  let fixedApp=t===16;
-  let customApp=t===8;
-  $('ch_credentials').classList.toggle('wecom-grid',customApp);
-  const meta={0:['','','','','',0],1:['Webhook URL','完整请求地址','鉴权 Token（可选）','Bearer Token，留空表示无鉴权','备用参数（可选）',3],2:['Telegram API URL','https://api.telegram.org/bot<BOT_TOKEN>/sendMessage','Chat ID','接收人的 Chat ID','',1],3:['Bark 推送 URL','例如 https://api.day.app/设备Key',' ','','',0],4:['钉钉机器人 Webhook','包含 access_token 的完整机器人地址','加签密钥（Secret）','未开启加签时留空','',1],5:['PushDeer API URL','填写包含 pushkey 的完整请求地址',' ','','',0],6:['飞书机器人 Webhook','飞书自定义机器人 Webhook 地址',' ','','',0],7:['企业微信机器人 Webhook','包含 key 的完整机器人地址',' ','','',0],9:['Gotify 消息 URL','例如 https://域名/message?token=应用Token',' ','','',0],10:['Server 酱推送 URL','包含 SendKey 的完整 .send 地址',' ','','',0],11:['PushPlus API URL','默认 https://www.pushplus.plus/send','Token','PushPlus 用户 Token','',1],12:['WxPusher API URL','默认 https://wxpusher.zjiecode.com/api/send/message','AppToken','应用 AppToken','UID',3],13:['Pushover API URL','默认 https://api.pushover.net/1/messages.json','应用 Token','Application API Token','用户 Key',3],14:['INotify API URL','填写 INotify 推送接口地址',' ','','',0],15:['SMTP 转发接口 URL','填写可接收邮件 JSON 的 HTTP 接口',' ','','',0]};
-  let m=meta[t]||['Webhook URL','完整请求地址','参数 1','','参数 2',3],mask=Number(m[5]);
-  let tip=$('ch_rec_tip'), urlFld=$('ch_rec_url_fld');
-  $('ch_bark_copy_fld').style.display=t===3?'block':'none';
-  $('ch_wecom_flds').style.display=customApp?'block':'none';
-  $('ch_url_fld').style.display=(fixedApp||t===0)?'none':'block';
-  $('ch_url_label').textContent=customApp?'企业微信 API 地址':m[0];
-  $('ch_url').placeholder=customApp?'https://qyapi.weixin.qq.com':m[1];
-  $('ch_url_hint').textContent=customApp?'默认使用企业微信官方地址。新应用需要配置可信 IP 白名单；无法使用官方地址时，请填写自建中转站的 API 基础地址，否则发送会失败。':(t===1?'支持多个 URL，每行一个，发送时轮询。':'请填写完整地址，包含平台要求的密钥或 Token 参数。');
-  if(customApp&&!$('ch_url').value.trim())$('ch_url').value='https://qyapi.weixin.qq.com';
-  $('ch_key1_fld').style.display=(!fixedApp&&!customApp&&(mask&1))?'block':'none';
-  $('ch_key2_fld').style.display=(!fixedApp&&!customApp&&(mask&2))||fixedApp||customApp?'block':'none';
-  $('ch_key1_label').textContent=m[2]||'参数 1';
-  $('ch_key1').placeholder=m[3]||'';
-  $('ch_key2_label').textContent=(fixedApp||customApp)?'接收人':(m[4]||'参数 2');
-  $('ch_key2').placeholder=(fixedApp||customApp)?'成员账号，多个用 | 分隔':'Token / Secret 等';
-  $('ch_key2_hint').textContent=(fixedApp||customApp)?'填写企业微信成员 userid，多个用 | 分隔。':'';
-  if(fixedApp){$('ch_url').value='';$('ch_key1').value='';$('ch_rec_up').value='0';syncSwitch('ch_rec_up')}
-  if(isWecom){
-    tip.style.display='block';
-    tip.textContent=fixedApp?'企业微信免费通道当前仅发送文本通知':'企业微信通道录音会自动上传为语音消息';
-    urlFld.style.display='none';
-  }else{
-    tip.style.display='none';
-    urlFld.style.display='block';
-  }
+let t=parseInt($('ch_type').value);
+let isWecom=t===7||t===8||t===16;
+let fixedApp=t===16;
+let customApp=t===8;
+$('ch_credentials').classList.toggle('wecom-grid',customApp);
+const meta={
+0:['','','','','',0],
+1:['Webhook URL','完整请求地址','鉴权 Token（可选）','Bearer Token，留空表示无鉴权','备用参数（可选）',3],
+2:['Telegram API URL','https://api.telegram.org/bot<BOT_TOKEN>/sendMessage','Chat ID','接收人的 Chat ID','',1],
+3:['Bark 推送 URL','例如 https://api.day.app/设备Key',' ','','',0],
+4:['钉钉机器人 Webhook','包含 access_token 的完整机器人地址','加签密钥（Secret）','未开启加签时留空','',1],
+5:['PushDeer API URL','填写包含 pushkey 的完整请求地址',' ','','',0],
+6:['飞书机器人 Webhook','飞书自定义机器人 Webhook 地址',' ','','',0],
+7:['企业微信机器人 Webhook','包含 key 的完整机器人地址',' ','','',0],
+9:['Gotify 消息 URL','例如 https://域名/message?token=应用Token',' ','','',0],
+10:['Server 酱推送 URL','包含 SendKey 的完整 .send 地址',' ','','',0],
+11:['PushPlus API URL','默认 https://www.pushplus.plus/send','Token','PushPlus 用户 Token','',1],
+12:['WxPusher API URL','默认 https://wxpusher.zjiecode.com/api/send/message','AppToken','应用 AppToken','UID','3'],
+13:['Pushover API URL','默认 https://api.pushover.net/1/messages.json','应用 Token','Application API Token','用户 Key',3],
+14:['INotify API URL','填写 INotify 推送接口地址',' ','','',0],
+15:['SMTP 转发接口 URL','填写可接收邮件 JSON 的 HTTP 接口',' ','','',0]
+};
+let m=meta[t]||['Webhook URL','完整请求地址','参数 1','','参数 2',3],mask=Number(m[5]);
+let tip=$('ch_rec_tip'),urlFld=$('ch_rec_url_fld');
+ $('ch_bark_copy_fld').style.display=t===3?'block':'none';
+$('ch_wecom_flds').style.display=customApp?'block':'none';
+$('ch_url_fld').style.display=(fixedApp||t===0)?'none':'block';
+$('ch_url_label').textContent=customApp?'企业微信 API 地址':m[0];
+$('ch_url').placeholder=customApp?'https://qyapi.weixin.qq.com':m[1];
+$('ch_url_hint').textContent=customApp?'默认使用企业微信官方地址。新应用需要配置可信 IP 白名单；无法使用官方地址时，请填写自建中转站的 API 基础地址，否则发送会失败。':(t===1?'支持多个 URL，每行一个，发送时轮询。':'请填写完整地址，包含平台要求的密钥或 Token 参数。');
+if(customApp&&!$('ch_url').value.trim())$('ch_url').value='https://qyapi.weixin.qq.com';
+$('ch_key1_fld').style.display=(!fixedApp&&!customApp&&(mask&1))?'block':'none';
+$('ch_key2_fld').style.display=(!fixedApp&&!customApp&&(mask&2))||fixedApp||customApp?'block':'none';
+$('ch_key1_label').textContent=m[2]||'参数 1';
+$('ch_key1').placeholder=m[3]||'';
+$('ch_key2_label').textContent=(fixedApp||customApp)?'接收人':(m[4]||'参数 2');
+$('ch_key2').placeholder=(fixedApp||customApp)?'成员账号，多个用 | 分隔':'Token / Secret 等';
+$('ch_key2_hint').textContent=(fixedApp||customApp)?'填写企业微信成员 userid，多个用 | 分隔。':'';
+if(fixedApp){$('ch_url').value='';$('ch_key1').value='';$('ch_rec_up').value='0';syncSwitch('ch_rec_up')}
+if(isWecom){
+tip.style.display='block';
+tip.textContent=fixedApp?'企业微信免费通道当前仅发送文本通知':'企业微信通道录音会自动上传为语音消息';
+urlFld.style.display='none';
+}else{
+tip.style.display='none';
+urlFld.style.display='block';
 }
+}
+
 function changePushType(){
-  let t=parseInt($('ch_type').value||0),old=activePushType;
-  if(!channelTypeDrafts[idx])channelTypeDrafts[idx]={};
-  channelTypeDrafts[idx][old]={url:$('ch_url').value,key1:$('ch_key1').value,key2:$('ch_key2').value,body:$('ch_body').value};
-  let draft=channelTypeDrafts[idx][t];
-  $('ch_url').value=draft?draft.url:(t===8?'https://qyapi.weixin.qq.com':'');
-  $('ch_key1').value=draft?draft.key1:'';$('ch_key2').value=draft?draft.key2:'';
-  if(draft)$('ch_body').value=draft.body||defBody();
-  activePushType=t;
-  showRec();
+let t=parseInt($('ch_type').value||0),old=activePushType;
+if(!channelTypeDrafts[idx])channelTypeDrafts[idx]={};
+ channelTypeDrafts[idx][old]={url:$('ch_url').value,key1:$('ch_key1').value,key2:$('ch_key2').value,body:$('ch_body').value};
+let draft=channelTypeDrafts[idx][t];
+$('ch_url').value=draft?draft.url:(t===8?'https://qyapi.weixin.qq.com':'');
+$('ch_key1').value=draft?draft.key1:'';$('ch_key2').value=draft?draft.key2:'';
+if(draft)$('ch_body').value=draft.body||defBody();
+activePushType=t;
+showRec();
 }
+
 function cacheCh(){
-  if(!cfg)return;
-  if(!cfg.pushChannels)cfg.pushChannels=[{},{},{},{},{},{}];
-  let current=cfg.pushChannels[idx]||{};
-  let type=parseInt($('ch_type').value||0),fixedApp=type===16;
-  cfg.pushChannels[idx]={
-    enabled:$('ch_type').value!=='0',
-    type:type,
-    name:current.name||'',
-    url:fixedApp?'':$('ch_url').value,
-    key1:fixedApp?'':$('ch_key1').value,
-    key2:$('ch_key2').value,
-    wecomCorpId:$('ch_wecom_corp').value.trim(),
-    wecomSecret:$('ch_wecom_secret').value,
-    wecomAgentId:parseInt($('ch_wecom_agent').value||'0',10)||0,
-    customBody:$('ch_body').value,
-    recordUploadEnabled:fixedApp?false:$('ch_rec_up').value==='1',
-    recordUrl:fixedApp?'':$('ch_rec_url').value
-  };
-}
-function syncPageTitle(name){
-  let n=name&&name.trim()?name.trim():'T3';
-  document.title=n+' · 设备控制台';
-  let b=$('brand_name'); if(b)b.textContent=n+' 设备控制台';
+if(!cfg)return;
+if(!cfg.pushChannels)cfg.pushChannels=[{},{},{},{},{}];
+let current=cfg.pushChannels[idx]||{};
+let type=parseInt($('ch_type').value||0),fixedApp=type===16;
+cfg.pushChannels[idx]={
+enabled:$('ch_type').value!=='0',
+type:type,
+name:current.name||'',
+url:fixedApp?'':$('ch_url').value,
+key1:fixedApp?'':$('ch_key1').value,
+key2:$('ch_key2').value,
+ barkCopy:'',
+wecomCorpId:$('ch_wecom_corp').value.trim(),
+wecomSecret:$('ch_wecom_secret').value,
+wecomAgentId:parseInt($('ch_wecom_agent').value||'0',10)||0,
+customBody:$('ch_body').value,
+recordUploadEnabled:fixedApp?false:$('ch_rec_up').value==='1',
+recordUrl:fixedApp?'':$('ch_rec_url').value
+};
 }
 
-/* ===== 配置加载（虚拟） ===== */
-function loadConfig(){
-  let d=VIRTUAL_CONFIG;
-  if(!d.pushChannels)d.pushChannels=[{},{},{},{},{},{}];
-  cfg=d;
-  syncFreeWeCom();
-  syncPageTitle(d.deviceName);
-  $('boot_notify_template').value=d.bootNotifyTemplate||defBootBody();
-  $('call_notify_template').value=d.callNotifyTemplate||defCallBody();
-  $('sim1_remark').value=d.sim1Remark||'';
-  $('sim2_remark').value=d.sim2Remark||'';
-  $('sim1_pin').value='';
-  $('sim2_pin').value='';
-  $('sms_ka1_enabled').value=d.sim1KeepAliveEnabled?'1':'0';
-  $('sms_ka2_enabled').value=d.sim2KeepAliveEnabled?'1':'0';
-  $('sms_ka_days').value=d.simKeepAliveDays||30;
-  $('sms_ka1_num').value=d.sim1KeepAlivePhone||'';
-  $('sms_ka2_num').value=d.sim2KeepAlivePhone||'';
-  $('sms_ka1_msg').value=d.sim1KeepAliveMessage||'';
-  $('sms_ka2_msg').value=d.sim2KeepAliveMessage||'';
-  $('sim1_num').value='13800138000';
-  $('sim2_num').value='+37253138565';
-  $('sys_device_name').value=d.deviceName||'';
-  $('network_mode').value=(d.networkMode===0||d.networkMode===2)?d.networkMode:1;
-  $('web_pass').value='';
-  $('web_pass_confirm').value='';
-  $('call_mode').value=d.callRecordEnabled?1:0;
-  $('sim1_call_answer').value=d.sim1CallAutoAnswer?'1':'0';
-  $('sim2_call_answer').value=d.sim2CallAutoAnswer?'1':'0';
-  $('call_sec').value=d.callHangupSeconds||50;
-  $('call_play').value=d.callPlayEnabled?1:0;
-  $('call_play_file').value=d.callPlayFile||'';
-  let mq=d.mqtt||{};
-  $('mqtt_enabled').value=mq.enabled!==false?'1':'0';
-  $('mqtt_broker').value=mq.broker||'';
-  $('mqtt_port').value=mq.port||1883;
-  $('mqtt_ip_mode').value=mq.ipMode===1||mq.ipMode===2?mq.ipMode:0;
-  $('mqtt_user').value=mq.username||'';
-  $('mqtt_pass').value=mq.password||'';
-  $('mqtt_prefix').value=mq.topicPrefix||'sms';
-  $('mqtt_clientid').value=mq.clientId||'';
-  $('mqtt_keepalive').value=mq.keepAlive||60;
-  $('mqtt_statusint').value=mq.statusInterval||60;
-  let wifi=d.wifi||{};
-  currentWifiSsid=wifi.ssid||'';
-  $('wifi_current_pass').value=wifi.password||'';
-  $('wifi_ssid').value=currentWifiSsid;
-  $('reboot_enabled').value=d.rebootEnabled?1:0;
-  $('reboot_hour').value=(d.rebootHour!=null)?d.rebootHour:4;
-  $('reboot_minute').value=(d.rebootMinute!=null)?d.rebootMinute:0;
-  $('sms_ctrl_enabled').value=d.smsControlEnabled?1:0;
-  $('admin_phones').value=d.adminPhones||'';
-  let ddns=d.ddns||{};
-  $('ddns_enabled').value=ddns.enabled?1:0;
-  $('ddns_api_token').value=ddns.apiToken||'';
-  $('ddns_sub_domain').value=ddns.subDomain||'';
-  $('ddns_interval').value=ddns.interval||30;
-  $('web_port').value=d.webPort||80;
-  syncAllSwitches();
-  $('ch_sel').value='0';
-  renderCh(0);
+function syncPageTitle(name){let n=name&&name.trim()?name.trim():'T3';document.title=n+' · 设备控制台';let b=$('brand_name');if(b)b.textContent=n+' 设备控制台'}
+
+async function loadConfig(){
+try{
+let selectedChannel=idx;
+let d=await api('/api/config');
+if(!d.pushChannels)d.pushChannels=[{},{},{},{},{},{}];
+cfg=d;
+syncFreeWeCom();
+syncPageTitle(d.deviceName);
+$('boot_notify_template').value=d.bootNotifyTemplate||defBootBody();
+$('call_notify_template').value=d.callNotifyTemplate||defCallBody();
+$('sim1_remark').value=d.sim1Remark||'';
+$('sim2_remark').value=d.sim2Remark||'';
+$('sim1_pin').value='';
+$('sim2_pin').value='';
+$('sms_ka1_enabled').value=d.sim1KeepAliveEnabled?'1':'0';
+$('sms_ka2_enabled').value=d.sim2KeepAliveEnabled?'1':'0';
+$('sms_ka1_mode').value=d.sim1KeepAliveCall?'call':'sms';
+$('sms_ka2_mode').value=d.sim2KeepAliveCall?'call':'sms';
+$('sms_ka_days').value=d.simKeepAliveDays||30;
+$('sms_ka1_num').value=d.sim1KeepAlivePhone||'';
+$('sms_ka2_num').value=d.sim2KeepAlivePhone||'';
+$('sms_ka1_call_num').value=d.sim1KeepAliveCall?(d.sim1KeepAlivePhone||''):'';
+$('sms_ka2_call_num').value=d.sim2KeepAliveCall?(d.sim2KeepAlivePhone||''):'';
+$('sms_ka1_msg').value=d.sim1KeepAliveMessage||'';
+$('sms_ka2_msg').value=d.sim2KeepAliveMessage||'';
+syncKeepAliveMode(1);syncKeepAliveMode(2);
+$('sys_device_name').value=d.deviceName||'';
+$('network_mode').value=d.networkMode===0||d.networkMode===2?d.networkMode:1;
+$('web_pass').value='';
+$('web_pass_confirm').value='';
+$('call_mode').value=d.callRecordEnabled?1:0;
+$('sim1_call_answer').value=d.sim1CallAutoAnswer?'1':'0';
+$('sim2_call_answer').value=d.sim2CallAutoAnswer?'1':'0';
+syncSwitch('sim1_call_answer');
+syncSwitch('sim2_call_answer');
+$('call_sec').value=d.callHangupSeconds||50;
+$('call_play').value=d.callPlayEnabled?1:0;
+$('call_play_file').value=d.callPlayFile||'';
+let mq=d.mqtt||{};
+$('mqtt_enabled').value=mq.enabled!==false?'1':'0';
+$('mqtt_broker').value=mq.broker||'';
+$('mqtt_port').value=mq.port||1883;
+$('mqtt_ip_mode').value=mq.ipMode===1||mq.ipMode===2?mq.ipMode:0;
+$('mqtt_user').value=mq.username||'';
+$('mqtt_pass').value=mq.password||'';
+$('mqtt_prefix').value=mq.topicPrefix||'sms';
+$('mqtt_clientid').value=mq.clientId||'';
+$('mqtt_keepalive').value=mq.keepAlive||60;
+$('mqtt_statusint').value=mq.statusInterval||60;
+let wifi=d.wifi||{};
+currentWifiSsid=wifi.ssid||'';
+$('wifi_current_pass').value=wifi.password||'';
+$('wifi_ssid').value=currentWifiSsid;
+$('reboot_enabled').value=d.rebootEnabled?1:0;
+$('reboot_hour').value=(d.rebootHour!=null)?d.rebootHour:4;
+$('reboot_minute').value=(d.rebootMinute!=null)?d.rebootMinute:0;
+$('sms_ctrl_enabled').value=d.smsControlEnabled?1:0;
+$('admin_phones').value=d.adminPhones||'';
+let ddns=d.ddns||{};
+$('ddns_enabled').value=ddns.enabled?1:0;
+$('ddns_api_token').value=ddns.apiToken||'';
+$('ddns_sub_domain').value=ddns.subDomain||'';
+$('ddns_interval').value=ddns.interval||30;
+$('web_port').value=d.webPort||80;
+syncAllSwitches();
+$('ch_sel').value=String(selectedChannel);
+renderCh(selectedChannel);
+}catch(e){}
 }
 
-/* ===== 诊断（虚拟） ===== */
-function appendDiagLine(cls,txt){
-  var p=$('diag_result');
-  var d=document.createElement('div');
-  d.className='diag-line diag-'+cls;
-  d.textContent=txt;
-  p.appendChild(d);
+function payload(){
+cacheCh();
+let m=parseInt($('call_mode').value||0);
+let p={
+deviceName:$('sys_device_name').value,
+networkMode:parseInt($('network_mode').value||0),
+bootNotifyTemplate:$('boot_notify_template').value,
+callNotifyTemplate:$('call_notify_template').value,
+callRecordEnabled:m>0,
+callRecordAutoAnswer:$('sim1_call_answer').value==='1'||$('sim2_call_answer').value==='1',
+sim1CallAutoAnswer:$('sim1_call_answer').value==='1',
+sim2CallAutoAnswer:$('sim2_call_answer').value==='1',
+callHangupSeconds:parseInt($('call_sec').value||50),
+callPlayEnabled:$('call_play').value==='1',
+callPlayFile:$('call_play_file').value,
+sim1Remark:$('sim1_remark').value,
+sim2Remark:$('sim2_remark').value,
+sim1KeepAliveEnabled:$('sms_ka1_enabled').value==='1',
+sim2KeepAliveEnabled:$('sms_ka2_enabled').value==='1',
+sim1KeepAliveCall:$('sms_ka1_mode').value==='call',
+sim2KeepAliveCall:$('sms_ka2_mode').value==='call',
+simKeepAliveDays:parseInt($('sms_ka_days').value||30),
+sim1KeepAlivePhone:($('sms_ka1_mode').value==='call'?$('sms_ka1_call_num').value:$('sms_ka1_num').value.trim()),
+sim2KeepAlivePhone:($('sms_ka2_mode').value==='call'?$('sms_ka2_call_num').value:$('sms_ka2_num').value.trim()),
+sim1KeepAliveMessage:$('sms_ka1_msg').value.trim(),
+sim2KeepAliveMessage:$('sms_ka2_msg').value.trim(),
+rebootEnabled:$('reboot_enabled').value==='1',
+rebootHour:parseInt($('reboot_hour').value||0),
+rebootMinute:parseInt($('reboot_minute').value||0),
+smsControlEnabled:$('sms_ctrl_enabled').value==='1',
+adminPhones:$('admin_phones').value.trim(),
+pushChannels:cfg?cfg.pushChannels:[{},{},{},{},{},{}],
+mqtt:{
+enabled:$('mqtt_enabled').value==='1',
+broker:$('mqtt_broker').value.trim(),
+port:parseInt($('mqtt_port').value||1883),
+ipMode:parseInt($('mqtt_ip_mode').value||0),
+username:$('mqtt_user').value,
+password:$('mqtt_pass').value,
+topicPrefix:$('mqtt_prefix').value.trim()||'sms',
+clientId:$('mqtt_clientid').value.trim(),
+keepAlive:parseInt($('mqtt_keepalive').value||60),
+statusInterval:parseInt($('mqtt_statusint').value||60)
+},
+webPort:parseInt($('web_port').value||80)
+};
+let p1=$('sim1_pin').value.trim(),p2=$('sim2_pin').value.trim();
+if(p1)p.sim1Pin=p1;
+if(p2)p.sim2Pin=p2;
+return p;
 }
+
+async function postJson(u,b){return api(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)})}
+function appendDiagLine(cls,txt){var p=$('diag_result');var d=document.createElement('div');d.className='diag-line diag-'+cls;d.textContent=txt;p.appendChild(d);}
+function selectEsimSlot(slot){
+esimSlot=slot;$('esim_slot1').classList.toggle('on',slot===1);$('esim_slot2').classList.toggle('on',slot===2);renderEsim(esimCache[slot]);
+}
+function setEsimBusy(busy,message){
+esimBusy=busy;$('esim_refresh').disabled=busy;document.querySelectorAll('.esim-actions .btn,.esim-slot').forEach(b=>b.disabled=busy);if(message)$('esim_status').textContent=message;
+}
+function renderEsim(data){
+let list=$('esim_profiles');list.innerHTML='';
+if(!data){$('esim_eid').textContent='点击刷新检测 eUICC';$('esim_status').textContent='仅在手动查询时检测，不影响普通 SIM 功能。';return}
+if(data.error){$('esim_eid').textContent='—';$('esim_status').textContent='查询失败：'+data.error;return}
+if(!data.supported){markSimEsim(esimSlot,false);$('esim_eid').textContent='—';$('esim_status').textContent=data.message||'不支持 eSIM 或未检测到 eUICC';return}
+markSimEsim(esimSlot,true);
+$('esim_eid').textContent=data.eid||'—';$('esim_status').textContent=(data.profiles||[]).length?'已读取 '+data.profiles.length+' 个 Profile':'未发现 Profile';
+(data.profiles||[]).forEach(p=>{
+let id=p.iccid||p.aid||'',name=p.nickname||p.profileName||p.serviceProviderName||'未命名 Profile',enabled=Number(p.state)===1;
+let el=document.createElement('div');el.className='esim-profile';
+el.innerHTML='<div class="esim-profile-hd"><span class="esim-profile-name">'+escapeHtml(name)+'</span><span class="esim-state '+(enabled?'':'off')+'">'+(enabled?'已启用':'已禁用')+'</span></div>'+
+'<div class="esim-profile-id mono">ICCID '+escapeHtml(p.iccid||'—')+(p.serviceProviderName?' · '+escapeHtml(p.serviceProviderName):'')+'</div>'+
+'<div class="esim-actions"><button class="btn btn-sm btn-primary" type="button" data-action="enable">启用/切换</button><button class="btn btn-sm" type="button" data-action="disable" '+(enabled?'':'disabled')+'>禁用</button><button class="btn btn-sm btn-danger" type="button" data-action="delete">删除</button></div>';
+el.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>operateEsim(btn.dataset.action,id,name)));list.appendChild(el);
+});
+}
+async function pollEsim(slot,expectedAction){
+for(let i=0;i<100;i++){
+await new Promise(resolve=>setTimeout(resolve,700));
+let d=await api('/api/esim?slot='+slot);
+if(d.done&&d.slot===slot&&d.action===expectedAction)return d;
+}
+throw new Error('eSIM 操作超时');
+}
+async function refreshEsim(){
+if(esimBusy)return;let slot=esimSlot;setEsimBusy(true,'正在检测 SIM '+slot+' 的 eUICC 并读取 Profile…');
+try{await api('/api/esim?slot='+slot+'&start=1');let d=await pollEsim(slot,'query');if(!d.success&&!String(d.message||'').includes('不支持 eSIM'))d.error=d.message||'设备未返回结果';esimCache[slot]=d;renderEsim(d)}catch(e){let d={error:e.message||'eSIM 查询失败'};esimCache[slot]=d;renderEsim(d)}finally{setEsimBusy(false)}
+}
+async function operateEsim(action,identifier,name){
+if(esimBusy||!identifier)return;
+let labels={enable:'启用/切换',disable:'禁用',delete:'删除'};
+if(action==='delete'&&!confirm('确认删除“'+name+'”？此操作无法撤销。'))return;
+if(action!=='delete'&&!confirm('确认'+labels[action]+'“'+name+'”？'))return;
+let slot=esimSlot;setEsimBusy(true,'正在'+labels[action]+' Profile…');
+try{
+await postJson('/api/esim/profile',{slot:slot,action:action,identifier:identifier});let d=await pollEsim(slot,action);if(!d.success)throw new Error(d.message||'操作失败');
+$('esim_status').textContent=d.refreshRequired?'操作成功，需要等待网络重新注册后生效':'操作成功，正在刷新 SIM 与 Profile 状态';
+esimCache[slot]=null;await loadStatus();setEsimBusy(false);await refreshEsim();
+}catch(e){$('esim_status').textContent='操作失败：'+(e.message||'设备未返回结果')}finally{setEsimBusy(false)}
+}
+
 async function runDiag(cmd){
-  var p=$('diag_result');
-  appendDiagLine('cmd','> '+cmd);
-  p.scrollTop=p.scrollHeight;
-  await new Promise(r=>setTimeout(r,180));
-  var key=cmd.replace('AT+','').replace(/\?$/,'');
-  var res=VIRTUAL_DIAG[key]||'(无响应)';
-  appendDiagLine('res',res);
-  p.scrollTop=p.scrollHeight;
+var p=$('diag_result');
+appendDiagLine('cmd','> '+cmd);
+p.scrollTop=p.scrollHeight;
+try{
+var d=await postJson('/api/at',{cmd:cmd,timeout:5000});
+appendDiagLine('res',d.response||d.message||'(无响应)');
+}catch(e){if(e.message==='AUTH')return;appendDiagLine('res','请求失败: '+e.message);}
+p.scrollTop=p.scrollHeight;
 }
 async function runAllDiag(){
-  var p=$('diag_result'), btn=$('diag_all_btn');
-  if(btn){btn.disabled=true; btn.textContent='诊断中…';}
-  clearDiagResult();
-  appendDiagLine('cmd','> 一键诊断（6 条指令）');
-  var keys=['QDSREG','QDSGREG','QDSEREG','QDSQ','QDSOPS','CEER'];
-  for(var i=0;i<keys.length;i++){
-    await new Promise(r=>setTimeout(r,140));
-    appendDiagLine('cmd','> AT+'+keys[i]+(keys[i]==='CEER'?'':'?'));
-    appendDiagLine('res',VIRTUAL_DIAG[keys[i]]||'(无响应)');
-  }
-  if(btn){btn.disabled=false; btn.textContent='一键诊断';}
-  p.scrollTop=p.scrollHeight;
+var p=$('diag_result'),btn=$('diag_all_btn');
+if(btn){btn.disabled=true;btn.textContent='诊断中…';}
+clearDiagResult();
+appendDiagLine('cmd','> 一键诊断（7 条指令）');
+try{
+var d=await api('/api/diag');
+var keys=['QDSREG','QDSGREG','QDSEREG','QDSQ','QDSOPS','QNWINFO','CEER'];
+for(var i=0;i<keys.length;i++){
+appendDiagLine('cmd','> '+(keys[i]==='ATI'?'ATI':'AT+'+keys[i]+((keys[i]==='CEER'||keys[i]==='QNWINFO')?'':'?')));
+appendDiagLine('res',d[keys[i]]||'(无响应)');
 }
-function clearDiagResult(){ $('diag_result').innerHTML=''; }
-
-/* ===== 主题切换（三态：auto/light/dark） ===== */
-function themeByHour(){
-  var h=new Date().getHours();
-  return (h>=22||h<7)?'dark':'light';
+}catch(e){if(e.message==='AUTH')return;appendDiagLine('res','一键诊断失败: '+e.message);}
+if(btn){btn.disabled=false;btn.textContent='一键诊断';}
+p.scrollTop=p.scrollHeight;
 }
-function applyTheme(t){
-  document.documentElement.dataset.theme=t;
-  var m=document.querySelector('meta[name="theme-color"]');
-  if(m)m.setAttribute('content',t==='light'?'#f3f0e9':'#0b1113');
-}
-function applyThemeMode(mode){
-  var t=mode==='auto'?themeByHour():mode;
-  applyTheme(t);
-  var b=$('theme_toggle');
-  if(b)b.dataset.mode=mode;
-  try{
-    localStorage.setItem('t3_theme_mode',mode);
-    if(mode!=='auto')localStorage.setItem('t3_theme',t);
-  }catch(e){}
-}
-function toggleTheme(){
-  var b=$('theme_toggle');
-  var cur=(b&&b.dataset.mode)||'auto';
-  var next=cur==='auto'?'light':(cur==='light'?'dark':'auto');
-  applyThemeMode(next);
-}
-
-/* ===== APN 弹窗与 eSIM ===== */
-function escapeHtml(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-
-/* ===== 保存类操作（预览模式仅弹提示） ===== */
+function clearDiagResult(){$('diag_result').innerHTML='';}
+function themeByHour(){var h=new Date().getHours();return(h>=22||h<7)?'dark':'light';}
+function applyTheme(t){document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t==='light'?'#f7f0e5':'#171512');}
+function applyThemeMode(mode){var t=mode==='auto'?themeByHour():mode;applyTheme(t);var b=$('theme_toggle');if(b)b.dataset.mode=mode;var label=$('theme_toggle_label');if(label)label.textContent=mode==='auto'?'自动':mode==='light'?'浅色':'深色';try{localStorage.setItem('t3_theme_mode',mode);if(mode!=='auto')localStorage.setItem('t3_theme',t);}catch(e){}}
+function toggleTheme(){var b=$('theme_toggle');var cur=(b&&b.dataset.mode)||'auto';var next=cur==='auto'?'light':(cur==='light'?'dark':'auto');applyThemeMode(next);}
 async function testSavedChannel(){
-  let btn=$('ch_test_btn');
-  btn.disabled=true; btn.textContent='测试中…';
-  await new Promise(r=>setTimeout(r,500));
-  alert('测试消息发送成功（预览模式，未实际推送）');
-  btn.disabled=false; btn.textContent='测试已保存通道';
+let btn=$('ch_test_btn');btn.disabled=true;btn.textContent='测试中…';
+try{let d=await postJson('/api/push/test',{channel:idx});alert(d.message||'测试消息发送成功')}catch(e){alert('通道测试失败：'+(e.message||'请求失败'))}finally{btn.disabled=false;btn.textContent='测试已保存通道'}
 }
-async function selectRoamingOperator(slot){var status=$('sim'+slot+'_operator_status');if(status)status.textContent='预览模式：实际设备会切换卡槽并选择运营商。';}
-async function saveConfig(){ alert('预览模式：配置不会实际保存到设备'); }
-async function saveSimPin(slot){
-  let input=$('sim'+slot+'_pin'),status=$('sim'+slot+'_pin_status'),pin=input.value.trim();
-  if(pin&&!/^\d{4,8}$/.test(pin)){status.textContent='PIN 必须为 4-8 位数字';return}
-  input.value='';status.textContent=pin?'PIN 已保存，重启模组后自动解锁':'已清除已保存的 PIN';
+function escapeHtml(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function waitSmsResult(){
+for(let i=0;i<40;i++){
+await new Promise(resolve=>setTimeout(resolve,500));
+let d=await api('/api/sms/status');
+if(d.done){if(d.success)return d;throw new Error(d.message||'发送失败')}
 }
-async function saveWebPort(){ alert('预览模式：Web 端口不会实际保存'); }
-async function saveDdnsConfig(){ alert('预览模式：DDNS 配置不会实际保存'); }
+throw new Error('发送超时');
+}
+
+async function saveDdnsConfig(){
+let ddns={
+enabled:$('ddns_enabled').value==='1',
+apiToken:$('ddns_api_token').value.trim(),
+subDomain:$('ddns_sub_domain').value.trim(),
+interval:parseInt($('ddns_interval').value||30)
+};
+let payload=cfg?JSON.parse(JSON.stringify(cfg)):{};
+payload.ddns=ddns;
+try{
+let r=await fetch('/api/config',withAuth({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}));
+if(r.ok){alert('DDNS 配置已保存');loadStatus()}else{alert('保存失败')}
+}catch(e){alert('保存失败：'+(e&&e.message?e.message:'请求失败'))}
+}
+
 async function triggerDdnsUpdate(){
-  let btn=$('btn_ddns_update');
-  btn.disabled=true; btn.textContent='更新中…';
-  await new Promise(r=>setTimeout(r,500));
-  alert('DDNS 更新成功\nIPv6: 2408:8214:3a15:1a2b::1a2b');
-  btn.disabled=false; btn.textContent='立即更新';
+let btn=$('btn_ddns_update');
+btn.disabled=true;btn.textContent='更新中…';
+try{
+let r=await fetch('/api/ddns/update',withAuth({method:'POST'}));
+let d=await r.json();
+if(d.success){alert('DDNS 更新成功\nIPv6: '+d.ipv6)}else{alert('更新失败: '+d.error)}
+loadStatus();
+}catch(e){alert('请求失败')}
+btn.disabled=false;btn.textContent='立即更新';
 }
-async function saveNum(n){
-  let input=$('sim'+n+'_num'), button=$('sim'+n+'_num_save'), status=$('sim'+n+'_num_status');
-  let number=input.value.trim();
-  simNumBusy[n]=true; input.disabled=true; button.disabled=true; button.textContent='保存中';
-  await new Promise(r=>setTimeout(r,400));
-  input.disabled=false; button.disabled=false; button.textContent='保存'; simNumBusy[n]=false;
-  alert('预览模式：SIM '+n+' 号码不会实际写入 SIM 卡');
-}
-async function sendSMS(){
-  let p=$('sms_phone').value.trim(), m=$('sms_content').value.trim(), status=$('sms_send_status'), btn=$('sms_send_btn');
-  if(!p||!m){ status.textContent='请填写目标号码和短信内容'; return; }
-  btn.disabled=true; status.textContent='正在下发短信任务…';
-  await new Promise(r=>setTimeout(r,500));
-  status.textContent='发送成功（预览模式，未实际下发）';
-  btn.disabled=false;
-}
-async function checkOTA(){
-  $('ota_status').textContent='已是最新版本 V2.9.7T';
-  $('btn_ota').style.display='none';
-}
-async function startOTA(){ alert('预览模式：OTA 在线升级不可用'); }
-async function uploadOTA(){ alert('预览模式：OTA 本地上传不可用'); }
-async function locateDevice(){let btn=$('btn_locate');btn.disabled=true;btn.classList.add('is-active');btn.title='设备指示灯正在闪烁';setTimeout(()=>{btn.disabled=false;btn.classList.remove('is-active');btn.title='定位设备：闪烁全部指示灯'},1600)}
-async function reboot(){ alert('预览模式：重启操作不可用'); }
-async function reset(){ alert('预览模式：恢复出厂不可用'); }
-async function resetAdminCredentials(){ alert('预览模式：管理密码不会实际修改'); }
-async function updateCurrentWifiPassword(){ alert('预览模式：当前热点密码不会实际修改'); }
-async function switchWifi(){ alert('预览模式：WiFi 切换不可用'); }
-async function clearWifi(){ alert('预览模式：WiFi 清除不可用'); }
 
-/* ===== WiFi 扫描（虚拟） ===== */
+async function selectRoamingOperator(slot){var sel=$('sim'+slot+'_operator_select'),status=$('sim'+slot+'_operator_status');if(!sel||!status)return;status.textContent='正在切换并选择运营商…';try{var d=await api('/api/operator/select',{method:'POST',body:JSON.stringify({slot:slot,plmn:sel.value})});status.textContent=d.message||'已发送，请等待注册';}catch(e){status.textContent='选择失败：'+e.message;}}
+function applyOperatorScan(slot,raw){var sel=$('sim'+slot+'_operator_select'),status=$('sim'+slot+'_operator_status');if(!sel)return 0;var entries=[],seen={},re=/\((\d+),"([^"]*)","([^"]*)","(\d{5,6})",(\d+)\)/g,m;while((m=re.exec(raw||''))!==null){var key=m[4]+'-'+m[5];if(seen[key])continue;seen[key]=1;entries.push({state:parseInt(m[1]),name:m[2]||m[3]||m[4],plmn:m[4],act:parseInt(m[5])});}sel.innerHTML='<option value="">自动选择</option>';entries.forEach(function(e){var o=document.createElement('option');o.value=e.plmn;o.textContent=e.name+' '+e.plmn+(e.act===7?' · LTE':'')+(e.state===2?' · 当前':e.state===3?' · 禁止':' · 可用');o.disabled=e.state===3;sel.appendChild(o);});if(status)status.textContent=entries.length?'扫描完成，选择可用运营商后点击“选择”':'扫描完成，但未解析到可用运营商';return entries.length;}
+async function saveConfig(){
+try{
+let p=payload();
+await postJson('/api/config',p);
+syncPageTitle(p.deviceName);
+alert('已保存');
+await loadConfig();await loadStatus();
+}catch(e){alert('保存失败：'+(e&&e.message?e.message:'请求失败'))}
+}
+
+async function saveSimPin(slot){
+let input=$('sim'+slot+'_pin'),btn=$('sim'+slot+'_pin_save'),status=$('sim'+slot+'_pin_status');
+let pin=input.value.trim();
+if(pin&&!/^\d{4,8}$/.test(pin)){status.textContent='PIN 必须为 4-8 位数字';input.focus();return}
+let next=cfg?JSON.parse(JSON.stringify(cfg)):{};
+next['sim'+slot+'Pin']=pin;
+btn.disabled=true;btn.textContent='保存中…';status.textContent='';
+try{
+await postJson('/api/config',next);
+if(cfg)cfg['sim'+slot+'PinSet']=pin.length>0;
+input.value='';
+status.textContent=pin?'PIN 已保存，重启模组后自动解锁':'已清除已保存的 PIN';
+}catch(e){status.textContent='保存失败：'+(e.message||'请求失败')}
+finally{btn.disabled=false;btn.textContent='保存'}
+}
+
+async function saveMqttConfig(){
+let enabled=$('mqtt_enabled').value==='1',broker=$('mqtt_broker').value.trim();
+if(enabled&&!broker){$('mqtt_broker').focus();alert('启用 MQTT 前请填写服务器地址');return}
+await saveConfig();
+}
+
+async function saveWebPort(){
+let input=$('web_port'),btn=$('web_port_save'),port=parseInt(input.value||80);
+if(!Number.isInteger(port)||port<1||port>65535){alert('端口必须在 1-65535 之间');return}
+let next=cfg?JSON.parse(JSON.stringify(cfg)):{};
+next.webPort=port;
+btn.disabled=true;btn.textContent='保存中…';
+try{
+await postJson('/api/config',next);
+if(cfg)cfg.webPort=port;
+alert('Web 端口已保存，重启后请通过新端口访问设备');
+}catch(e){alert('端口保存失败')}
+btn.disabled=false;btn.textContent='保存端口';
+}
+
 async function scanWifi(){
-  let btn=$('wifi_scan_btn'), list=$('wifi_list'), status=$('wifi_action_status');
-  btn.disabled=true; btn.textContent='扫描中'; status.textContent='正在扫描附近热点…';
-  await new Promise(r=>setTimeout(r,600));
-  list.innerHTML='';
-  [
-    ['T3-Home-5G',-45],
-    ['ChinaNet-2F3A',-58],
-    ['Xiaomi_Router_5G',-72],
-    ['CMCC-Public',-80]
-  ].forEach(([ssid,rssi])=>list.add(new Option(ssid+' · '+rssi+' dBm',ssid)));
-  list.style.display='block';
-  $('wifi_ssid').value=list.value;
-  status.textContent='请选择热点并填写密码';
-  btn.disabled=false; btn.textContent='扫描';
+let btn=$('wifi_scan_btn'),list=$('wifi_list'),status=$('wifi_action_status');
+btn.disabled=true;btn.textContent='扫描中';status.textContent='正在扫描附近热点…';
+try{
+let r=await fetch('/api/wifi/scan?start=1',withAuth());
+if(r.status!==202)throw new Error('HTTP '+r.status);
+let t='',ready=false;
+for(let i=0;i<18;i++){
+await new Promise(resolve=>setTimeout(resolve,400));
+try{
+r=await fetch('/api/wifi/scan',withAuth());
+if(r.status===200){t=await r.text();ready=true;break}
+if(r.status!==202&&r.status!==500)throw new Error('HTTP '+r.status);
+}catch(e){continue}
 }
-function selectWifi(){ $('wifi_ssid').value=$('wifi_list').value; }
+if(!ready)throw new Error('扫描超时');
+list.innerHTML='';
+t.trim().split('\n').forEach(x=>{let a=x.split('|');if(a[0])list.add(new Option(a[0]+' · '+a[1]+' dBm',a[0]))});
+if(list.length){list.style.display='block';$('wifi_ssid').value=list.value;status.textContent='请选择热点并填写密码'}
+else{list.style.display='none';status.textContent='未发现附近热点'}
+}catch(e){status.textContent='扫描失败，请稍后重试'}
+finally{btn.disabled=false;btn.textContent='扫描'}
+}
+function selectWifi(){$('wifi_ssid').value=$('wifi_list').value}
 function toggleWifiPassword(){
-  let input=$('wifi_current_pass'), show=input.type==='password';
-  input.type=show?'text':'password';
-  $('wifi_pass_toggle').textContent=show?'隐藏':'查看';
+let input=$('wifi_current_pass'),show=input.type==='password';
+input.type=show?'text':'password';
+$('wifi_pass_toggle').textContent=show?'隐藏':'查看';
+}
+async function updateCurrentWifiPassword(){
+let ssid=currentWifiSsid,pass=$('wifi_current_pass').value,status=$('wifi_action_status');
+if(!ssid){alert('当前没有已保存的热点名称');return}
+if(!confirm('确认修改当前热点“'+ssid+'”的密码并重新连接？'))return;
+try{
+let d=await postJson('/api/wifi',{ssid:ssid,pass:pass});
+status.textContent=d.message||'正在使用新密码重新连接当前热点';
+$('wifi_pass').value=pass;
+}catch(e){alert('修改当前热点密码失败')}
+}
+async function switchWifi(){
+let ssid=$('wifi_ssid').value.trim(),pass=$('wifi_pass').value,status=$('wifi_action_status');
+if(!ssid){alert('请输入 WiFi 名称');return}
+if(!confirm('确认切换到热点“'+ssid+'”？'))return;
+try{
+let d=await postJson('/api/wifi',{ssid:ssid,pass:pass});
+status.textContent=d.message||'正在切换热点，请稍后使用新 IP 访问';
+$('wifi_pass').value='';
+}catch(e){alert('切换 WiFi 失败')}
+}
+async function clearWifi(){
+if(!confirm('确认清除当前 WiFi？设备将启动带唯一后缀的 T3-Setup 配网热点。'))return;
+try{
+let d=await api('/api/wifi',{method:'DELETE'});
+$('wifi_action_status').textContent=d.message||'WiFi 已清除，正在启动带设备后缀的配网热点';
+$('wifi_ssid').value='';$('wifi_pass').value='';
+}catch(e){alert('清除 WiFi 失败')}
 }
 
-/* ===== 消息中心（虚拟数据） ===== */
-function loadInbox(){
-  let list=VIRTUAL_MESSAGES, cnt=list.length;
-  $('inbox_count').textContent=cnt;
-  if(cnt===0){
-    $('inbox_list').innerHTML='<div class="inbox-empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>暂无近期消息记录</p><p style="font-size:12px;margin-top:4px;opacity:.7">完整记录见服务端短信工作台</p></div>';
-    return;
-  }
-  var sim1=list.filter(function(s){return s.sim!=='SIM2'});
-  var sim2=list.filter(function(s){return s.sim==='SIM2'});
-  var idx=0;
-  function isCall(s){return s.type==='call'}
-  function phoneOf(s){return isCall(s)?(s.msg||'').substring(5).trim():(s.from||'')}
-  function renderCol(arr,label){
-    var smsCnt=arr.filter(function(s){return!isCall(s)}).length;
-    var callCnt=arr.length-smsCnt;
-    var stats='短信'+smsCnt+' · 来电'+callCnt;
-    if(arr.length===0)return '<div class="inbox-col"><div class="inbox-col-hd">'+escHtml(label)+' <span class="inbox-col-cnt">0</span><span class="inbox-col-stats">'+escHtml(stats)+'</span></div><div class="inbox-empty inbox-empty-sm"><p>暂无记录</p></div></div>';
-    return '<div class="inbox-col"><div class="inbox-col-hd">'+escHtml(label)+' <span class="inbox-col-cnt">'+arr.length+'</span><span class="inbox-col-stats">'+escHtml(stats)+'</span></div>'+arr.map(function(sms){
-      var i=idx++;
-      var call=isCall(sms);
-      var simSlot=sms.sim==='SIM2'?2:1;
-      var phone=phoneOf(sms);
-      var typeIcon=call?'<svg class="inbox-type-ic call" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>':'<svg class="inbox-type-ic sms" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
-      var typeCls=call?'is-call':'is-sms';
-      var actions=call?'':'<button class="inbox-reply-btn" onclick="event.stopPropagation();showReply('+i+')">回复</button>';
-      var replyForm=call?'':'<div class="inbox-reply-form" id="inbox_reply_'+i+'"><div class="fld"><label class="fld-lbl">卡槽</label><select class="inp" id="inbox_reply_slot_'+i+'"><option value="1"'+(simSlot===1?' selected':'')+'>SIM 1</option><option value="2"'+(simSlot===2?' selected':'')+'>SIM 2</option></select></div><div class="fld"><label class="fld-lbl">收件人</label><input class="inp" id="inbox_reply_to_'+i+'" value="'+escHtml(phone)+'" readonly></div><div class="fld"><label class="fld-lbl">内容</label><textarea class="inp" id="inbox_reply_msg_'+i+'" placeholder="输入回复内容"></textarea></div><div class="btn-row"><button class="btn btn-primary btn-sm" onclick="sendReply('+i+')">发送回复</button><button class="btn btn-sm btn-ghost" onclick="cancelReply('+i+')">取消</button></div></div>';
-      var bodyText=call?('来电：'+escHtml(phone)):escHtml(sms.msg);
-      return '<div class="inbox-item '+typeCls+'"><div class="inbox-hd" onclick="toggleSms('+i+')"><div class="inbox-hd-l">'+typeIcon+'<span class="inbox-phone">'+escHtml(phone)+'</span></div><span class="inbox-time">'+escHtml(sms.ts||'')+'</span></div><div class="inbox-body collapsed" id="inbox_body_'+i+'">'+bodyText+'</div><div class="inbox-actions">'+actions+'</div>'+replyForm+'</div>';
-    }).join('')+'</div>';
-  }
-  $('inbox_list').innerHTML='<div class="inbox-cols">'+renderCol(sim1,'SIM 1')+renderCol(sim2,'SIM 2')+'</div>';
+async function resetAdminCredentials(){
+let pass=$('web_pass').value;
+let confirmPass=$('web_pass_confirm').value;
+if(!pass){alert('请输入新密码');return}
+if(pass!==confirmPass){alert('两次输入的密码不一致');return}
+if(!confirm('确认修改管理密码？'))return;
+try{
+await postJson('/api/config',{webUser:'admin',webPass:pass});
+authPass=pass;
+sessionStorage.setItem('t3_admin_pass',authPass);
+$('web_pass').value='';
+$('web_pass_confirm').value='';
+alert('管理密码已修改');
+}catch(e){alert('修改失败')}
 }
-function clearInbox(){
-  if(!confirm('确认清空所有消息记录？此操作不可恢复。'))return;
-  $('inbox_count').textContent='0';
-  $('inbox_list').innerHTML='<div class="inbox-empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>消息记录已清空</p></div>';
-  alert('预览模式：消息记录不会实际清空');
+
+async function saveNum(n){
+let input=$('sim'+n+'_num'),button=$('sim'+n+'_num_save'),status=$('sim'+n+'_num_status'),number=input.value.trim();
+simNumBusy[n]=true;input.disabled=true;button.disabled=true;button.textContent='保存中';status.style.color='var(--fg-muted)';status.textContent='正在写入 SIM 卡并校验…';
+await new Promise(resolve=>requestAnimationFrame(resolve));
+try{
+await postJson('/api/sim/number',{slot:n,number:number});
+await loadStatus();
+let message=number?'SIM '+n+' 号码修改成功':'SIM '+n+' 号码清空成功';
+status.style.color='var(--green)';status.textContent=message;alert(message);
+}catch(e){
+let message=e&&e.message?e.message:'设备未返回结果';
+status.style.color='var(--red)';status.textContent='号码修改失败：'+message;alert('SIM '+n+' 号码修改失败：'+message);
+}finally{input.disabled=false;button.disabled=false;button.textContent='保存';simNumBusy[n]=false}
 }
-function callBack(i,phone,slot){ alert('预览模式：回拨不可用'); }
-function switchMsgView(){ loadInbox(); }
-function toggleSms(i){ let el=$('inbox_body_'+i); if(el)el.classList.toggle('collapsed'); }
-function showReply(i){ let el=$('inbox_reply_'+i); if(el)el.classList.toggle('on'); }
-function cancelReply(i){ let el=$('inbox_reply_'+i); if(el)el.classList.remove('on'); }
+
+async function sendSMS(){
+let p=$('sms_phone').value.trim(),m=$('sms_content').value.trim(),status=$('sms_send_status'),btn=$('sms_send_btn');
+if(!p||!m){status.textContent='请填写目标号码和短信内容';return}
+btn.disabled=true;status.textContent='正在下发短信任务…';
+try{
+await postJson('/api/sms/send',{slot:parseInt($('sms_slot').value||1),phone:p,msg:m});
+status.textContent='正在发送…';
+await waitSmsResult();
+status.textContent='发送成功';
+$('sms_content').value='';
+}catch(e){status.textContent='发送失败：'+(e&&e.message?e.message:'设备未返回结果')}
+finally{btn.disabled=false}
+}
+
+let otaCheckBusy=false;
+function otaCheckErrorText(error){
+if(error==='mac_unauthorized')return '设备 MAC 尚未授权，请在 OTA 管理后台加入白名单';
+if(error==='wifi_not_connected')return '设备当前未连接 WiFi';
+if(error==='manifest_http_-11'||error==='manifest_timeout')return 'OTA 服务连接超时，请稍后重试';
+if(error&&error.indexOf('manifest_http_')===0)return 'OTA 服务返回 '+error.substring(14);
+return error||'未知错误';
+}
+async function checkOTA(silent){
+if(otaCheckBusy)return;
+otaCheckBusy=true;
+try{
+let d=await api('/api/ota/check');
+if(d.update){
+upUrl=d.url;
+upVer=d.version||'';
+$('top_update').style.display='inline-block';
+$('top_update').textContent='新版本 '+(d.version||'');
+$('ota_status').innerHTML='<b style="color:var(--accent)">发现新版本 '+d.version+'</b>';
+$('btn_ota').style.display='inline-flex';
+}else{
+upUrl='';upVer='';
+$('top_update').style.display='none';
+if(d.error&&d.error!=='no_update'){
+$('ota_status').textContent='检查失败：'+otaCheckErrorText(d.error);
+}else{
+$('ota_status').textContent='已是最新版本 '+(d.current_version||$('top_ver').textContent);
+}
+$('btn_ota').style.display='none';
+}
+}catch(e){if(!silent)$('ota_status').textContent='检查失败：'+otaCheckErrorText(e&&e.message)}
+finally{otaCheckBusy=false}
+}
+
+async function startOTA(){
+if(!upUrl||!confirm('确认升级？升级期间设备将重启。'))return;
+try{let s=await api('/api/status');otaPreVer=s.version||$('top_ver').textContent}catch(e){otaPreVer=$('top_ver').textContent}
+$('ota_status').textContent='升级请求已发送，等待设备开始下载…';
+$('btn_ota').disabled=true;
+$('ota_online_progress').style.display='block';
+$('ota_online_bar').style.width='0%';
+$('ota_online_pct').textContent='准备中…';
+let f=new URLSearchParams();f.append('url',upUrl);
+try{
+let r=await fetch('/api/ota/start',withAuth({method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:f}));
+if(!r.ok){
+let t=await r.text();
+$('ota_status').textContent='启动升级失败：'+t;
+$('btn_ota').disabled=false;
+return;
+}
+}catch(e){
+$('ota_status').textContent='启动升级请求失败';
+$('btn_ota').disabled=false;
+return;
+}
+setTimeout(function(){pollOtaProgress(0)},1000);
+}
+
+async function pollOtaProgress(retry){
+try{
+let p=await api('/api/ota/progress');
+let pct=parseInt(p.percent||0);
+if(p.total>0){
+$('ota_online_bar').style.width=pct+'%';
+$('ota_online_pct').textContent='下载中… '+pct+'% ('+p.loaded+'/'+p.total+' 字节)';
+$('ota_status').textContent='在线升级下载中… '+pct+'%';
+}else{
+$('ota_online_pct').textContent=p.message||'连接中…';
+$('ota_status').textContent='在线升级准备中…';
+}
+if(p.running){setTimeout(function(){pollOtaProgress(0)},1000);return}
+if(p.finished&&p.success){
+$('ota_online_bar').style.width='100%';
+$('ota_online_pct').textContent='刷写完成，设备正在重启…';
+$('ota_status').textContent='刷写完成，等待设备重启…';
+setTimeout(function(){pollAfterOTA(0)},12000);
+return;
+}
+if(p.finished&&!p.success){
+$('ota_status').textContent='在线升级失败：'+(p.message||'unknown');
+$('ota_online_pct').textContent=p.message||'升级失败';
+$('btn_ota').disabled=false;
+return;
+}
+setTimeout(function(){pollOtaProgress(retry+1)},1000);
+}catch(e){
+if(retry>30){
+$('ota_status').textContent='读取升级进度失败';
+$('btn_ota').disabled=false;
+return;
+}
+setTimeout(function(){pollOtaProgress(retry+1)},1000);
+}
+}
+
+async function pollAfterOTA(retry){
+try{
+let d=await api('/api/status');
+let newVer=d.version||'';
+$('btn_ota').disabled=false;
+if((upVer&&newVer&&newVer.replace(/^V/i,'')===upVer.replace(/^V/i,''))||(otaPreVer&&newVer&&newVer!==otaPreVer)){
+$('ota_status').textContent='在线升级成功，当前版本：'+newVer;
+$('ota_online_pct').textContent='升级成功，当前版本：'+newVer;
+$('btn_ota').style.display='none';
+setTimeout(function(){$('ota_online_progress').style.display='none'},3000);
+}else{
+$('ota_status').textContent='设备已响应，但版本未变化，无法确认升级成功（当前：'+(newVer||'未知')+'）';
+$('ota_online_pct').textContent='版本未变化：'+(newVer||'未知');
+}
+await loadStatus();
+}catch(e){
+if(retry>30){
+$('ota_status').textContent='设备长时间未响应，请手动检查';
+$('btn_ota').disabled=false;
+return;
+}
+setTimeout(function(){pollAfterOTA(retry+1)},5000);
+}
+}
+
+async function uploadOTA(){
+let fileInput=$('ota_file');
+if(!fileInput.files||!fileInput.files.length){alert('请先选择固件文件');return}
+let file=fileInput.files[0];
+if(!file.name.endsWith('.bin')){alert('请选择 .bin 固件文件');return}
+if(!confirm('确认上传升级？升级期间设备将重启。'))return;
+try{let s=await api('/api/status');otaPreVer=s.version||$('top_ver').textContent}catch(e){otaPreVer=$('top_ver').textContent}
+$('btn_ota_upload').disabled=true;
+$('ota_upload_progress').style.display='block';
+let form=new FormData();
+form.append('firmware',file);
+let xhr=new XMLHttpRequest();
+xhr.open('POST','/api/ota/upload',true);
+xhr.setRequestHeader('Authorization',authValue(authPass));
+xhr.upload.onprogress=function(e){
+if(e.lengthComputable){
+let pct=Math.round(e.loaded/e.total*100);
+$('ota_upload_bar').style.width=pct+'%';
+$('ota_upload_pct').textContent='上传中… '+pct+'%';
+}
+};
+xhr.onload=function(){
+if(xhr.status===200){
+$('ota_upload_pct').textContent='上传完成（'+xhr.responseText+'字节），设备正在重启…';
+$('ota_upload_bar').style.width='100%';
+setTimeout(function(){pollAfterUpload(0)},15000);
+}else{
+$('ota_upload_pct').textContent='上传失败：'+xhr.status+' '+xhr.responseText;
+$('btn_ota_upload').disabled=false;
+}
+};
+xhr.onerror=function(){
+$('ota_upload_pct').textContent='上传失败，网络错误';
+$('btn_ota_upload').disabled=false;
+};
+xhr.send(form);
+}
+
+async function pollAfterUpload(retry){
+try{
+let d=await api('/api/status');
+let newVer=d.version||'';
+if(otaPreVer&&newVer&&otaPreVer!==newVer){
+$('ota_upload_pct').textContent='升级成功！版本：'+newVer;
+setTimeout(function(){$('ota_upload_progress').style.display='none'},3000);
+}else{
+$('ota_upload_pct').textContent='设备已响应，但版本未变化，无法确认升级成功（当前：'+(newVer||'未知')+'）';
+}
+$('btn_ota_upload').disabled=false;
+$('ota_upload_bar').style.width='0%';
+await loadStatus();
+}catch(e){
+if(retry>30){
+$('ota_upload_pct').textContent='设备长时间未响应，请手动检查';
+$('btn_ota_upload').disabled=false;
+return;
+}
+setTimeout(function(){pollAfterUpload(retry+1)},5000);
+}
+}
+
+async function reboot(){
+if(confirm('确认重启？约 30 秒恢复。')){await fetch('/api/reboot',withAuth({method:'POST'}));alert('正在重启')}
+}
+
+async function locateDevice(){
+let btn=$('btn_locate'),label=$('btn_locate_label');btn.disabled=true;btn.classList.add('is-active');btn.title='定位设备：闪烁全部指示灯';if(label)label.textContent='定位中…';
+try{let r=await fetch('/api/locate',withAuth({method:'POST'}));if(!r.ok)throw new Error('HTTP '+r.status)}
+catch(e){alert('定位失败：'+(e.message||'请求失败'))}
+finally{setTimeout(()=>{btn.disabled=false;btn.classList.remove('is-active');btn.title='定位设备：闪烁全部指示灯';if(label)label.textContent='定位'},1600)}
+}
+
+async function reset(){
+if(confirm('⚠️ 将清除所有配置！确认恢复出厂？')){await fetch('/api/factory_reset',withAuth({method:'POST'}));alert('已恢复，设备将重启')}
+}
+
+// ===== 消息中心 =====
+// 消息中心架构：短信/来电记录写入 ESP32-C3 LittleFS，并合并尚未落盘的实时记录
+function isCall(s){return s&&s.type==='call'}
+function phoneOf(s){return isCall(s)?(s.msg||'').substring(5).trim():(s.from||'')}
+async function loadInbox(silent,delta){
+if(inboxLoading||inboxReplyOpen||inboxReplySending)return;
+inboxLoading=true;
+try{
+let d=await api(delta?'/api/messages/pending':'/api/messages');
+let incoming=d.messages||[];
+if(d.partial){
+let seen={};
+inboxCache.forEach(function(m){seen[[m.type,m.ts,m.sim,m.num,m.from,m.msg].join('\u001f')]=1});
+incoming.forEach(function(m){let k=[m.type,m.ts,m.sim,m.num,m.from,m.msg].join('\u001f');if(!seen[k]){seen[k]=1;inboxCache.push(m)}});
+}else{
+let seen={};inboxCache=[];
+incoming.forEach(function(m){let k=[m.type,m.ts,m.sim,m.num,m.from,m.msg].join('\u001f');if(!seen[k]){seen[k]=1;inboxCache.push(m)}});
+}
+let list=inboxCache,cnt=list.length;
+$('inbox_count').textContent=cnt;
+if(cnt===0){
+$('inbox_list').innerHTML='<div class="inbox-empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>暂无近期消息记录</p><p style="font-size:12px;margin-top:4px;opacity:.7">完整记录见服务端短信工作台</p></div>';
+return;
+}
+// 统一为单列，并按时间倒序排列，最新记录置顶。
+function messageTime(s){
+var raw=String(s.ts||'').trim();
+if(!raw)return 0;
+var parsed=Date.parse(raw.replace(' ','T'));
+return isNaN(parsed)?0:parsed;
+}
+list.sort(function(a,b){
+var diff=messageTime(b)-messageTime(a);
+return diff||(String(b.ts||'').localeCompare(String(a.ts||'')));
+});
+var idx=0;
+function renderMessage(sms){
+var i=idx++;
+var call=isCall(sms);
+var simSlot=sms.sim==='SIM2'?2:1;
+var phone=phoneOf(sms);
+var typeIcon=call?'<svg class="inbox-type-ic call" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>':'<svg class="inbox-type-ic sms" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+var typeCls=call?'is-call':'is-sms';
+var actions=call?'':'<button type="button" class="inbox-reply-btn" onclick="event.stopPropagation();showReply('+i+')">回复</button>';
+var bodyText=call?('来电：'+escHtml(phone)):escHtml(sms.msg||'');
+return '<div class="inbox-item '+typeCls+'" data-inbox-index="'+i+'" onclick="toggleSms('+i+')"><div class="inbox-summary"><div class="inbox-hd"><div class="inbox-hd-l">'+typeIcon+'<span class="inbox-sim">SIM'+simSlot+'</span><span class="inbox-phone">'+escHtml(phone||'未知号码')+'</span></div><span class="inbox-time">'+escHtml(sms.ts||'')+'</span></div><div class="inbox-preview">'+bodyText+'</div></div><div class="inbox-actions">'+actions+'</div></div>';
+}
+$('inbox_list').innerHTML='<div class="inbox-cols">'+list.map(renderMessage).join('')+'</div>';
+}catch(e){if(!silent)$('inbox_list').innerHTML='<div class="inbox-empty"><p>加载失败: '+escHtml(e.message)+'</p></div>'}
+finally{inboxLoading=false}
+}
+
+async function clearInbox(){
+if(!confirm('确认清空所有消息记录？此操作不可恢复。'))return;
+try{
+let d=await postJson('/api/messages/clear',{});
+if(d.success){
+inboxCache=[];
+$('inbox_count').textContent='0';
+$('inbox_list').innerHTML='<div class="inbox-empty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><p>消息记录已清空</p></div>';
+alert('已清空');
+}else{
+alert('清空失败：'+(d.message||'未知错误'));
+}
+}catch(e){alert('清空失败: '+e.message)}
+}
+
+async function callBack(i,phone,slot){
+if(!confirm('确认通过 SIM'+slot+' 回拨给 '+phone+'？'))return;
+try{
+await postJson('/api/sms/send',{slot:slot,phone:phone,msg:'回拨请求'});
+await waitSmsResult();
+alert('发送成功');
+}catch(e){alert('发送失败：'+(e&&e.message?e.message:'设备未返回结果'))}
+}
+
+// 切换实时/历史视图
+function switchMsgView(){
+loadInbox();
+}
+
+
+let inboxDialogIndex=-1;
+let inboxDialogMode='view';
+function openInboxDialog(i,mode){
+if(inboxReplySending)return;
+let sms=inboxCache[i];
+if(!sms)return;
+let call=isCall(sms),slot=sms.sim==='SIM2'?2:1,phone=phoneOf(sms);
+inboxDialogIndex=i;inboxDialogMode=mode||'view';inboxReplyOpen=inboxDialogMode==='reply';
+let dlg=$('inbox_dialog'),reply=$('inbox_dialog_reply'),body=$('inbox_dialog_body'),actions=$('inbox_dialog_ft');
+if(!dlg||!body||!actions)return;
+$('inbox_dialog_type').textContent=call?'来电':'短信';
+$('inbox_dialog_title').textContent=phone||'未知号码';
+$('inbox_dialog_meta').textContent='SIM '+slot+' · '+(sms.ts||'');
+body.textContent=call?'来电记录：'+(phone||'未知号码'):(sms.msg||'');
+if(reply){reply.hidden=call||inboxDialogMode!=='reply';$('inbox_dialog_slot').value=String(slot);$('inbox_dialog_to').value=phone||'';$('inbox_dialog_msg').value='';}
+actions.innerHTML=call?'':'<button type="button" class="btn btn-ghost" onclick="closeInboxDialog()">关闭</button>'+(inboxDialogMode==='reply'?'<button type="button" class="btn btn-primary" onclick="sendReply('+i+')">发送回复</button>':'<button type="button" class="btn btn-primary" onclick="showReply('+i+')">回复</button>');
+dlg.hidden=false;dlg.setAttribute('aria-hidden','false');
+if(inboxDialogMode==='reply')setTimeout(function(){if($('inbox_dialog_msg'))$('inbox_dialog_msg').focus()},0);
+}
+function closeInboxDialog(){
+let dlg=$('inbox_dialog');if(dlg){dlg.hidden=true;dlg.setAttribute('aria-hidden','true')}
+inboxDialogIndex=-1;inboxDialogMode='view';inboxReplyOpen=false;
+}
+function toggleSms(i){openInboxDialog(i,'view')}
+function showReply(i){openInboxDialog(i,'reply')}
+function cancelReply(){closeInboxDialog()}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('inbox_dialog').hidden)closeInboxDialog()});
+
 async function sendReply(i){
-  let msg=$('inbox_reply_msg_'+i).value.trim();
-  if(!msg){ alert('请输入回复内容'); return; }
-  await new Promise(r=>setTimeout(r,300));
-  alert('预览模式：回复不会实际发送');
-  $('inbox_reply_msg_'+i).value='';
-  cancelReply(i);
+let slotEl=$('inbox_dialog_slot'),phoneEl=$('inbox_dialog_to'),msgEl=$('inbox_dialog_msg');
+if(!slotEl||!phoneEl||!msgEl){alert('回复窗口已刷新，请重新点击回复');closeInboxDialog();return}
+let slot=parseInt(slotEl.value)||1;
+let phone=phoneEl.value.trim();
+let msg=msgEl.value.trim();
+if(!msg){alert('请输入回复内容');return}
+inboxReplySending=true;
+let sendBtn=document.querySelector('#inbox_dialog_ft .btn-primary');
+if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='发送中…'}
+let sent=false;
+try{
+await postJson('/api/sms/send',{slot:slot,phone:phone,msg:msg});
+await waitSmsResult();
+alert('发送成功');
+msgEl.value='';
+closeInboxDialog();
+sent=true;
+}catch(e){alert('发送失败：'+(e&&e.message?e.message:'设备未返回结果'))}
+finally{
+inboxReplySending=false;
+if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='发送回复'}
+if(sent&&currentTab==='inbox')loadInbox(true,false);
 }
+}
+
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-/* ===== 60s 定时器：自动模式下按小时切换主题 ===== */
-(function(){
-  try{
-    var m=localStorage.getItem('t3_theme_mode')||'auto';
-    var b=document.getElementById('theme_toggle');
-    if(b)b.dataset.mode=m;
-    setInterval(function(){
-      var bb=document.getElementById('theme_toggle');
-      if(bb&&bb.dataset.mode==='auto'){
-        var t=themeByHour();
-        if(document.documentElement.dataset.theme!==t)applyTheme(t);
-      }
-    },60000);
-  }catch(e){}
-})();
-
-/* ===== 初始化（无需登录，直接展示） ===== */
-function init(){
-  $('auth_screen').hidden=true;
-  $('app').classList.remove('is-locked');
-  loadStatus();
-  loadConfig();
-  loadInbox();
+(function(){try{var m=localStorage.getItem('t3_theme_mode')||'auto';applyThemeMode(m);setInterval(function(){var bb=document.getElementById('theme_toggle');if(bb&&bb.dataset.mode==='auto'){var t=themeByHour();if(document.documentElement.dataset.theme!==t)applyTheme(t);}},60000);}catch(e){}})();
+let timersStarted=false;
+async function init(){
+loadOtaAnnouncement();
+await loadStatus();await loadConfig();
+setTimeout(function(){checkOTA(true)},1500);
+if(!timersStarted){
+timersStarted=true;
+setInterval(function(){if(!document.hidden&&!statusLoading&&!$('app').classList.contains('is-locked'))loadStatus()},8000);
+setInterval(function(){if(!$('app').classList.contains('is-locked')&&currentTab==='inbox'&&!document.hidden)loadInbox(true,true)},3000);
+setInterval(function(){if(!$('app').classList.contains('is-locked')&&currentTab==='inbox'&&!document.hidden)loadInbox(true,false)},60000);
+setInterval(function(){if(!document.hidden&&!$('app').classList.contains('is-locked'))checkOTA(true)},21600000);
 }
-/* ===== 键盘快捷键（新增） ===== */
-(function(){
-  var TABS=['status','forward','sms','inbox','wifi','tools'];
-  var TAB_LABELS={status:'SIM 状态',forward:'转发通道',sms:'发送短信',inbox:'消息中心',wifi:'WiFi',tools:'设备工具'};
-  var helpOpen=false,overlay,fab;
-
-  function row(k,d){
-    return '<div style="display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid #222">'
-      +'<span style="font-family:ui-monospace,Consolas,monospace;background:#181818;border:1px solid #2a2a2a;border-radius:5px;padding:2px 10px;color:#c8a45c">'+k+'</span>'
-      +'<span style="color:#b8b4ad;text-align:right">'+d+'</span></div>';
-  }
-  function buildOverlay(){
-    if(overlay)return;
-    overlay=document.createElement('div');
-    overlay.id='kbd_overlay';
-    overlay.style.cssText='position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)';
-    var card=document.createElement('div');
-    card.style.cssText='max-width:440px;width:88%;background:#1c1c1c;color:#e0ddd8;border:1px solid #2a2a2a;border-radius:12px;padding:24px 26px;font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.5)';
-    var html='<div style="font-size:16px;font-weight:700;margin-bottom:4px">键盘快捷键</div>'
-      +'<div style="color:#8a8780;font-size:12px;margin-bottom:16px">预览模式 · 按 Esc 或 ? 关闭</div>';
-    TABS.forEach(function(t,i){ html+=row((i+1)+'', TAB_LABELS[t]||t); });
-    html+=row('T','切换 白天 / 黑夜 / 自动 主题');
-    html+=row('?','打开 / 关闭本帮助');
-    html+=row('Esc','关闭本帮助');
-    card.innerHTML=html;
-    overlay.appendChild(card);
-    overlay.addEventListener('click',function(e){ if(e.target===overlay) closeHelp(); });
-    document.body.appendChild(overlay);
-
-    fab=document.createElement('button');
-    fab.textContent='⌨ 快捷键';
-    fab.title='键盘快捷键（?）';
-    fab.style.cssText='position:fixed;right:14px;bottom:72px;z-index:9998;border:1px solid #2a2a2a;background:rgba(28,28,28,.92);color:#c8a45c;font:600 13px -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;padding:8px 14px;border-radius:20px;cursor:pointer;backdrop-filter:blur(8px)';
-    fab.addEventListener('click',toggleHelp);
-    document.body.appendChild(fab);
-  }
-  function openHelp(){ buildOverlay(); overlay.style.display='flex'; helpOpen=true; }
-  function closeHelp(){ if(overlay) overlay.style.display='none'; helpOpen=false; }
-  function toggleHelp(){ helpOpen?closeHelp():openHelp(); }
-
-  document.addEventListener('keydown',function(e){
-    var t=e.target;
-    var typing=t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable);
-    if(e.metaKey||e.ctrlKey||e.altKey) return;
-    if(e.key==='Escape'){ if(helpOpen) closeHelp(); return; }
-    if(typing) return;
-    if(e.key==='?'){ e.preventDefault(); toggleHelp(); return; }
-    if(e.key==='t'||e.key==='T'){ if(typeof toggleTheme==='function') toggleTheme(); return; }
-    if(/^[1-6]$/.test(e.key)){
-      var i=parseInt(e.key,10)-1;
-      if(TABS[i]&&typeof tab==='function'){ e.preventDefault(); tab(TABS[i]); }
-    }
-  });
-})();
-
-init();
+}
+showApp();init();
 </script>
 </div></body></html>
 <style>
@@ -2180,5 +2701,181 @@ init();
   .channel-config-panel+.channel-config-panel,.call-config-panel+.call-config-panel{padding-left:0;padding-top:14px;border-left:0;border-top:1px solid var(--border-subtle)}
   .diag-cmds{flex-direction:row;flex-wrap:wrap}
   .diag-cmds .diag-btn{flex:1 1 calc(50% - 4px)}
+}
+</style>
+<style>
+/* Juquan-inspired console theme: warm paper, ink outlines and orange actions. */
+:root:not([data-theme="light"]){
+  --bg:#171512;--bg-card:#211e19;--bg-card2:#29251e;--bg-input:#181613;
+  --border:#5a5750;--border-subtle:#3f3c36;--fg:#fff8eb;--fg-dim:#d6cab8;--fg-muted:#9d9180;
+  --accent:#ff6a2a;--accent-h:#ff824d;--brand:#ff6a2a;--accent-subtle:rgba(255,106,42,.14);--accent-border:rgba(255,106,42,.5);--accent-glow:rgba(255,106,42,.18);
+  --green:#86bd68;--green-subtle:rgba(134,189,104,.13);--green-border:rgba(134,189,104,.42);--amber:#ffc94a;--amber-h:#ffd66f;--amber-subtle:rgba(255,201,74,.13);
+  --red:#ff8d82;--red-h:#ffa59d;--red-subtle:rgba(255,141,130,.12);--red-border:rgba(255,141,130,.38);--orange:#ff6a2a;--muted-subtle:rgba(255,248,235,.07);
+  --bar:rgba(23,21,18,.97);--bar-strong:rgba(23,21,18,.98);--auth-bg:#171512;--on-accent:#241108;
+  --switch-bg:#181613;--switch-thumb:#3a342b;--switch-thumb-border:#6b6051;--switch-hover-bg:#302b24;--switch-hover-border:#8a7b68;--switch-on-bg:rgba(255,106,42,.15);--switch-on-border:#ff6a2a;--switch-active-off:#fff8eb;--switch-active-on:#241108;--switch-dim:#9d9180;--btn-hover:#383229;
+}
+:root[data-theme="light"]{
+  --bg:#f7f0e5;--bg-card:#fffdf7;--bg-card2:#fff7e9;--bg-input:#fffdfa;
+  --border:#29261f;--border-subtle:#d9cdbb;--fg:#24211c;--fg-dim:#625a4d;--fg-muted:#8f8372;
+  --accent:#f25b24;--accent-h:#d94716;--brand:#f25b24;--accent-subtle:rgba(242,91,36,.1);--accent-border:rgba(242,91,36,.38);--accent-glow:rgba(242,91,36,.12);
+  --green:#467b43;--green-subtle:rgba(70,123,67,.1);--green-border:rgba(70,123,67,.32);--amber:#bd7a00;--amber-h:#985f00;--amber-subtle:rgba(255,201,74,.28);
+  --red:#bd4038;--red-h:#9f302a;--red-subtle:rgba(189,64,56,.08);--red-border:rgba(189,64,56,.3);--orange:#f25b24;--muted-subtle:rgba(36,33,28,.06);
+  --bar:rgba(255,250,240,.97);--bar-strong:rgba(255,250,240,.98);--auth-bg:#f7f0e5;--on-accent:#fffdf7;
+  --switch-bg:#eee4d4;--switch-thumb:#fffdf7;--switch-thumb-border:#b7aa97;--switch-hover-bg:#e8dccb;--switch-hover-border:#8c7e6b;--switch-on-bg:rgba(242,91,36,.1);--switch-on-border:#f25b24;--switch-active-off:#24211c;--switch-active-on:#fffdf7;--switch-dim:#8f8372;--btn-hover:#eee3d2;
+}
+html,body,.app{background-color:var(--bg)}
+body{
+  background-image:radial-gradient(circle at 1px 1px,color-mix(in srgb,var(--fg) 8%,transparent) 1px,transparent 0);
+  background-size:18px 18px;
+  font-family:"Arial Rounded MT Bold","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+}
+.topbar{background:var(--bar);border-bottom:2px solid var(--border);box-shadow:none}
+.chip{background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:6px}
+.status-pill{background:var(--green-subtle);border:1px solid var(--green-border);border-radius:999px}
+.theme-toggle{background:var(--bg-card);border:2px solid var(--border);border-radius:8px;color:var(--fg);box-shadow:2px 2px 0 color-mix(in srgb,var(--border) 35%,transparent)}
+.theme-toggle:hover{background:var(--amber-subtle);border-color:var(--border);color:var(--fg)}
+.brand-mark,.sidebar-mark,.auth-mark{background:var(--accent);border:2px solid var(--border);border-radius:8px;color:var(--on-accent);box-shadow:3px 3px 0 var(--border)}
+.brand-name,.sidebar-brand strong,.auth-title{font-weight:900}
+.tabbar{background:var(--bar);border-right:2px solid var(--border);box-shadow:none}
+.sidebar-brand{border-bottom:2px solid var(--border-subtle)}
+.sidebar-label{color:var(--fg-dim);font-weight:800}
+.tab{border:1px solid transparent;border-radius:6px;color:var(--fg-dim);font-weight:750}
+.tab:hover{background:var(--amber-subtle);border-color:var(--border-subtle);color:var(--fg)}
+.tab.on{background:var(--accent);border:2px solid var(--border);color:var(--on-accent);box-shadow:3px 3px 0 var(--border)}
+.tab.on::after{display:none}
+.card{background:var(--bg-card);border:2px solid var(--border);border-radius:8px;box-shadow:4px 4px 0 color-mix(in srgb,var(--border) 22%,transparent)}
+.card:hover{border-color:var(--border)}
+.card-hd{background:var(--bg-card2);border-bottom:2px solid var(--border);padding:14px 18px}
+.card-hd h2{font-weight:900;color:var(--fg)}
+.card-hd .ic{stroke:var(--accent);stroke-width:2.5}
+.card-hd .meta{padding:3px 8px;border:1px solid var(--border);border-radius:999px;background:var(--bg-card);color:var(--fg-dim)}
+.eyebrow{color:var(--fg);font-weight:900}
+.eyebrow::before{content:"";display:inline-block;width:8px;height:8px;margin-right:7px;background:#ffc94a;border:1px solid var(--border);transform:rotate(-8deg)}
+.inp,select,textarea{background:var(--bg-input);border:2px solid var(--border-subtle);border-radius:8px;color:var(--fg)}
+.inp:hover,select:hover,textarea:hover{border-color:var(--border)}
+.inp:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:3px 3px 0 var(--accent-subtle)}
+.btn{border:2px solid var(--border);border-radius:8px;background:var(--bg-card2);color:var(--fg);font-weight:850;box-shadow:3px 3px 0 color-mix(in srgb,var(--border) 28%,transparent)}
+.btn:hover{background:var(--amber-subtle);color:var(--fg)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 color-mix(in srgb,var(--border) 28%,transparent)}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-h);color:var(--on-accent)}
+.btn-ghost{background:var(--bg-card);border-color:var(--border);color:var(--fg)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-warn{background:#ffc94a;color:#241b08}
+.switch-btn{border:2px solid var(--border);border-radius:8px;background:var(--switch-bg);box-shadow:none}
+.switch-thumb{border-radius:5px}
+.switch-btn.is-on{border-color:var(--border);background:var(--switch-on-bg);box-shadow:3px 3px 0 var(--accent-subtle)}
+.switch-btn.is-on .switch-thumb{background:var(--accent);border-color:var(--border)}
+.sim-card,.channel-block,.ota-panel,.info-panel,.diag-panel,.inbox-item,.wecom-free-panel,.maintenance-danger{background:var(--bg-card2);border:2px solid var(--border);border-radius:8px;box-shadow:3px 3px 0 color-mix(in srgb,var(--border) 18%,transparent)}
+.sim-card>.sim-head{background:#ffc94a;color:#241b08;border-bottom:2px solid var(--border)}
+.sim-card .sim-title{color:#241b08!important;font-weight:900}
+.sim-card .sim-badge.idle{background:#fff7d9;color:#5b4610;border:1px solid #5b4610}
+.sim-card .sim-badge.ok{border:1px solid var(--green)}
+.sim-controls{background:var(--bg-card)}
+.channel-block.active{background:#ffc94a;border-color:var(--border);box-shadow:3px 3px 0 var(--border)}
+.channel-block.active strong,.channel-block.active span{color:#241b08}
+.placeholder-btn,.esim-slot,.inbox-reply-btn{border:2px solid var(--border);border-radius:999px;background:var(--bg-card);color:var(--fg);font-weight:800}
+.tools-nav{background:var(--bg-card);border:2px solid var(--border);border-top:8px solid #ffc94a;border-radius:8px;box-shadow:4px 4px 0 color-mix(in srgb,var(--border) 22%,transparent)}
+.tools-nav-title{border-bottom:2px solid var(--border-subtle);font-weight:900}
+.tools-nav a{border:1px solid var(--border-subtle);border-left:5px solid var(--accent);border-radius:6px;background:var(--bg-card2);color:var(--fg-dim);font-weight:800}
+.tools-nav a:hover,.tools-nav a:focus-visible{border-color:var(--border);border-left-color:var(--accent);background:var(--amber-subtle);transform:translateX(2px)}
+.tool-section-hd{background:var(--bg-card2);border:2px solid var(--border);border-left:8px solid var(--accent);border-radius:8px;box-shadow:3px 3px 0 color-mix(in srgb,var(--border) 20%,transparent)}
+.tool-section-hd h2{font-weight:900}
+.ota-announcement,.auth-panel{background:var(--bg-card);border:2px solid var(--border);border-radius:8px;box-shadow:6px 6px 0 color-mix(in srgb,var(--border) 28%,transparent)}
+.auth-screen{background-color:var(--auth-bg);background-image:radial-gradient(circle at 1px 1px,color-mix(in srgb,var(--fg) 8%,transparent) 1px,transparent 0);background-size:18px 18px}
+@media(max-width:760px){
+  .topbar{border-bottom:2px solid var(--border)}
+  .tabbar{background:var(--bar-strong);border-top:2px solid var(--border);border-right:0;box-shadow:none}
+  .tab{border:1px solid transparent;border-radius:6px;box-shadow:none}
+  .tab.on{border:2px solid var(--border);border-radius:8px;box-shadow:2px 2px 0 var(--border)}
+  .tools-nav{border-top-width:5px}
+  .card{box-shadow:3px 3px 0 color-mix(in srgb,var(--border) 20%,transparent)}
+}
+@media(prefers-reduced-motion:reduce){.btn:active{transform:none}}
+.inbox-list-scroll{scrollbar-width:thin}
+.inbox-item{display:flex;align-items:center;gap:14px;min-height:72px;padding:11px 14px;cursor:pointer}
+.inbox-item:hover{transform:none;background:var(--accent-subtle)}
+.inbox-summary{min-width:0;flex:1}
+.inbox-hd{align-items:center;margin:0 0 5px}
+.inbox-hd-l{min-width:0;overflow:hidden}
+.inbox-phone{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inbox-time{margin-left:auto}
+.inbox-preview{display:block;overflow:hidden;color:var(--fg-dim);font-size:13px;line-height:1.45;white-space:nowrap;text-overflow:ellipsis}
+.inbox-actions{flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;margin:0}
+.inbox-reply-btn{min-width:62px;padding:7px 12px;border-radius:7px;border:2px solid var(--border);background:var(--bg-card);color:var(--fg);font-weight:800}
+.inbox-dialog[hidden]{display:none}
+.inbox-dialog{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px}
+.inbox-dialog-backdrop{position:absolute;inset:0;background:rgba(15,12,8,.58);backdrop-filter:blur(3px)}
+.inbox-dialog-panel{position:relative;width:min(100%,620px);max-height:min(88vh,720px);overflow:auto;background:var(--bg-card);border:2px solid var(--border);border-radius:10px;box-shadow:8px 8px 0 rgba(15,12,8,.28);padding:22px}
+.inbox-dialog-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:14px;border-bottom:2px solid var(--border-subtle)}
+.inbox-dialog-title-wrap{min-width:0;display:flex;align-items:center;gap:10px}
+.inbox-dialog-type{display:inline-flex;align-items:center;justify-content:center;min-width:44px;padding:4px 8px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-size:12px;font-weight:900}
+.inbox-dialog-hd h3{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:20px;font-weight:900;color:var(--fg)}
+.inbox-dialog-close{width:34px;height:34px;border:2px solid var(--border);border-radius:7px;background:var(--bg-card2);color:var(--fg);font-size:24px;line-height:1;cursor:pointer}
+.inbox-dialog-close:hover{background:var(--accent-subtle)}
+.inbox-dialog-meta{padding:12px 0 8px;color:var(--fg-muted);font-size:13px}
+.inbox-dialog-body{min-height:88px;padding:16px;background:var(--bg-card2);border:2px solid var(--border-subtle);border-radius:8px;color:var(--fg);font-size:15px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.inbox-dialog-reply{margin-top:16px;padding-top:16px;border-top:2px solid var(--border-subtle)}
+.inbox-dialog-reply[hidden]{display:none}
+.inbox-dialog-ft{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+@media(max-width:700px){
+  .inbox-item{min-height:68px;padding:10px 11px;gap:8px}
+  .inbox-preview{font-size:12px}
+  .inbox-dialog{padding:10px;align-items:end}
+  .inbox-dialog-panel{max-height:90vh;padding:17px;border-radius:10px 10px 0 0;border-bottom:0}
+  .inbox-dialog-hd h3{font-size:18px}
+  .inbox-dialog-ft{position:sticky;bottom:0;padding-top:10px;background:var(--bg-card)}
+}
+@media(max-width:760px){
+  #pane_inbox .card-hd{padding:12px 13px;gap:8px}
+  #pane_inbox .card-hd h2{font-size:16px;white-space:nowrap}
+  #pane_inbox .card-hd>div{gap:5px!important}
+  #pane_inbox .card-bd{padding:9px 8px 14px}
+  #inbox_list{max-height:calc(100vh - 250px)!important;padding-right:0!important}
+  #pane_inbox .inbox-item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px 9px}
+  #pane_inbox .inbox-summary{min-width:0}
+  #pane_inbox .inbox-hd{gap:5px;margin-bottom:4px}
+  #pane_inbox .inbox-hd-l{gap:5px;min-width:0}
+  #pane_inbox .inbox-type-ic{width:16px;height:16px}
+  #pane_inbox .inbox-sim{padding:2px 5px;font-size:10px}
+  #pane_inbox .inbox-phone{font-size:13px}
+  #pane_inbox .inbox-time{font-size:10px}
+  #pane_inbox .inbox-preview{font-size:12px;line-height:1.4}
+  #pane_inbox .inbox-actions{margin:0}
+  #pane_inbox .inbox-reply-btn{min-width:54px;padding:6px 8px;font-size:12px}
+  .inbox-dialog-ft .btn{flex:1;min-width:0;padding-left:10px;padding-right:10px}
+}
+.text-action{width:auto;min-width:76px;height:36px;padding:0 10px;font-size:12px;white-space:nowrap}
+.text-action .ic{display:none!important}
+.tools-workbench{display:block!important}
+.tools-content{width:100%!important}
+.sim-info .sim-line{display:grid;grid-column:1/-1;grid-template-columns:auto minmax(0,1fr);gap:0 10px;align-items:baseline;min-width:0}
+.sim-info .sim-line b{min-width:42px}
+.sim-info .sim-line .num,.sim-info .sim-line .mono{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:760px){
+  .topbar{display:grid!important;grid-template-columns:minmax(90px,1fr) auto;align-items:center;gap:8px}
+  .topbar .brand{grid-column:1;display:flex;min-width:0;width:100%;flex:0 0 auto}
+  .topbar .top-actions{grid-column:2;min-width:0;width:auto;flex:0 0 auto}
+  .topbar .chips{grid-column:1 / -1;min-width:0;width:100%}
+  .status-txt{display:inline!important;font-size:11px!important}
+  .status-pill{min-width:70px;justify-content:center}
+  .text-action{min-width:0;height:34px;padding:0 8px;font-size:11px}
+  .top-actions{max-width:100%;display:flex!important;align-items:stretch;justify-content:flex-start;gap:5px}
+  .top-actions .status-pill,.top-actions .text-action,.top-actions .link{min-width:0;max-width:100%;overflow:hidden}
+  .top-actions .text-action{flex:0 1 auto;width:max-content;min-width:0;padding-left:9px;padding-right:9px;white-space:nowrap;text-overflow:ellipsis;text-align:center}
+  .top-actions .link{display:flex;align-items:center;justify-content:center;font-size:11px!important;white-space:nowrap;text-overflow:ellipsis}
+  .sim-status .sim-info{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+  .sim-status .sim-info .op{grid-column:1}
+  .sim-info .sim-line{grid-template-columns:42px minmax(0,1fr);width:100%}
+  .tools-nav{display:none!important}
+  .tools-workbench{display:block!important;gap:0!important}
+  .tools-content{width:100%;border-left:0}
+}
+@media(max-width:380px){
+  .topbar{grid-template-columns:minmax(72px,1fr) auto;gap:5px}
+  .top-actions{gap:3px}
+  .top-actions .text-action{width:max-content;min-width:0;padding-left:5px;padding-right:5px;font-size:10px}
+  .top-actions .status-pill{min-width:62px;padding-left:5px;padding-right:5px}
+  .top-actions .link{font-size:10px!important}
 }
 </style>

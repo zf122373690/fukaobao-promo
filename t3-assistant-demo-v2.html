@@ -330,19 +330,19 @@
 const CHANNEL_TYPES = ['关闭','Webhook/POST','Telegram','Bark','钉钉','PushDeer','飞书','企微机器人','企微应用','Gotify','ServerChan','PushPlus','WxPusher','Pushover','Inotify','Next SMTP Proxy'];
 
 const DEVICES = [
-  { id: 1, name: 'Node-A1', group: '办公室', ip: '192.168.123.21', status: 'online', version: '4.0',
+  { id: 1, name: 'Node-A1', group: '办公室', ip: '192.168.123.21', status: 'online', version: '4.6',
     sim1: { present: true, number: '13800001111', operator: '中国移动', registered: true, signal: -67 },
     sim2: { present: true, number: '13900002222', operator: '中国联通', registered: true, signal: -73 },
     wifi: { name: 'Office-5G' } },
-  { id: 2, name: 'Node-B2', group: '仓库', ip: '192.168.123.22', status: 'online', version: '4.0',
+  { id: 2, name: 'Node-B2', group: '仓库', ip: '192.168.123.22', status: 'online', version: '4.6',
     sim1: { present: true, number: '13700003333', operator: '中国电信', registered: true, signal: -71 },
     sim2: { present: false, number: '', operator: '', registered: false, signal: 0 },
     wifi: { name: 'WH-2.4G' } },
-  { id: 3, name: 'Node-C3', group: '门店', ip: '192.168.123.23', status: 'offline', version: '4.0',
+  { id: 3, name: 'Node-C3', group: '门店', ip: '192.168.123.23', status: 'offline', version: '4.6',
     sim1: { present: true, number: '13600004444', operator: '中国移动', registered: false, signal: -85 },
     sim2: { present: true, number: '13500005555', operator: '中国联通', registered: true, signal: -69 },
     wifi: { name: 'Shop-WiFi' } },
-  { id: 4, name: 'Node-D4', group: '家庭', ip: '192.168.123.24', status: 'online', version: '4.0',
+  { id: 4, name: 'Node-D4', group: '家庭', ip: '192.168.123.24', status: 'online', version: '4.6',
     sim1: { present: false, number: '', operator: '', registered: false, signal: 0 },
     sim2: { present: false, number: '', operator: '', registered: false, signal: 0 },
     wifi: { name: 'Home' } },
@@ -705,7 +705,7 @@ function refreshTakeover(){ openModal(renderTakeover()); }
 function patchCh(k,v){ const i=S.activeChannel; S.config.pushChannels[i]={...S.config.pushChannels[i],[k]:v, enabled: k==='type'?(v!==0):S.config.pushChannels[i].enabled}; }
 function saveConfig(){ toast('固件配置已保存'); }
 function runAt(){ const cmd=S.atCmd.trim();
-  const map={ 'AT':'OK', 'AT+CSQ':'+CSQ: 23,0', 'ATI':'T3-MQTT v4.0', 'AT+CGMR':'4.0' };
+  const map={ 'AT':'OK', 'AT+CSQ':'+CSQ: 23,0', 'ATI':'T3-MQTT v4.6', 'AT+CGMR':'4.6' };
   S.atResp = map[cmd] || ('[' + cmd + ']\nOK'); refreshTakeover(); }
 function checkOta(){ S.otaUrl='https://s.dkb.cc.cd/'; refreshTakeover(); toast('3.x升级4.0需全量更新，4.0以上支持正常 OTA'); }
 
