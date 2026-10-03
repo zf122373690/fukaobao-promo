@@ -1,916 +1,2046 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f0e5">
 <title>T3 本地助手 · 交互演示</title>
 <style>
-  :root {
-    --background: #ffffff;
-    --bg-muted: #f4f4f5;
-    --surface: #ffffff;
-    --surface-2: #fafafa;
-    --border: #e4e4e7;
-    --text: #18181b;
-    --muted: #71717a;
-    --primary: #18181b;
-    --primary-fg: #ffffff;
-    --accent: #2563eb;
-    --accent-soft: rgba(37,99,235,.12);
-    --success: #22c55e;
-    --success-soft: rgba(34,197,94,.12);
-    --warning: #f59e0b;
-    --warning-soft: rgba(245,158,11,.12);
-    --danger: #ef4444;
-    --danger-soft: rgba(239,68,68,.12);
-    --brand-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-    --brand-gradient-soft: linear-gradient(135deg, rgba(37,99,235,.14), rgba(124,58,237,.14));
-    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.04);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -2px rgba(0,0,0,.05);
-    --radius: 10px;
-    --radius-sm: 8px;
-    --ring: rgba(24,24,27,.08);
-    color-scheme: light;
+/* ============================================================
+   T3 本地设备助手 · 暖纸橙（浅色默认）+ 暖黑橙（深色）
+   与固件 html_ui 「Juquan console theme」同一设计语言。
+   本文件为官网演示版：界面 1:1 对齐本地助手，数据全部为本地模拟。
+   ============================================================ */
+:root {
+  --bg: #f7f0e5;
+  --bg-card: #fffdf7;
+  --bg-card2: #fff7e9;
+  --bg-input: #fffdfa;
+  --border: #29261f;
+  --border-subtle: #d9cdbb;
+  --fg: #24211c;
+  --fg-dim: #625a4d;
+  --fg-muted: #8f8372;
+  --accent: #f25b24;
+  --accent-h: #d94716;
+  --accent-subtle: rgba(242, 91, 36, 0.1);
+  --accent-border: rgba(242, 91, 36, 0.38);
+  --accent-glow: rgba(242, 91, 36, 0.12);
+  --on-accent: #fffdf7;
+  --green: #467b43;
+  --green-subtle: rgba(70, 123, 67, 0.1);
+  --green-border: rgba(70, 123, 67, 0.32);
+  --amber: #bd7a00;
+  --amber-subtle: rgba(255, 201, 74, 0.28);
+  --red: #bd4038;
+  --red-h: #9f302a;
+  --red-subtle: rgba(189, 64, 56, 0.08);
+  --red-border: rgba(189, 64, 56, 0.3);
+  --btn-hover: #eee3d2;
+  --bar: rgba(255, 250, 240, 0.97);
+  --grad-accent: linear-gradient(135deg, #f25b24 0%, #d94716 100%);
+  --grad-hero: linear-gradient(120deg, #f25b24 0%, #e04f1d 100%);
+  --shadow-card: 0 2px 10px rgba(36, 33, 28, 0.06);
+  --shadow-float: 0 16px 48px rgba(36, 33, 28, 0.18);
+  --radius: 10px;
+  --radius-lg: 14px;
+  --topbar-h: 56px;
+  --tabbar-h: 64px;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #171512;
+  --bg-card: #211e19;
+  --bg-card2: #29251e;
+  --bg-input: #181613;
+  --border: #5a5750;
+  --border-subtle: #3f3c36;
+  --fg: #fff8eb;
+  --fg-dim: #d6cab8;
+  --fg-muted: #9d9180;
+  --accent: #ff6a2a;
+  --accent-h: #ff824d;
+  --accent-subtle: rgba(255, 106, 42, 0.14);
+  --accent-border: rgba(255, 106, 42, 0.5);
+  --accent-glow: rgba(255, 106, 42, 0.18);
+  --on-accent: #241108;
+  --green: #86bd68;
+  --green-subtle: rgba(134, 189, 104, 0.13);
+  --green-border: rgba(134, 189, 104, 0.42);
+  --amber: #ffc94a;
+  --amber-subtle: rgba(255, 201, 74, 0.13);
+  --red: #ff8d82;
+  --red-h: #ffa59d;
+  --red-subtle: rgba(255, 141, 130, 0.12);
+  --red-border: rgba(255, 141, 130, 0.38);
+  --btn-hover: #383229;
+  --bar: rgba(23, 21, 18, 0.97);
+  --grad-accent: linear-gradient(135deg, #ff6a2a 0%, #e05517 100%);
+  --grad-hero: linear-gradient(120deg, #ff6a2a 0%, #e05517 100%);
+  --shadow-card: 0 6px 22px rgba(0, 0, 0, 0.45);
+  --shadow-float: 0 16px 48px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body, #app { height: 100%; }
+body {
+  margin: 0;
+  color: var(--fg);
+  font-family: 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  background:
+    radial-gradient(1000px 500px at 85% -10%, var(--accent-glow), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--muted-line, rgba(36, 33, 28, 0.04)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--muted-line, rgba(36, 33, 28, 0.04)) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(75% 55% at 50% 0%, rgba(0, 0, 0, 0.9), transparent 85%);
+  mask-image: radial-gradient(75% 55% at 50% 0%, rgba(0, 0, 0, 0.9), transparent 85%);
+  z-index: 0;
+}
+:root[data-theme="dark"] body::before { --muted-line: rgba(255, 248, 235, 0.03); }
+#app { position: relative; z-index: 1; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+a { color: var(--accent); text-decoration: none; }
+code { font-family: 'JetBrains Mono', Consolas, ui-monospace, monospace; font-size: 0.92em; color: var(--accent-h); }
+.mono { font-family: 'JetBrains Mono', Consolas, ui-monospace, monospace; }
+.muted, .text-muted { color: var(--fg-muted); }
+small { color: var(--fg-muted); }
+h1, h2, h3 { margin: 0; font-weight: 700; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ============ 演示提示条 ============ */
+.demo-banner {
+  position: sticky; top: 0; z-index: 55;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px; font-size: 12px;
+  background: var(--grad-accent); color: var(--on-accent);
+}
+.demo-banner .pill { background: rgba(255, 255, 255, .22); border-radius: 999px; padding: 1px 9px; font-weight: 600; }
+.demo-banner .banner-close { margin-left: auto; font-weight: 700; opacity: .85; text-decoration: underline; white-space: nowrap; }
+.demo-banner .banner-close:hover { opacity: 1; }
+:root.has-banner .top-nav-bar { top: 31px; }
+
+/* ============ 通用按钮 ============ */
+.primary-button, .btn-primary, .mode-enter-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 12px 20px; border-radius: var(--radius);
+  background: var(--grad-accent);
+  color: var(--on-accent); font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.primary-button:active, .btn-primary:active, .mode-enter-button:active { transform: scale(0.97); }
+.primary-button:hover:not(:disabled), .btn-primary:hover:not(:disabled), .mode-enter-button:hover:not(:disabled) { filter: brightness(1.05); }
+.secondary-button, .btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--fg-dim); font-size: 14px; font-weight: 500;
+  transition: border 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.secondary-button:hover:not(:disabled), .btn-secondary:hover:not(:disabled) { background: var(--btn-hover); border-color: var(--accent-border); color: var(--accent); }
+.danger-button, .btn-danger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--radius);
+  background: var(--red-subtle); border: 1px solid var(--red-border);
+  color: var(--red); font-size: 14px; font-weight: 500;
+}
+.btn-action {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 7px 12px; border-radius: 8px;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  color: var(--fg-dim); font-size: 12.5px;
+}
+.btn-action.btn-danger { background: var(--red-subtle); border-color: var(--red-border); color: var(--red); }
+.btn-action:disabled { opacity: 0.4; }
+.btn-action:hover:not(:disabled) { border-color: var(--accent-border); color: var(--accent); }
+.small-action {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 8px 12px; border-radius: 8px;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  color: var(--fg-dim); font-size: 12.5px;
+}
+.btn-logout {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px; border-radius: var(--radius-lg);
+  background: var(--red-subtle); border: 1px solid var(--red-border); color: var(--red); font-size: 15px; font-weight: 600;
+}
+svg { flex-shrink: 0; }
+
+/* ============ 表单 ============ */
+input, textarea, select {
+  width: 100%; font-family: inherit; font-size: 15px; color: var(--fg);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius); padding: 11px 14px;
+  outline: none; transition: border 0.15s ease, box-shadow 0.15s ease;
+}
+input::placeholder, textarea::placeholder { color: var(--fg-muted); }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
+textarea { resize: vertical; min-height: 72px; }
+select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%), linear-gradient(135deg, var(--fg-muted) 50%, transparent 50%); background-position: calc(100% - 19px) 50%, calc(100% - 14px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+input[type="checkbox"], input[type="radio"] { width: 16px; height: 16px; min-width: 16px; padding: 0; flex-shrink: 0; accent-color: var(--accent); border-radius: 4px; }
+input[type="file"] { padding: 8px; font-size: 12.5px; color: var(--fg-muted); background: var(--bg-input); }
+.field { display: block; margin-bottom: 14px; }
+.field > span { display: block; margin-bottom: 7px; font-size: 13px; color: var(--fg-dim); font-weight: 500; }
+.hint { font-size: 12.5px; color: var(--fg-muted); }
+label { display: block; }
+label > span { display: block; }
+label input, label select, label textarea { margin-top: 6px; }
+label div input, label div select { margin-top: 0; }
+.form-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
+.full-field { grid-column: 1 / -1; }
+.error, .inline-error {
+  padding: 11px 14px; border-radius: var(--radius); font-size: 13.5px; margin: 10px 0;
+  background: var(--red-subtle); border: 1px solid var(--red-border); color: var(--red);
+  word-break: break-all;
+}
+.inline-error.success, .success { background: var(--green-subtle); border-color: var(--green-border); color: var(--green); }
+.empty {
+  padding: 44px 16px; text-align: center; color: var(--fg-muted); font-size: 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  border: 1px dashed var(--border-subtle); border-radius: var(--radius-lg);
+  background: var(--bg-card2);
+}
+
+/* ============ 页面骨架 ============ */
+.app-shell-topnav { display: flex; flex-direction: column; height: 100%; }
+.top-nav-bar {
+  height: var(--topbar-h); flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px; padding: 0 18px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; z-index: 40;
+  backdrop-filter: blur(10px);
+}
+.top-nav-logo { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.brand-mark-sm {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--grad-accent); color: var(--on-accent); font-weight: 800; font-size: 13px;
+}
+.top-nav-logo-copy { display: flex; flex-direction: column; min-width: 0; text-align: left; }
+.top-nav-logo-copy strong { font-size: 14.5px; }
+.top-nav-logo-copy small { font-size: 11px; color: var(--fg-muted); }
+.top-nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.top-nav-icon-btn, .top-nav-logout {
+  width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--fg-dim);
+}
+.top-nav-icon-btn:hover, .top-nav-logout:hover { border-color: var(--accent-border); color: var(--accent); }
+.top-nav-serial-btn {
+  display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 12px;
+  border-radius: 8px; background: var(--bg-card);
+  border: 1px solid var(--border-subtle); color: var(--fg-dim); font-size: 12.5px; white-space: nowrap;
+}
+.top-nav-serial-btn:hover { border-color: var(--accent-border); color: var(--accent); }
+.content-topnav {
+  flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 16px 16px calc(var(--tabbar-h) + 26px);
+  width: 100%; margin: 0 auto;
+}
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 45;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  background: var(--bar);
+  border-top: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+}
+.bottom-nav-group {
+  max-width: 720px; margin: 0 auto; height: var(--tabbar-h);
+  display: flex; align-items: stretch;
+}
+.bottom-nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: var(--fg-muted); font-size: 10.5px; position: relative; transition: color 0.15s ease;
+}
+.bottom-nav-item.active { color: var(--accent); font-weight: 600; }
+.bottom-nav-item.active::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 34px; height: 2px; background: var(--accent);
+}
+
+/* ============ 通用页头 ============ */
+.page { display: flex; flex-direction: column; gap: 16px; }
+.page-header h1, .page-hero h1 { font-size: 22px; letter-spacing: 0.01em; }
+.page-header p, .page-hero p { margin: 3px 0 0; color: var(--fg-muted); font-size: 13px; }
+.page-hero { padding: 18px; border-radius: var(--radius-lg); background: var(--bg-card); border: 1px solid var(--border-subtle); }
+.eyebrow { display: block; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.page-hero .messages-hero-actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 13px; }
+.page-hero.with-actions { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; align-items: flex-start; }
+
+/* ============ 登录页 ============ */
+.login-page { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: clamp(24px, 8vh, 72px) 22px 28px; }
+.login-title-main { font-size: 26px; font-weight: 800; letter-spacing: 0.06em; margin-bottom: clamp(28px, 6vh, 60px); }
+.login-card {
+  width: 100%; max-width: 400px;
+  padding: 30px 26px 26px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-float);
+  display: flex; flex-direction: column;
+}
+.login-card .field { margin-bottom: 18px; }
+.login-remember { display: flex; align-items: center; gap: 9px; margin: 2px 0 22px; font-size: 14px; color: var(--fg-dim); cursor: pointer; user-select: none; }
+.login-remember input { width: 16px; height: 16px; margin: 0; }
+.login-links { display: flex; justify-content: space-between; margin-top: 18px; font-size: 13px; color: var(--fg-muted); }
+.login-links button { color: var(--accent); font-size: 13px; }
+.login-foot { margin-top: auto; padding-top: 34px; font-size: 12px; color: var(--fg-muted); }
+
+/* ============ 模式选择 ============ */
+.mode-select-page { padding: 26px 18px; gap: 20px; }
+.mode-hero { text-align: center; padding-top: 18px; }
+.mode-hero h1 { font-size: 24px; }
+.mode-hero p { color: var(--fg-muted); font-size: 13.5px; margin: 6px 0 0; }
+.mode-hero-badge {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+  padding: 6px 14px; border-radius: 999px; font-size: 12px; color: var(--accent);
+  background: var(--accent-subtle); border: 1px solid var(--accent-border);
+}
+.mode-choice-grid { display: grid; gap: 14px; margin-top: 8px; }
+.mode-choice-card { text-align: left; padding: 18px; border-radius: var(--radius-lg); background: var(--bg-card); border: 1px solid var(--border-subtle); transition: border 0.15s ease, transform 0.15s ease; cursor: pointer; }
+.mode-choice-card:hover { border-color: var(--accent-border); transform: translateY(-1px); }
+.mode-choice-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-subtle); }
+.mode-choice-icon {
+  width: 44px; height: 44px; border-radius: 10px; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-subtle); color: var(--accent);
+}
+.mode-choice-card h2 { font-size: 17px; }
+.mode-choice-card > p { margin: 5px 0 0; font-size: 13px; color: var(--fg-muted); }
+.mode-check-list { margin: 12px 0 14px; padding: 0; list-style: none; display: grid; gap: 5px; }
+.mode-check-list li { font-size: 12.5px; color: var(--fg-muted); display: flex; gap: 6px; align-items: center; }
+.mode-check-list li::before { content: '✓'; color: var(--green); font-weight: 700; }
+
+/* ============ 仪表盘 ============ */
+.dashboard-page { gap: 18px; }
+.dash-hello {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 20px; border-radius: var(--radius-lg);
+  background: var(--grad-hero);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+.dash-hello h1 { font-size: 20px; color: var(--on-accent); }
+.dash-hello p { margin: 3px 0 0; font-size: 12.5px; color: var(--on-accent); opacity: 0.85; }
+.dash-mode-chip {
+  display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+  padding: 6px 12px; border-radius: 999px; font-size: 12px;
+  background: rgba(255, 255, 255, 0.18); color: var(--on-accent); border: 1px solid rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+}
+.dash-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.dash-stat {
+  padding: 14px 6px; border-radius: var(--radius-lg); text-align: center;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.dash-stat:hover { border-color: var(--accent-border); }
+.dash-stat strong { font-size: 22px; font-weight: 800; color: var(--fg); }
+.dash-stat span { font-size: 11px; color: var(--fg-muted); }
+.dash-stat.online strong { color: var(--green); }
+.dash-stat.nosim strong { color: var(--amber); }
+.dash-stat.registered strong { color: var(--accent); }
+.dash-quick { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.dash-quick button {
+  padding: 13px 4px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 11.5px; color: var(--fg-dim);
+}
+.dash-quick button:hover { border-color: var(--accent-border); }
+.quick-ico {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-subtle); color: var(--accent);
+}
+.quick-ico.green { background: var(--green-subtle); color: var(--green); }
+.quick-ico.amber { background: var(--amber-subtle); color: var(--amber); }
+.quick-ico.blue { background: var(--accent-subtle); color: var(--accent); }
+.dash-recent-header { display: flex; align-items: center; justify-content: space-between; }
+.dash-recent-header h2 { font-size: 15.5px; }
+.dash-recent-header button { font-size: 12.5px; color: var(--accent); }
+.dash-device-list { display: flex; flex-direction: column; gap: 10px; }
+.dash-device {
+  display: flex; align-items: center; gap: 11px; text-align: left; min-width: 0; max-width: 100%;
+  padding: 13px 14px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.dash-device:hover { border-color: var(--accent-border); }
+.dash-device.offline { opacity: 0.6; }
+.dd-status { width: 9px; height: 9px; border-radius: 50%; background: var(--border-subtle); flex-shrink: 0; }
+.dash-device:not(.offline) .dd-status { background: var(--green); }
+.dd-main { min-width: 0; flex: 1; }
+.dd-main strong { display: block; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dd-main small { display: block; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dd-sims { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.dd-sims small { font-size: 11px; color: var(--fg-muted); }
+.dd-meta { font-size: 11.5px; color: var(--fg-muted); flex-shrink: 0; }
+.dd-meta.ok { color: var(--green); }
+
+/* ============ 设备页 ============ */
+.devices-page { gap: 14px; }
+.version-banner {
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  padding: 10px 14px; border-radius: var(--radius); font-size: 11.5px; color: var(--fg-muted);
+  background: var(--bg-card2); border: 1px solid var(--border-subtle);
+}
+.stats-bar { display: flex; flex-wrap: wrap; gap: 7px; }
+.stat-item {
+  padding: 7px 13px; border-radius: 999px; font-size: 12px; color: var(--fg-dim);
+  background: var(--bg-card2); border: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+.stat-item.stat-online { color: var(--green); border-color: var(--green-border); }
+.stat-item.stat-nosim { color: var(--amber); border-color: var(--amber-subtle); }
+.stat-item.stat-sim { color: var(--amber); }
+.stat-item.stat-registered { color: var(--accent); border-color: var(--accent-border); }
+.stat-item.stat-auto-refresh { color: var(--fg-muted); }
+.filter-chips { display: flex; gap: 9px; overflow-x: auto; padding: 2px 0 4px; scrollbar-width: none; }
+.filter-chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; padding: 8px 18px; border-radius: 999px; font-size: 13.5px; color: var(--fg-dim);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  transition: all 0.15s ease;
+}
+.chip.active { color: var(--on-accent); background: var(--grad-accent); border-color: transparent; font-weight: 600; }
+.search-bar { position: relative; }
+.search-bar .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--fg-muted); pointer-events: none; }
+.search-bar input { padding-left: 42px; }
+.device-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.dev-card {
+  padding: 15px 16px 13px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  min-width: 0; max-width: 100%;
+}
+.dev-card:hover { border-color: var(--accent-border); }
+.dev-card-top { display: flex; align-items: center; gap: 9px; }
+.dev-card-check { margin-right: 2px; }
+.dev-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-subtle); flex-shrink: 0; }
+.dev-card.online .dev-dot { background: var(--green); }
+.dev-card-top strong { flex: 1; min-width: 0; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dev-badge {
+  flex-shrink: 0; padding: 3px 11px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+  background: var(--green-subtle); color: var(--green); border: 1px solid var(--green-border);
+}
+.dev-badge.off { background: var(--bg-card2); color: var(--fg-muted); border-color: var(--border-subtle); }
+.dev-sim-rows { margin: 12px 0 10px; display: grid; gap: 8px; }
+.dev-sim-row {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 9px 12px; border-radius: var(--radius);
+  background: var(--bg-card2); border: 1px solid var(--border-subtle);
+  font-size: 13px; min-width: 0;
+}
+.dev-sim-tag { flex-shrink: 0; padding: 2px 8px; border-radius: 6px; font-size: 10.5px; font-weight: 700; background: var(--accent-subtle); color: var(--accent); }
+.dev-sim-row .num { font-family: 'JetBrains Mono', Consolas, monospace; font-weight: 600; color: var(--fg); overflow-wrap: anywhere; }
+.dev-sim-row .meta { margin-left: auto; font-size: 11.5px; color: var(--fg-muted); text-align: right; min-width: 0; }
+.dev-meta-row {
+  display: flex; flex-wrap: wrap; gap: 5px 16px; padding-top: 10px;
+  border-top: 1px dashed var(--border-subtle); font-size: 11.5px; color: var(--fg-muted);
+}
+.dev-meta-row b { color: var(--fg-dim); font-weight: 500; }
+.dev-actions { display: flex; gap: 7px; margin-top: 11px; flex-wrap: wrap; padding-top: 2px; }
+.dev-actions::-webkit-scrollbar { display: none; }
+.dev-actions .btn-action { flex-shrink: 0; }
+.dev-select-row { display: flex; align-items: center; gap: 9px; }
+.batch-bar {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 12px 14px; border-radius: var(--radius-lg);
+  background: var(--accent-subtle); border: 1px solid var(--accent-border);
+}
+.fab {
+  position: fixed; right: 18px; bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 18px);
+  z-index: 42;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: var(--grad-accent); color: var(--on-accent);
+  box-shadow: 0 8px 22px var(--accent-glow);
+  font-size: 10.5px; font-weight: 700;
+  transition: transform 0.15s ease;
+}
+.fab:active { transform: scale(0.94); }
+
+/* ============ 弹窗 ============ */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+  background: rgba(36, 33, 28, 0.5); backdrop-filter: blur(4px);
+  animation: fade-in 0.18s ease;
+}
+:root[data-theme="dark"] .modal-backdrop { background: rgba(0, 0, 0, 0.7); }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.modal-panel {
+  width: 100%; max-width: 440px; max-height: 86vh; overflow-y: auto;
+  padding: 20px 18px; border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-float);
+  animation: pop-in 0.2s ease;
+}
+@keyframes pop-in { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
+.modal-panel.modal-large { max-width: 720px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.modal-header h2 { font-size: 17px; }
+.modal-header button { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--bg-card2); color: var(--fg-dim); }
+.modal-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.modal-actions > * { flex: 1; min-width: 110px; }
+
+/* ============ 接管面板 ============ */
+.takeover-content { display: flex; flex-direction: column; gap: 14px; }
+.takeover-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.takeover-metrics > div {
+  padding: 10px 6px; border-radius: var(--radius); text-align: center;
+  background: var(--bg-card2); border: 1px solid var(--border-subtle);
+}
+.takeover-metrics span { display: block; font-size: 10.5px; color: var(--fg-muted); }
+.takeover-metrics strong { font-size: 12.5px; color: var(--fg); font-weight: 600; word-break: break-all; }
+.save-config-bar { display: flex; gap: 10px; }
+.save-config-bar .btn-primary { flex: 1; }
+.takeover-nav { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+.takeover-nav::-webkit-scrollbar { display: none; }
+.takeover-nav button {
+  flex-shrink: 0; padding: 8px 15px; border-radius: 999px; font-size: 13px; color: var(--fg-dim);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  transition: all 0.15s ease;
+}
+.takeover-nav button.active { color: var(--on-accent); background: var(--grad-accent); border-color: transparent; font-weight: 600; }
+.takeover-grid { display: flex; flex-direction: column; gap: 14px; }
+.takeover-card {
+  padding: 15px 14px; border-radius: var(--radius-lg);
+  background: var(--bg-card2); border: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; gap: 11px;
+}
+.takeover-card h3 { font-size: 14.5px; margin-bottom: 2px; color: var(--accent); }
+.takeover-card.accent-blue { border-color: var(--accent-border); }
+.takeover-card.accent-green { border-color: var(--green-border); }
+.takeover-card.accent-amber { border-color: var(--amber); }
+.takeover-card.accent-red { border-color: var(--red-border); }
+.takeover-card.accent-slate { border-color: var(--border); }
+.takeover-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.channel-tabs { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+.channel-tabs::-webkit-scrollbar { display: none; }
+.channel-tabs button {
+  flex-shrink: 0; padding: 7px 15px; border-radius: 999px; font-size: 12.5px; color: var(--fg-dim);
+  background: var(--bg-input); border: 1px solid var(--border-subtle);
+}
+.channel-tabs button.active { background: var(--accent-subtle); color: var(--accent); border-color: var(--accent-border); font-weight: 600; }
+.serial-command { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.serial-command input { flex: 1; min-width: 130px; }
+.serial-command.refined button { flex-shrink: 0; }
+.at-response {
+  margin: 0; padding: 12px; border-radius: var(--radius); max-height: 240px; overflow: auto;
+  background: var(--bg-input); border: 1px solid var(--border-subtle);
+  font-family: 'JetBrains Mono', Consolas, monospace; font-size: 12px; color: var(--green);
+  white-space: pre-wrap; word-break: break-all;
+}
+.diag-result { display: flex; flex-direction: column; gap: 6px; }
+.diag-row {
+  display: flex; gap: 10px; align-items: flex-start; justify-content: space-between;
+  padding: 9px 12px; border-radius: var(--radius); font-size: 12px;
+  background: var(--bg-input); border: 1px solid var(--border-subtle);
+}
+.diag-key { color: var(--accent); font-weight: 600; flex-shrink: 0; }
+.diag-val { text-align: right; word-break: break-all; color: var(--fg-dim); font-family: monospace; font-size: 11.5px; }
+.ota-progress { display: flex; flex-direction: column; gap: 8px; }
+.ota-bar {
+  position: relative; height: 22px; border-radius: 11px; overflow: hidden;
+  background: var(--bg-input); border: 1px solid var(--border-subtle);
+  display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--fg);
+}
+.ota-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--grad-accent); transition: width 0.4s ease; }
+.msg-log { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+
+/* ============ 短信页 ============ */
+.msg-page { gap: 14px; }
+.msg-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.msg-tabs button {
+  padding: 8px 16px; border-radius: 999px; font-size: 13px; color: var(--fg-dim);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.msg-tabs button.active { color: var(--on-accent); background: var(--grad-accent); border-color: transparent; font-weight: 600; }
+.msg-tabs button em { font-style: normal; opacity: .7; margin-left: 4px; font-size: 12px; }
+.msg-toolbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.msg-toolbar-left { display: flex; gap: 8px; flex: 1; min-width: 0; flex-wrap: wrap; }
+.msg-toolbar-right { display: flex; gap: 8px; flex-wrap: wrap; }
+.msg-toolbar button { white-space: nowrap; }
+.msg-search-wrap { position: relative; flex: 1 1 240px; }
+@media (max-width: 560px) {
+  .msg-toolbar { flex-direction: column; align-items: stretch; }
+  .msg-toolbar-left { flex-direction: column; }
+  .msg-search-wrap { flex: 0 0 auto; }
+}
+.msg-search-wrap svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--fg-muted); pointer-events: none; }
+.msg-search-wrap input { padding-left: 40px; }
+.msg-search-wrap select { margin: 0; }
+.msg-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+.msg-stat {
+  padding: 12px 6px; border-radius: var(--radius-lg); text-align: center;
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.msg-stat-value { font-size: 19px; font-weight: 800; color: var(--fg); }
+.msg-stat-label { font-size: 11px; color: var(--fg-muted); }
+.msg-pill { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--accent-subtle); color: var(--accent); }
+.msg-pill.in { background: var(--green-subtle); color: var(--green); }
+.msg-pill.out { background: var(--accent-subtle); color: var(--accent); }
+.msg-pill.call { background: var(--amber-subtle); color: var(--amber); }
+.msg-table-wrap { border-radius: var(--radius-lg); background: var(--bg-card); border: 1px solid var(--border-subtle); overflow-x: auto; }
+.msg-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.msg-table th { padding: 10px 13px; text-align: left; font-size: 11.5px; color: var(--fg-muted); font-weight: 600; background: var(--bg-card2); border-bottom: 1px solid var(--border-subtle); white-space: nowrap; }
+.msg-table td { padding: 12px 13px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+.msg-table tr:last-child td { border-bottom: none; }
+.msg-dir { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--fg-dim); white-space: nowrap; }
+.msg-dir.in { color: var(--green); }
+.msg-dir.out { color: var(--accent); }
+.msg-dir.call { color: var(--amber); }
+.msg-content-cell .msg-from { font-weight: 700; font-size: 14px; color: var(--fg); }
+.msg-content-cell .msg-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 3px; color: var(--fg-dim); font-size: 13px; }
+.msg-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 32px; height: 36px; padding: 0 13px; border-radius: 8px;
+  background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--fg-dim); font-size: 13px;
+}
+.msg-btn:hover:not(:disabled) { border-color: var(--accent-border); color: var(--accent); }
+.msg-btn.primary { background: var(--accent-subtle); border-color: var(--accent-border); color: var(--accent); }
+.msg-btn.danger { background: var(--red-subtle); border-color: var(--red-border); color: var(--red); }
+.msg-pagination { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.msg-pagination span { font-size: 12.5px; color: var(--fg-muted); }
+.msg-conv-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.msg-conv-card {
+  display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; min-width: 0; max-width: 100%;
+  padding: 13px 14px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.msg-conv-card:hover { border-color: var(--accent-border); }
+.msg-conv-avatar {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-subtle); border: 1px solid var(--accent-border); color: var(--accent); font-weight: 700;
+}
+.msg-conv-avatar.call { background: var(--amber-subtle); border-color: var(--amber); color: var(--amber); }
+.msg-conv-main { flex: 1; min-width: 0; }
+.msg-conv-top { display: flex; align-items: baseline; gap: 8px; }
+.msg-conv-top strong { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; }
+.msg-conv-meta { font-size: 11px; color: var(--fg-muted); flex-shrink: 0; text-align: right; }
+.msg-conv-meta em { font-style: normal; display: block; }
+.msg-conv-sub { display: flex; gap: 8px; margin-top: 2px; align-items: center; }
+.msg-tag { padding: 2px 9px; border-radius: 6px; font-size: 10.5px; background: var(--accent-subtle); color: var(--accent); }
+.msg-conv-preview { flex: 1; min-width: 0; font-size: 12.5px; color: var(--fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msg-chat-panel { display: flex; flex-direction: column; gap: 12px; }
+.msg-chat-header { display: flex; align-items: center; gap: 10px; }
+.msg-icon-btn { width: 36px; height: 36px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--fg-dim); }
+.msg-icon-btn.danger { background: var(--red-subtle); border-color: var(--red-border); color: var(--red); }
+.msg-chat-identity strong { display: block; font-size: 15px; }
+.msg-chat-identity small { font-size: 11.5px; }
+.msg-chat-body { display: flex; flex-direction: column; gap: 9px; max-height: 52vh; overflow-y: auto; padding: 4px 2px; }
+.msg-bubble { max-width: 84%; padding: 10px 13px; border-radius: 12px; font-size: 13.5px; }
+.msg-bubble.in { align-self: flex-start; background: var(--bg-card2); border: 1px solid var(--border-subtle); border-bottom-left-radius: 4px; }
+.msg-bubble.out { align-self: flex-end; background: var(--accent-subtle); border: 1px solid var(--accent-border); color: var(--fg); border-bottom-right-radius: 4px; }
+.msg-bubble.call { align-self: center; background: var(--amber-subtle); border: 1px solid var(--amber); }
+.msg-bubble-text { word-break: break-all; }
+.msg-bubble-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; font-size: 10px; opacity: 0.85; }
+.msg-bubble-meta .mono { font-size: 10.5px; color: var(--fg-muted); }
+.msg-bubble-actions { display: flex; gap: 7px; margin-top: 6px; }
+.msg-bubble-actions button { font-size: 11px; padding: 4px 10px; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--fg-dim); display: inline-flex; align-items: center; }
+.msg-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 40px 16px; color: var(--fg-muted); font-size: 13.5px; }
+.msg-empty-icon { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--accent-subtle); color: var(--accent); }
+
+/* ============ 扫描页 ============ */
+.scan-panel {
+  padding: 16px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.scan-panel label > span { font-size: 11.5px; color: var(--fg-muted); margin-bottom: 5px; }
+.scan-status .status-line { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--fg-dim); margin-bottom: 7px; }
+.progress { height: 8px; border-radius: 999px; background: var(--bg-input); border: 1px solid var(--border-subtle); overflow: hidden; }
+.progress > div { height: 100%; background: var(--grad-accent); transition: width .3s; }
+
+/* ============ 任务中心 ============ */
+.tasks-page { gap: 14px; }
+.task-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.task-tabs button {
+  flex: 1; min-width: 100px; padding: 10px 8px; border-radius: var(--radius); font-size: 13.5px; color: var(--fg-dim);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.task-tabs button.active { color: var(--on-accent); background: var(--grad-accent); border-color: transparent; font-weight: 600; }
+.task-action-grid { display: grid; gap: 14px; }
+.task-card {
+  min-width: 0; max-width: 100%;
+  padding: 16px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; gap: 11px;
+}
+.task-card-title { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 700; }
+.task-card p { margin: 0; font-size: 12.5px; }
+.task-field { display: flex; flex-direction: column; gap: 9px; }
+.task-field label > span { font-size: 11.5px; color: var(--fg-muted); margin-bottom: 0; }
+.task-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.task-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+.task-actions > * { flex: 1; min-width: 104px; }
+.task-info-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.task-info-grid > div {
+  padding: 11px 8px; border-radius: var(--radius); text-align: center;
+  background: var(--bg-card2); border: 1px solid var(--border-subtle);
+}
+.task-info-grid span { display: block; font-size: 10.5px; color: var(--fg-muted); }
+.task-info-grid strong { font-size: 12px; color: var(--fg); word-break: break-all; }
+
+/* ============ 个人资料 ============ */
+.profile-page { gap: 16px; }
+.profile-hero {
+  display: flex; align-items: center; gap: 16px;
+  padding: 24px 20px; border-radius: var(--radius-lg);
+  background: var(--grad-hero);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+.profile-avatar {
+  width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.5);
+  color: var(--on-accent); font-size: 24px; font-weight: 800;
+}
+.profile-hero h1 { font-size: 19px; color: var(--on-accent); }
+.profile-hero p { margin: 3px 0 0; font-size: 12.5px; color: var(--on-accent); opacity: 0.85; }
+.profile-badge {
+  display: inline-flex; align-items: center; gap: 5px; margin-top: 7px;
+  padding: 3px 11px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  background: rgba(255, 255, 255, 0.18); color: var(--on-accent); border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.profile-section {
+  padding: 6px 16px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.profile-section h2 { font-size: 13px; color: var(--fg-muted); font-weight: 600; padding: 13px 0 9px; border-bottom: 1px solid var(--border-subtle); }
+.po-icon {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-subtle); color: var(--accent);
+}
+.po-main { flex: 1; min-width: 0; }
+.po-main strong { display: block; font-size: 14.5px; font-weight: 600; }
+.po-main small { font-size: 11.5px; }
+.profile-meta { display: flex; flex-direction: column; }
+.profile-meta > div { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border-subtle); font-size: 14px; gap: 10px; }
+.profile-meta > div:last-child { border-bottom: none; }
+.profile-meta span { color: var(--fg-muted); font-size: 13px; flex-shrink: 0; }
+.profile-meta strong { font-size: 13.5px; color: var(--fg); text-align: right; word-break: break-all; }
+.profile-row { display: flex; align-items: center; gap: 13px; width: 100%; padding: 13px 0; border-bottom: 1px solid var(--border-subtle); text-align: left; font-size: 14.5px; color: var(--fg); }
+.profile-row:last-child { border-bottom: none; }
+.profile-row .arrow { margin-left: auto; color: var(--accent); flex-shrink: 0; }
+.profile-row.danger { color: var(--red); }
+.profile-row.danger .po-icon { background: var(--red-subtle); color: var(--red); }
+.profile-foot { text-align: center; font-size: 11.5px; color: var(--fg-muted); padding: 4px 0 10px; }
+
+/* ============ 串口工作台 ============ */
+.serial-page { gap: 14px; }
+.serial-hero {
+  padding: 18px; border-radius: var(--radius-lg);
+  background: var(--grad-hero);
+}
+.serial-hero h1 { font-size: 19px; color: var(--on-accent); }
+.serial-hero p { margin: 4px 0 0; font-size: 12.5px; color: var(--on-accent); opacity: 0.85; }
+.serial-hero-actions { display: flex; gap: 9px; margin-top: 13px; flex-wrap: wrap; }
+.serial-hero-actions button {
+  padding: 9px 15px; border-radius: var(--radius); font-size: 12.5px; font-weight: 600;
+  background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.35); color: var(--on-accent);
+}
+.serial-panel {
+  padding: 16px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.panel-title { font-size: 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.panel-title h2 { font-size: 15px; display: flex; align-items: center; gap: 7px; }
+.panel-title p { margin: 2px 0 0; font-size: 11.5px; color: var(--fg-muted); font-weight: 400; }
+.multi-serial-layout { display: grid; gap: 14px; }
+.multi-port-list { display: grid; gap: 9px; }
+.multi-port-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: var(--radius);
+  background: var(--bg-card2); border: 1px solid var(--border-subtle);
+}
+.multi-port-card > input[type="checkbox"] { flex-shrink: 0; }
+.multi-port-card > button { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-align: left; }
+.multi-port-card.selected { border-color: var(--accent-border); background: var(--accent-subtle); }
+.multi-port-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border-subtle); flex-shrink: 0; }
+.multi-port-dot.connected { background: var(--green); }
+.multi-port-card strong { flex-shrink: 0; font-size: 13.5px; }
+.multi-port-card small { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; font-size: 11.5px; }
+.multi-port-card em { font-style: normal; flex-shrink: 0; font-size: 11px; color: var(--fg-muted); }
+.port-selection-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+.compact-connect-box { display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--border-subtle); padding-top: 12px; }
+.compact-connect-box label > span { font-size: 11.5px; color: var(--fg-muted); margin-bottom: 0; }
+.compact-button-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.compact-button-row .secondary-button { flex: 1; min-width: 88px; }
+.wizard-section { padding: 14px; border-radius: var(--radius); background: var(--bg-card2); border: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 10px; }
+.wizard-section-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.wizard-section-title small { font-weight: 400; }
+.wizard-step-number {
+  width: 24px; height: 24px; border-radius: 7px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--grad-accent); color: var(--on-accent); font-size: 12px; font-weight: 700;
+}
+.wizard-required-note { font-size: 11.5px; color: var(--amber); }
+.optional-wizard-section { opacity: 0.92; }
+.compact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.compact-footer-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+.compact-footer-actions > * { flex: 1; min-width: 110px; }
+.channel-compact-grid { display: grid; gap: 10px; }
+.channel-compact-grid > div { padding: 12px; border-radius: var(--radius); background: var(--bg-card2); border: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px; }
+.serial-ota-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.serial-ota-bar input { flex: 1; min-width: 130px; }
+.terminal-surface {
+  border-radius: var(--radius); overflow: hidden;
+  background: var(--bg-input); border: 1px solid var(--border-subtle);
+  max-height: 260px; overflow-y: auto;
+}
+.terminal-row { display: flex; gap: 9px; padding: 5px 12px; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 11.5px; border-bottom: 1px solid var(--border-subtle); }
+.terminal-row:last-child { border-bottom: none; }
+.terminal-time { color: var(--fg-muted); flex-shrink: 0; }
+.terminal-level { flex-shrink: 0; font-weight: 600; min-width: 30px; }
+.terminal-row-rx .terminal-level { color: var(--green); }
+.terminal-row-tx .terminal-level { color: var(--accent); }
+.terminal-row-system .terminal-level { color: var(--amber); }
+.terminal-empty { padding: 26px; text-align: center; color: var(--fg-muted); font-size: 12.5px; font-family: inherit; }
+.log-count { font-size: 12px; color: var(--fg-muted); }
+.saved { color: var(--green); font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; }
+.status-line { font-size: 12.5px; color: var(--fg-muted); }
+
+/* ============ 自更新条 ============ */
+.self-update-bar {
+  display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
+  padding: 12px 14px; border-radius: var(--radius-lg);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+}
+.self-update-main { flex: 1; min-width: 150px; }
+.self-update-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.self-update-title .has-update { color: var(--amber); }
+.self-update-meta { font-size: 11px; color: var(--fg-muted); margin-top: 2px; display: flex; gap: 10px; flex-wrap: wrap; }
+.self-update-msg { font-size: 12px; color: var(--accent); }
+.self-update-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.self-update-actions button { padding: 8px 13px; border-radius: 8px; font-size: 12.5px; background: var(--bg-card2); border: 1px solid var(--border-subtle); color: var(--fg-dim); display: inline-flex; align-items: center; gap: 5px; }
+.self-update-actions .btn-primary { background: var(--grad-accent); color: var(--on-accent); border-color: transparent; }
+
+/* ============ Toast ============ */
+#toast-root { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 90; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.toast { background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow-float); animation: toast-in .2s ease; max-width: min(86vw, 480px); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============ 响应式：≥960px 铺开为桌面版 ============ */
+@media (min-width: 960px) {
+  .content-topnav { padding: 22px 30px calc(var(--tabbar-h) + 30px); max-width: 1280px; }
+  .bottom-nav { background: transparent; border-top: none; pointer-events: none; }
+  .bottom-nav-group {
+    max-width: 560px; pointer-events: auto;
+    background: var(--bar); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg); height: 58px;
+    box-shadow: var(--shadow-float);
+    overflow: hidden;
   }
-  [data-theme="dark"] {
-    --background: #0b0f17;
-    --bg-muted: #161d2b;
-    --surface: #121826;
-    --surface-2: #0e1420;
-    --border: #232c3d;
-    --text: #e7ebf3;
-    --muted: #97a1b3;
-    --primary: #e7ebf3;
-    --primary-fg: #0b0f17;
-    --accent: #3b82f6;
-    --accent-soft: rgba(59,130,246,.16);
-    --success: #22c55e;
-    --success-soft: rgba(34,197,94,.16);
-    --warning: #f59e0b;
-    --warning-soft: rgba(245,158,11,.16);
-    --danger: #ef4444;
-    --danger-soft: rgba(239,68,68,.18);
-    --ring: rgba(231,235,243,.12);
-    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.4);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,.6), 0 2px 4px -2px rgba(0,0,0,.4);
-    color-scheme: dark;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--background);
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  button { font-family: inherit; cursor: pointer; }
-  input, select, textarea {
-    font-family: inherit; font-size: 13px;
-    background: var(--surface); color: var(--text);
-    border: 1px solid var(--border); border-radius: var(--radius-sm);
-    padding: 7px 10px; outline: none; width: 100%;
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--muted); }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
-
-  /* Buttons */
-  .btn-primary, .primary-action, .primary-button {
-    border: 0; border-radius: var(--radius-sm); color: #fff;
-    background: var(--brand-gradient); font-size: 13px; font-weight: 600;
-    padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-primary:hover:not(:disabled), .primary-action:hover:not(:disabled), .primary-button:hover:not(:disabled) { filter: brightness(1.08); }
-  .btn-secondary, .secondary-button {
-    border: 1px solid var(--border); border-radius: var(--radius-sm);
-    background: var(--surface); color: var(--text); font-size: 13px;
-    padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-secondary:hover:not(:disabled), .secondary-button:hover:not(:disabled) { background: var(--bg-muted); }
-  .btn-action {
-    border: 1px solid var(--border); border-radius: 7px; background: var(--surface);
-    color: var(--text); font-size: 12px; padding: 5px 9px;
-  }
-  .btn-action:hover { background: var(--bg-muted); }
-  .btn-danger { color: var(--danger); border-color: var(--danger-soft); }
-  .btn-danger:hover { background: var(--danger-soft); }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  .small-action, .icon-btn {
-    border: 1px solid var(--border); background: var(--surface); color: var(--text);
-    border-radius: 7px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;
-  }
-
-  /* Demo hint banner */
-  .demo-banner {
-    position: sticky; top: 0; z-index: 200;
-    background: var(--brand-gradient); color: #fff;
-    font-size: 12px; padding: 5px 16px; display: flex; align-items: center; gap: 8px;
-    box-shadow: var(--shadow);
-  }
-  .demo-banner .pill { background: rgba(255,255,255,.2); border-radius: 999px; padding: 1px 9px; font-weight: 600; }
-
-  /* Login */
-  .login-wrap { min-height: 100vh; display: grid; place-items: center; background: radial-gradient(1200px 600px at 50% -10%, var(--brand-gradient-soft), transparent), var(--background); }
-  .login-card { width: 340px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow-md); }
-  .login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
-  .brand-mark { width: 40px; height: 40px; border-radius: 11px; background: var(--brand-gradient); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 16px; }
-  .brand-mark-sm { width: 26px; height: 26px; border-radius: 8px; background: var(--brand-gradient); color: #fff; display: inline-grid; place-items: center; font-weight: 800; font-size: 12px; }
-  .login-card h1 { font-size: 18px; margin: 0; }
-  .login-card .sub { color: var(--muted); font-size: 12px; margin: 2px 0 18px; }
-  .login-field { margin-bottom: 12px; }
-  .login-error { color: var(--danger); font-size: 12px; margin-top: 6px; min-height: 16px; }
-  .orbital { font-family: ui-monospace, monospace; letter-spacing: 2px; color: var(--accent); font-size: 12px; }
-
-  /* Mode select */
-  .mode-wrap { min-height: 100vh; display: grid; place-items: center; background: var(--background); }
-  .mode-grid { display: flex; gap: 18px; }
-  .mode-card { width: 260px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; box-shadow: var(--shadow); transition: .15s; }
-  .mode-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--accent); }
-  .mode-icon { font-size: 30px; }
-  .mode-card h3 { margin: 10px 0 4px; }
-  .mode-card p { color: var(--muted); font-size: 12px; min-height: 32px; }
-
-  /* Top nav (LAN) */
-  .app-shell-topnav { min-height: 100vh; display: flex; flex-direction: column; }
-  .top-nav-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 18px; background: var(--surface); border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .top-nav-bar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--brand-gradient); }
-  .top-nav-left { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
-  .top-nav-tabs { display: flex; gap: 4px; }
-  .top-nav-tab { border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 6px 14px; border-radius: 8px; font-size: 13px; }
-  .top-nav-tab.active { background: var(--brand-gradient); color: #fff; border-color: transparent; }
-  .top-nav-right { display: flex; align-items: center; gap: 8px; }
-  .top-nav-icon-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 9px; color: var(--text); font-size: 13px; }
-  .top-nav-serial-btn { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 11px; color: var(--text); font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
-  .top-nav-logout { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 6px 11px; color: var(--text); font-size: 13px; }
-  .content-topnav { padding: 20px; flex: 1; }
-
-  /* Sidebar (Serial) */
-  .app-shell { display: flex; min-height: 100vh; }
-  .sidebar { width: 230px; background: var(--surface); border-right: 1px solid var(--border); padding: 16px 14px; display: flex; flex-direction: column; }
-  .sidebar-brand { position: relative; display: flex; align-items: center; gap: 10px; padding: 0 0 14px; border-bottom: 1px solid var(--border); color: inherit; text-decoration: none; }
-  .sidebar-brand-text strong { display: block; font-size: 14px; color: var(--text); }
-  .sidebar-brand-text span { font-size: 11px; color: var(--muted); }
-  .sidebar-brand::after { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 3px; background: var(--brand-gradient); border-radius: 2px; }
-  .sidebar-nav { margin-top: 16px; display: flex; flex-direction: column; gap: 4px; }
-  .sidebar-nav-item { padding: 9px 12px; border-radius: 8px; color: var(--muted); font-size: 13px; text-decoration: none; }
-  .sidebar-nav-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-  .sidebar-footer { margin-top: auto; }
-  .sidebar-logout { width: 100%; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 9px; color: var(--text); display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 13px; }
-  .content { flex: 1; padding: 20px; }
-
-  /* Page hero */
-  .page-hero { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; gap: 12px; }
-  .page-hero .eyebrow { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
-  .page-hero h1 { font-size: 20px; margin: 4px 0 4px; }
-  .page-hero p { color: var(--muted); font-size: 12px; margin: 0; }
-
-  /* Stats bar */
-  .stats-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
-  .stat-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 13px; box-shadow: var(--shadow); }
-  .stat-online { color: var(--success); font-weight: 700; }
-  .stat-nosim { color: var(--danger); }
-  .stat-sim { color: var(--warning); }
-  .stat-registered { color: var(--success); }
-
-  /* Scan control panel (Devices) */
-  .scan-control-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: var(--shadow); }
-  .scan-inputs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
-  .scan-inputs label { flex: 1; min-width: 130px; }
-  .scan-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-  /* Search bar */
-  .search-bar, .toolbar, .search-field { display: flex; align-items: center; gap: 8px; }
-  .search-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; margin-bottom: 12px; box-shadow: var(--shadow); }
-  .search-bar input { border: 0; background: transparent; padding: 0; }
-  .search-icon { color: var(--muted); }
-  .toolbar { margin-bottom: 12px; }
-  .search-field { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; }
-  .search-field input { border: 0; background: transparent; padding: 0; flex: 1; }
-
-  /* Tables */
-  .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th { text-align: left; padding: 10px 12px; background: var(--bg-muted); color: var(--muted); font-weight: 600; font-size: 12px; border-bottom: 1px solid var(--border); }
-  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  tbody tr:last-child td { border-bottom: 0; }
-  .empty { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 13px; }
-  .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
-  .text-muted { color: var(--muted); font-size: 12px; }
-  .status-badge { padding: 3px 9px; border-radius: 999px; font-size: 12px; }
-  .status-online { background: var(--success-soft); color: var(--success); }
-  .status-offline { background: var(--bg-muted); color: var(--muted); }
-
-  /* Error / notice */
-  .inline-error { padding: 8px 12px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; }
-  .error { background: var(--danger-soft); color: var(--danger); }
-  .success { background: var(--success-soft); color: var(--success); }
-
-  /* Modal */
-  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 300; padding: 20px; }
-  .modal-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 440px; max-width: 100%; max-height: 90vh; overflow: auto; box-shadow: var(--shadow-md); }
-  .modal-large { width: 760px; }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); }
-  .modal-header h2 { font-size: 16px; margin: 0; }
-  .modal-header button { border: 0; background: transparent; color: var(--muted); font-size: 18px; }
-  .form-grid { display: grid; gap: 12px; padding: 18px; }
-  .form-grid .full-field { grid-column: 1 / -1; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--border); }
-
-  /* Takeover */
-  .takeover-content { padding: 16px 18px; }
-  .takeover-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-  .takeover-metrics > div { background: var(--bg-muted); border-radius: 10px; padding: 10px; }
-  .takeover-metrics span { display: block; font-size: 11px; color: var(--muted); }
-  .takeover-metrics strong { font-size: 14px; }
-  .save-config-bar { margin: 10px 0; }
-  .takeover-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .takeover-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .takeover-card.wide { grid-column: 1 / -1; }
-  .takeover-card h3 { margin: 0; font-size: 14px; }
-  .takeover-card.accent-blue { border-top: 3px solid var(--accent); }
-  .takeover-card.accent-green { border-top: 3px solid var(--success); }
-  .takeover-card.accent-amber { border-top: 3px solid var(--warning); }
-  .takeover-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .channel-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-  .channel-tabs button { border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 5px 11px; border-radius: 7px; font-size: 12px; }
-  .channel-tabs button.active { background: var(--brand-gradient); color: #fff; border-color: transparent; }
-  .serial-command { display: flex; gap: 8px; }
-  .serial-command input { flex: 1; }
-  .at-response { background: #0b0f17; color: #d6f5d6; padding: 10px; border-radius: 8px; font-family: ui-monospace, monospace; font-size: 12px; white-space: pre-wrap; margin-top: 8px; }
-
-  /* Scan page */
-  .scan-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end; box-shadow: var(--shadow); margin-bottom: 14px; }
-  .scan-status { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: var(--shadow); }
-  .status-line { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
-  .progress { height: 8px; background: var(--bg-muted); border-radius: 999px; overflow: hidden; }
-  .progress > div { height: 100%; background: var(--brand-gradient); transition: width .3s; }
-
-  /* Messages */
-  .record-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-  .record-tabs button { border: 1px solid var(--border); background: var(--surface); color: var(--muted); padding: 7px 14px; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
-  .record-tabs button.active { background: var(--brand-gradient); color: #fff; border-color: transparent; }
-  .messages-conversations { display: flex; flex-direction: column; gap: 8px; }
-  .messages-conversation-card { display: flex; align-items: center; gap: 12px; text-align: left; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); }
-  .messages-conversation-card:hover { border-color: var(--accent); }
-  .messages-conversation-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
-  .messages-conversation-main { flex: 1; min-width: 0; }
-  .messages-conversation-main strong { display: block; font-size: 14px; }
-  .messages-conversation-preview { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .messages-conversation-meta { text-align: right; font-size: 11px; color: var(--muted); }
-  .messages-chat-view { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
-  .messages-chat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .messages-chat-title { display: flex; align-items: center; gap: 6px; font-size: 15px; }
-  .messages-chat-body { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow: auto; padding: 4px; }
-  .messages-bubble { max-width: 72%; padding: 9px 12px; border-radius: 12px; font-size: 13px; }
-  .messages-bubble-meta { display: flex; gap: 8px; font-size: 11px; color: var(--muted); margin-bottom: 3px; }
-  .bubble-in { background: var(--bg-muted); align-self: flex-start; border-bottom-left-radius: 3px; }
-  .bubble-out { background: var(--brand-gradient); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
-  .call-bubble { background: var(--warning-soft); color: var(--warning); align-self: center; text-align: center; }
-  .messages-bubble-actions { text-align: right; }
-  .row-actions { display: flex; gap: 6px; }
-
-  /* Serial workbench */
-  .serial-hero { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
-  .serial-hero .eyebrow { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
-  .serial-hero h1 { font-size: 20px; margin: 4px 0; }
-  .serial-hero p { color: var(--muted); font-size: 12px; margin: 0; max-width: 640px; }
-  .multi-serial-layout { display: grid; grid-template-columns: 280px 1fr; gap: 14px; margin-bottom: 14px; }
-  .serial-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
-  .panel-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .panel-title h2 { font-size: 15px; margin: 0; display: flex; align-items: center; gap: 7px; }
-  .panel-title p { margin: 2px 0 0; font-size: 11px; color: var(--muted); }
-  .multi-port-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-  .multi-port-card { display: flex; flex-direction: column; gap: 2px; text-align: left; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; position: relative; }
-  .multi-port-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
-  .multi-port-card.connected { border-left: 3px solid var(--success); }
-  .multi-port-card strong { font-size: 13px; }
-  .multi-port-card small { color: var(--muted); font-size: 11px; }
-  .multi-port-card em { font-style: normal; font-size: 11px; color: var(--muted); }
-  .multi-port-dot { position: absolute; right: 10px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
-  .multi-port-card.connected .multi-port-dot { background: var(--success); }
-  .compact-connect-box { display: flex; flex-direction: column; gap: 8px; }
-  .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .compact-grid .full-field { grid-column: 1 / -1; }
-  .mini-channel-shell { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
-  .serial-channel-tabs { margin-bottom: 10px; }
-  .compact-footer-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-  .compact-actions { display: flex; gap: 6px; }
-  .danger-button { color: var(--danger); }
-  .serial-log-bottom { margin-top: 0; }
-  .terminal-surface { background: #0b0f17; border-radius: 10px; padding: 10px; height: 240px; overflow: auto; font-family: ui-monospace, monospace; font-size: 12px; }
-  .terminal-row { display: flex; gap: 10px; padding: 2px 0; color: #c8d0dd; }
-  .terminal-level { width: 34px; color: #7b8494; flex-shrink: 0; }
-  .terminal-row-rx .terminal-level { color: #6ee7b7; }
-  .terminal-row-tx .terminal-level { color: #93c5fd; }
-  .terminal-row-error .terminal-level { color: #fca5a5; }
-  .terminal-row-system .terminal-level { color: #fcd34d; }
-  .terminal-time { margin-left: auto; color: #5b6472; }
-  .terminal-empty { color: #5b6472; text-align: center; padding: 40px; }
-
-  /* Toast */
-  #toast-root { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 500; display: flex; flex-direction: column; gap: 8px; align-items: center; }
-  .toast { background: var(--text); color: var(--background); padding: 10px 16px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow-md); animation: toast-in .2s ease; }
-  @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .bottom-nav-item.active::before { top: auto; bottom: 0; border-radius: 2px 2px 0 0; }
+  .device-list { grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); }
+  .dash-device-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+  .msg-conv-list { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+  .task-action-grid { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+  .mode-choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 860px; margin-left: auto; margin-right: auto; }
+  .multi-serial-layout { grid-template-columns: 340px minmax(0, 1fr); align-items: start; }
+  .dash-stats { max-width: 860px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
 </style>
 </head>
 <body>
-<div class="demo-banner">🛰️ T3 本地助手 · 交互演示 <span class="pill">模拟数据</span> 本页面为产品功能演示，所有数据均为虚构，无真实设备连接。</div>
+<div class="demo-banner" id="demo-banner">🛰️ T3 本地助手 · 交互演示 <span class="pill">模拟数据</span> 本页面为产品功能演示，界面与 T3 本地助手一致，所有数据均为虚构，无真实设备连接。<button class="banner-close" onclick="hideBanner()">知道了</button></div>
 <div id="app"></div>
 <div id="toast-root"></div>
 <div id="modal-root"></div>
 
 <script>
+/* ============================ 图标（lucide 风格内联 SVG） ============================ */
+var ICONS = {
+  home:'<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  message:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  messagecircle:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  wrench:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  cable:'<path d="M12 12v10"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+  radio:'<path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19.1"/>',
+  moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  radar:'<path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62a10 10 0 1 0 19.02-1.27"/><path d="M16.24 7.76a6 6 0 1 0-8.01 8.91"/><path d="M12 18h.01"/><path d="M17.99 11.66a6 6 0 0 1-2.22 4.75"/><circle cx="12" cy="12" r="2"/><path d="m13.41 10.59 5.66-5.66"/>',
+  plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+  settings:'<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
+  router:'<rect width="20" height="8" x="2" y="14" rx="2"/><path d="M6.01 18H6"/><path d="M10.01 18H10"/><path d="M15 18h.01"/><path d="M2 14h20"/><path d="M12 6v8"/><path d="m8.5 8.5 3.5-3.5 3.5 3.5"/>',
+  monitor:'<path d="M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h6"/><rect width="10" height="7" x="8" y="16" rx="1"/>',
+  cloudup:'<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/>',
+  refresh:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+  left:'<path d="m15 18-6-6 6-6"/>',
+  right:'<path d="m9 18 6-6-6-6"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  plug:'<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+  unplug:'<path d="m19 5 3-3"/><path d="m2 22 3-3"/><path d="M9 8h6"/><path d="M10 2v4"/><path d="M14 2v4"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+  save:'<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>',
+  filedown:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/>',
+  fileup:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m9 15 3-3 3 3"/>',
+  activity:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  wifi:'<path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 20 0"/><line x1="12" x2="12.01" y1="20" y2="20"/>',
+  shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  arrowright:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  inbox:'<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  up:'<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  down:'<path d="M17 7 7 17"/><path d="M17 17H7V7"/>',
+  rocket:'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+  x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  receiver:'<path d="M12 8h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 12h12"/>'
+};
+function ic(name, size) {
+  size = size || 16;
+  return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
+}
+
 /* ============================ 模拟数据 ============================ */
-const CHANNEL_TYPES = ['关闭','Webhook/POST','Telegram','Bark','钉钉','PushDeer','飞书','企微机器人','企微应用','Gotify','ServerChan','PushPlus','WxPusher','Pushover','Inotify','Next SMTP Proxy'];
+var CHANNEL_TYPES = ['关闭','Webhook/POST','Telegram','Bark','钉钉','PushDeer','飞书','企微机器人','企微应用','Gotify','ServerChan','PushPlus','WxPusher','Pushover','Inotify','Next SMTP Proxy'];
+var CHANNEL_META = {
+  1:{urlLabel:'Webhook URL',urlPh:'完整请求地址',k1:['鉴权 Token（可选）','Bearer Token，留空表示无鉴权']},
+  2:{urlLabel:'Telegram API URL',urlPh:'https://api.telegram.org/bot<BOT_TOKEN>/sendMessage',k1:['Chat ID','接收人的 Chat ID']},
+  4:{urlLabel:'钉钉机器人 Webhook',urlPh:'包含 access_token 的完整机器人地址',k1:['加签密钥（Secret）','未开启加签时留空']},
+  6:{urlLabel:'飞书机器人 Webhook',urlPh:'飞书自定义机器人 Webhook 地址'},
+  7:{urlLabel:'企业微信机器人 Webhook',urlPh:'包含 key 的完整机器人地址'},
+  8:{urlLabel:'企业微信应用推送 URL',urlPh:'企业微信应用推送接口地址',k1:['AgentId','应用 AgentId'],k2:['接收人','成员账号，多个用 | 分隔']},
+  11:{urlLabel:'PushPlus API URL',urlPh:'默认 https://www.pushplus.plus/send',k1:['Token','PushPlus 用户 Token']}
+};
+var DEFAULT_TEMPLATE = '【{{设备名称}}】{{事件标题}}\n号码: {{号码}}\n内容: {{内容}}\n时间: {{时间}}\n来源: SIM{{卡槽}} {{卡号}}\n备注: {{备注}}';
 
-const DEVICES = [
-  { id: 1, name: 'Node-A1', group: '办公室', ip: '192.168.123.21', status: 'online', version: '4.6',
-    sim1: { present: true, number: '13800001111', operator: '中国移动', registered: true, signal: -67 },
-    sim2: { present: true, number: '13900002222', operator: '中国联通', registered: true, signal: -73 },
-    wifi: { name: 'Office-5G' } },
-  { id: 2, name: 'Node-B2', group: '仓库', ip: '192.168.123.22', status: 'online', version: '4.6',
-    sim1: { present: true, number: '13700003333', operator: '中国电信', registered: true, signal: -71 },
-    sim2: { present: false, number: '', operator: '', registered: false, signal: 0 },
-    wifi: { name: 'WH-2.4G' } },
-  { id: 3, name: 'Node-C3', group: '门店', ip: '192.168.123.23', status: 'offline', version: '4.6',
-    sim1: { present: true, number: '13600004444', operator: '中国移动', registered: false, signal: -85 },
-    sim2: { present: true, number: '13500005555', operator: '中国联通', registered: true, signal: -69 },
-    wifi: { name: 'Shop-WiFi' } },
-  { id: 4, name: 'Node-D4', group: '家庭', ip: '192.168.123.24', status: 'online', version: '4.6',
-    sim1: { present: false, number: '', operator: '', registered: false, signal: 0 },
-    sim2: { present: false, number: '', operator: '', registered: false, signal: 0 },
-    wifi: { name: 'Home' } },
+var DEVICES = [
+  { id:1, name:'Node-A1', group:'办公室', ip:'192.168.123.21', status:'online', version:'4.0', uptime:11520,
+    sim1:{present:true,number:'13800001111',operator:'中国移动',registered:true,signal:-67},
+    sim2:{present:true,number:'13900002222',operator:'中国联通',registered:true,signal:-73},
+    wifi:{name:'Office-5G'} },
+  { id:2, name:'Node-B2', group:'仓库', ip:'192.168.123.22', status:'online', version:'4.0', uptime:8420,
+    sim1:{present:true,number:'13700003333',operator:'中国电信',registered:true,signal:-71},
+    sim2:{present:false,number:'',operator:'',registered:false,signal:0},
+    wifi:{name:'WH-2.4G'} },
+  { id:3, name:'Node-C3', group:'门店', ip:'192.168.123.23', status:'offline', version:'4.0', uptime:0,
+    sim1:{present:true,number:'13600004444',operator:'中国移动',registered:false,signal:-85},
+    sim2:{present:true,number:'13500005555',operator:'中国联通',registered:true,signal:-69},
+    wifi:{name:'Shop-WiFi'} },
+  { id:4, name:'Node-D4', group:'家庭', ip:'192.168.123.24', status:'online', version:'4.0', uptime:230400,
+    sim1:{present:false,number:'',operator:'',registered:false,signal:0},
+    sim2:{present:false,number:'',operator:'',registered:false,signal:0},
+    wifi:{name:'Home'} }
 ];
 
-// 短信 / 通话会话（按号码分组）
-const CONVERSATIONS = [
-  { phone: '13800001111', items: [
-    { id: 1, direction: 'in', content: '您的验证码是 482913，请勿告知他人。', createdAt: Date.now()/1000 - 3600 },
-    { id: 2, direction: 'out', content: '好的，已收到，谢谢。', createdAt: Date.now()/1000 - 3500 },
-    { id: 3, direction: 'call', content: '', createdAt: Date.now()/1000 - 1800 },
-  ]},
-  { phone: '13900002222', items: [
-    { id: 4, direction: 'in', content: '会议改到明天下午三点。', createdAt: Date.now()/1000 - 7200 },
-    { id: 5, direction: 'call', content: '', createdAt: Date.now()/1000 - 5400 },
-  ]},
-  { phone: '13700003333', items: [
-    { id: 6, direction: 'out', content: '快递已放前台，请查收。', createdAt: Date.now()/1000 - 9000 },
-  ]},
+var now = Date.now()/1000;
+var MSGS = [
+  { id:1, phone:'13800001111', deviceId:1, deviceName:'Node-A1', simSlot:'1', direction:'in', content:'您的验证码是 482913，请勿告知他人。', time: now-1200 },
+  { id:2, phone:'13800001111', deviceId:1, deviceName:'Node-A1', simSlot:'1', direction:'out', content:'已收到，感谢。', time: now-1100 },
+  { id:3, phone:'10086', deviceId:1, deviceName:'Node-A1', simSlot:'1', direction:'in', content:'您本月流量剩余 2.3GB，回复 10086 查询。', time: now-5400 },
+  { id:4, phone:'13900002222', deviceId:1, deviceName:'Node-A1', simSlot:'2', direction:'in', content:'【淘宝】您正在登录，验证码 672081，请勿泄露。', time: now-7200 },
+  { id:5, phone:'13700003333', deviceId:2, deviceName:'Node-B2', simSlot:'1', direction:'out', content:'仓库明日盘点，请提前到岗。', time: now-9000 },
+  { id:6, phone:'13500005555', deviceId:3, deviceName:'Node-C3', simSlot:'2', direction:'in', content:'快递已放前台，请查收。', time: now-86400*2 }
+];
+var CALLS = [
+  { id:101, phone:'13800001111', deviceId:1, deviceName:'Node-A1', simSlot:'1', simNumber:'13800001111', duration:42, createdAt: now-1800 },
+  { id:102, phone:'13900002222', deviceId:1, deviceName:'Node-A1', simSlot:'2', simNumber:'13900002222', duration:0, createdAt: now-5400 },
+  { id:103, phone:'13600004444', deviceId:3, deviceName:'Node-C3', simSlot:'1', simNumber:'13600004444', duration:128, createdAt: now-12000 }
 ];
 
-const CALLS = [
-  { id: 101, phone: '13800001111', duration: 42, createdAt: Date.now()/1000 - 1800 },
-  { id: 102, phone: '13900002222', duration: 0, createdAt: Date.now()/1000 - 5400 },
-  { id: 103, phone: '13600004444', duration: 128, createdAt: Date.now()/1000 - 12000 },
+var PORTS = [
+  { name:'COM3', description:'USB-SERIAL CH340', connected:true, baudrate:115200 },
+  { name:'COM5', description:'CP2102 USB to UART', connected:false, baudrate:0 },
+  { name:'COM7', description:'ESP32-S3 Native USB', connected:true, baudrate:115200 }
+];
+var SERIAL_LOGS = [
+  { level:'system', content:'[boot] T3 serial bridge ready', time: now-25 },
+  { level:'rx', content:'AT', time: now-18 },
+  { level:'tx', content:'OK', time: now-17 },
+  { level:'rx', content:'AT+CSQ', time: now-12 },
+  { level:'tx', content:'+CSQ: 23,0', time: now-11 },
+  { level:'rx', content:'AT+COPS?', time: now-8 },
+  { level:'tx', content:'+COPS: 0,0,"CMCC",7', time: now-7 }
 ];
 
-const PORTS = [
-  { name: 'COM3', description: 'USB-SERIAL CH340', connected: true, baudrate: 115200, logCount: 12 },
-  { name: 'COM5', description: 'CP2102 USB to UART', connected: false, baudrate: 0, logCount: 0 },
-  { name: 'COM7', description: 'ESP32-S3 Native USB', connected: true, baudrate: 115200, logCount: 7 },
-];
-
-let SERIAL_LOGS = [
-  { id: 1, level: 'system', content: '[boot] T3 Serial bridge ready', time: Date.now()/1000 - 20 },
-  { id: 2, level: 'rx', content: 'AT', time: Date.now()/1000 - 15 },
-  { id: 3, level: 'tx', content: 'OK', time: Date.now()/1000 - 14 },
-  { id: 4, level: 'rx', content: 'AT+CSQ', time: Date.now()/1000 - 10 },
-  { id: 5, level: 'tx', content: '+CSQ: 23,0', time: Date.now()/1000 - 9 },
-];
+function defaultConfig() {
+  return {
+    deviceName:'', webUser:'admin', webPass:'',
+    wifiSsid:'', wifiPass:'',
+    sim1Number:'', sim2Number:'', sim1Pin:'', sim2Pin:'', networkMode:0,
+    callRecordEnabled:false, sim1AutoAnswer:false, sim2AutoAnswer:false, hangupSeconds:10, ttsEnabled:false, ttsText:'',
+    bootNotify:true, whitelist:false, bootTemplate:'设备 {{设备名称}} 已上线', callTemplate:'设备 {{设备名称}} 收到来电 {{号码}}', keywords:'验证码,淘宝,拼多多',
+    channels:[
+      {type:4, url:'https://oapi.dingtalk.com/robot/send?access_token=demo', key1:'', key2:'', customBody:DEFAULT_TEMPLATE, sim1:true, sim2:true},
+      {type:6, url:'https://open.feishu.cn/open-apis/bot/v2/hook/demo', key1:'', key2:'', customBody:DEFAULT_TEMPLATE, sim1:true, sim2:true},
+      {type:0, url:'', key1:'', key2:'', customBody:DEFAULT_TEMPLATE, sim1:true, sim2:true},
+      {type:0, url:'', key1:'', key2:'', customBody:DEFAULT_TEMPLATE, sim1:true, sim2:true},
+      {type:0, url:'', key1:'', key2:'', customBody:DEFAULT_TEMPLATE, sim1:true, sim2:true}
+    ],
+    mqttEnabled:false, mqttServer:'mqtt.example.com', mqttPort:1883, mqttTopic:'t3/events', mqttUser:'', mqttPass:'', mqttKeepAlive:60, mqttStatusInterval:60, mqttClientId:'',
+    ddnsEnabled:false, ddnsInterval:30, ddnsToken:'', ddnsDomain:'t3.example.com',
+    rebootEnabled:false, rebootHour:4, rebootMinute:0, smsControl:false, adminPhones:'13800001111',
+    smsClean:true, smsCleanThreshold:80, smsCleanInterval:60, smsCleanKeep:50, webPort:80,
+    sim1PinSet:false, sim2PinSet:false
+  };
+}
 
 /* ============================ 状态 ============================ */
-const S = {
-  view: 'login',          // login | mode | lan | serial
-  theme: localStorage.getItem('t3-theme') || 'light',
-  mode: localStorage.getItem('t3-work-mode') || null, // lan | serial
-  lanTab: 'devices',      // devices | messages
-  token: localStorage.getItem('token') || null,
-  // devices
-  devices: DEVICES.slice(),
-  searchQuery: '',
-  scanPrefix: '192.168.123.', scanStart: '1', scanEnd: '254', scanPass: '',
-  smsDevice: null, smsPhone: '', smsContent: '', smsSlot: 1,
-  takeoverDevice: null, takeover: null, config: null, configReady: false, activeChannel: 0,
-  wifiSsid: '', wifiPass: '', atCmd: 'AT', atResp: '',
-  otaUrl: '', busyId: null, error: '', notice: '',
-  // scan page
-  cidr: '', scanUser: 'admin', scanPass2: 'admin123',
-  scanStatus: null, scanRunning: false, scanTimer: null,
-  // messages
-  msgMode: 'all', msgSearch: '', chatPhone: null,
-  // serial
-  ports: PORTS.slice(), activePort: 'COM3', baudrate: 115200,
-  serialMode: 'cdc', dtr: false, rts: false, streamMode: 'poll',
-  deviceName: 'Node-A1', wifiSsid2: 'Office-5G', wifiPass2: '', netMode: 0,
-  sim1Pin: '', sim2Pin: '', channels: Array.from({length:5}, (_,i)=>({enabled:false,type:0,name:'通道 '+(i+1),url:'',key1:'',key2:'',customBody:''})),
-  activeSerialChannel: 0, serialLogs: SERIAL_LOGS.slice(), serialTimer: null,
+var S = {
+  view: 'login',            // login | mode | dashboard | devices | messages | scan | tasks | profile | serial
+  theme: localStorage.getItem('t3-theme') === 'dark' ? 'dark' : 'light',
+  username: 'admin',
+  lanTabMsg: 'conversations',
+  msgMode: '', search: '',
+  chatKey: null,
+  devices: DEVICES.slice(), msgs: MSGS.slice(), calls: CALLS.slice(),
+  filterStatus: '', deviceSearch: '',
+  takeDevice: null, takePane: 'basic', activeChannel: 0, config: null,
+  showTakeWifiPass: false,
+  pushChannel: 0, pushResult: '',
+  scanRunning: false, scanStatus: null, scanTimer: null,
+  taskTab: 'scan', taskProgress: '', taskResult: '', taskOtaResult: '',
+  ports: PORTS.slice(), activePort: 'COM3', selectedPorts: ['COM3'], serialConnected: true, baudrate:115200,
+  serialCfg: { deviceName:'Node-A1', wifiSsid:'Office-5G', wifiPass:'', sim1Pin:'', sim2Pin:'' },
+  serialChannels: null,
+  serialChannel: 0, showWifiPass: false,
+  serialLogs: SERIAL_LOGS.slice(), serialTimer: null,
+  notice: '', error: ''
 };
+S.serialChannels = JSON.parse(JSON.stringify(defaultConfig().channels));
 
 /* ============================ 工具 ============================ */
-const $ = (sel) => document.querySelector(sel);
-function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function fmtTime(v){ return v ? new Date(v*1000).toLocaleString('zh-CN') : '-'; }
-function fmtTimeShort(v){ return v ? new Date(v*1000).toLocaleTimeString('zh-CN',{hour12:false}) : '--:--:--'; }
-function fmtDuration(s){ if(!s||s<=0) return '-'; const m=Math.floor(s/60), x=s%60; return m>0?`${m} 分 ${x} 秒`:`${x} 秒`; }
-function toast(msg){ const r=$('#toast-root'); const t=document.createElement('div'); t.className='toast'; t.textContent=msg; r.appendChild(t); setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 2200); }
-function closeModal(){ $('#modal-root').innerHTML=''; }
-function openModal(html){ $('#modal-root').innerHTML = `<div class="modal-backdrop" onclick="if(event.target===this)closeModal()"><div class="modal-panel ${html.includes('modal-large')?'modal-large':''}" onclick="event.stopPropagation()">${html}</div></div>`; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function fmtTime(ts){
+  if(!ts) return '-';
+  var d=new Date(ts*1000), n=new Date();
+  if(d.toDateString()===n.toDateString()) return d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false});
+  return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+}
+function fmtFull(ts){ return ts? new Date(ts*1000).toLocaleString('zh-CN',{hour12:false}) : '-'; }
+function fmtDur(s){ if(!s||s<=0) return '-'; var m=Math.floor(s/60),x=s%60; return m>0? m+' 分 '+x+' 秒' : x+' 秒'; }
+function uptimeLabel(v){ if(!v) return '-'; if(v<60) return v+' 秒'; if(v<3600) return Math.floor(v/60)+' 分 '+(v%60)+' 秒'; return Math.floor(v/3600)+' 时 '+Math.floor((v%3600)/60)+' 分'; }
+function toast(msg){
+  var r=document.getElementById('toast-root');
+  var t=document.createElement('div'); t.className='toast'; t.textContent=msg; r.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){ t.remove(); },300); }, 2400);
+}
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+function openModal(html, large){
+  document.getElementById('modal-root').innerHTML =
+    '<div class="modal-backdrop" onclick="if(event.target===this)closeModal()"><div class="modal-panel'+(large?' modal-large':'')+'" onclick="event.stopPropagation()">'+html+'</div></div>';
+}
+function hideBanner(){
+  document.getElementById('demo-banner').style.display='none';
+  document.documentElement.classList.remove('has-banner');
+}
+function setTheme(t){
+  S.theme=t; localStorage.setItem('t3-theme', t);
+  document.documentElement.dataset.theme=t;
+  var meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', t==='dark' ? '#171512' : '#f7f0e5');
+}
+function applyTheme(){ setTheme(S.theme); }
+function nav(v){ S.view=v; S.chatKey=null; window.scrollTo(0,0); closeModal(); render(); }
+function switchMode(mode){
+  localStorage.setItem('t3-work-mode', mode);
+  nav(mode==='serial' ? 'serial' : 'dashboard');
+}
+function setNotice(m){ S.notice=m; S.error=''; render(); }
+function setError(m){ S.error=m; S.notice=''; render(); }
+
+/* ============================ 顶部/底部导航 ============================ */
+var PAGE_TITLES = { dashboard:'仪表盘', devices:'设备列表', messages:'所有短信', calls:'通话记录', scan:'扫描设备', tasks:'任务中心', profile:'个人资料', serial:'串口工作台' };
+function isSerialView(){ return S.view==='serial'; }
+function isLanView(){ return ['dashboard','devices','messages','scan','tasks','profile'].indexOf(S.view)>=0; }
+function topNav(){
+  var title = PAGE_TITLES[S.view] || '本地设备助手';
+  var modeBtn = '';
+  if(isSerialView()) modeBtn = '<button class="top-nav-serial-btn" onclick="switchMode(\'lan\')">'+ic('radio',14)+'局域网模式</button>';
+  else if(isLanView()) modeBtn = '<button class="top-nav-serial-btn" onclick="switchMode(\'serial\')">'+ic('cable',14)+'串口</button>';
+  return '<header class="top-nav-bar">'+
+    '<button class="top-nav-logo" onclick="nav(\''+(isSerialView()?'serial':isLanView()?'dashboard':'mode')+'\')">'+
+      '<span class="brand-mark-sm">T3</span>'+
+      '<span class="top-nav-logo-copy"><strong>'+title+'</strong><small>'+(isSerialView()?'串口工作台':'短信转发器管理系统')+'</small></span>'+
+    '</button>'+
+    '<div class="top-nav-right">'+
+      '<button class="top-nav-icon-btn" onclick="toggleTheme()" title="切换主题">'+ic(S.theme==='dark'?'sun':'moon',16)+'</button>'+
+      modeBtn+
+      '<button class="top-nav-icon-btn" onclick="doLogout()" title="退出登录">'+ic('logout',16)+'</button>'+
+    '</div>'+
+  '</header>';
+}
+function toggleTheme(){ setTheme(S.theme==='dark'?'light':'dark'); render(); }
+function doLogout(){ localStorage.removeItem('token'); S.view='login'; closeModal(); render(); toast('已退出登录'); }
+function bottomNav(){
+  if(!isSerialView() && !isLanView()) return '';
+  var items;
+  if(isSerialView()){
+    items = '<button class="bottom-nav-item active">'+ic('cable',21)+'<span>串口配置</span></button>';
+  } else {
+    function item(view, icon, label, active){
+      return '<button class="bottom-nav-item'+(active?' active':'')+'" onclick="nav(\''+view+'\')">'+ic(icon,21)+'<span>'+label+'</span></button>';
+    }
+    items =
+      item('dashboard','home','仪表盘', S.view==='dashboard')+
+      item('devices','monitor','设备列表', S.view==='devices'||S.view==='scan')+
+      item('messages','message','所有短信', S.view==='messages')+
+      item('tasks','wrench','任务中心', S.view==='tasks')+
+      item('profile','user','个人资料', S.view==='profile');
+  }
+  return '<nav class="bottom-nav"><div class="bottom-nav-group">'+items+'</div></nav>';
+}
+function layout(content){
+  return '<div class="app-shell-topnav">'+topNav()+'<main class="content-topnav">'+content+'</main>'+bottomNav()+'</div>';
+}
+function noticeHtml(){
+  return (S.error?'<div class="inline-error">'+esc(S.error)+'</div>':'')+(S.notice?'<div class="inline-error success">'+esc(S.notice)+'</div>':'');
+}
+
+/* ============================ 登录 ============================ */
+function renderLogin(){
+  return '<div class="login-page">'+
+    '<h1 class="login-title-main">短信转发器管理系统</h1>'+
+    '<form class="login-card" onsubmit="return doLogin(event)">'+
+      '<label class="field"><span>账号</span><input id="li-user" value="admin" autocomplete="username" placeholder="请输入账号"></label>'+
+      '<label class="field"><span>密码</span><input id="li-pass" type="password" autocomplete="current-password" placeholder="请输入密码"></label>'+
+      '<label class="login-remember"><input type="checkbox" checked>记住登录</label>'+
+      '<div id="li-err" class="error" style="display:none"></div>'+
+      '<button class="primary-button" type="submit">登 录</button>'+
+      '<div class="login-links"><span>默认账号 admin / admin</span><button type="button" onclick="document.getElementById(\'li-pass\').value=\'\'">忘记密码？</button></div>'+
+    '</form>'+
+    '<p class="login-foot">© 短信转发器管理系统 · T3 本地助手</p>'+
+  '</div>';
+}
+function doLogin(e){
+  e.preventDefault();
+  var u=document.getElementById('li-user').value.trim(), p=document.getElementById('li-pass').value;
+  if((u==='admin'&&p==='admin')||(u==='admin'&&p==='admin123')){
+    S.username=u; localStorage.setItem('token','demo-token'); nav('mode'); toast('登录成功');
+  } else {
+    var el=document.getElementById('li-err');
+    el.style.display='block'; el.textContent='账号或密码错误（演示账号 admin / admin）';
+  }
+  return false;
+}
+
+/* ============================ 模式选择 ============================ */
+function renderMode(){
+  return '<section class="page mode-select-page">'+
+    '<div class="page-hero mode-hero">'+
+      '<div><span class="eyebrow">Access Mode</span><h1>选择设备接入方式</h1>'+
+      '<p>串口模式和局域网模式的使用场景不同。首次进入请先选择当前设备的接入方式，后续也可以在右上角随时切换。</p></div>'+
+      '<div class="mode-hero-badge">'+ic('settings',18)+'可随时修改</div>'+
+    '</div>'+
+    '<div class="mode-choice-grid">'+
+      '<div class="mode-choice-card" onclick="this.classList.toggle(\'selected\')">'+
+        '<div class="mode-choice-icon">'+ic('cable',30)+'</div>'+
+        '<span class="eyebrow">USB / 首次配置</span><h2>串口模式</h2>'+
+        '<p>需要把 T3 设备通过 USB 插入当前电脑。适合首次开箱、设备未联网、需要离线写入 WiFi、设备名称和通道配置的场景。</p>'+
+        '<ul class="mode-check-list"><li>设备需要插入电脑</li><li>可读取本机串口日志</li><li>可通过 USB 写入离线配置</li></ul>'+
+        '<button class="mode-enter-button" onclick="event.stopPropagation();switchMode(\'serial\')">进入串口模式</button>'+
+      '</div>'+
+      '<div class="mode-choice-card" onclick="this.classList.toggle(\'selected\')">'+
+        '<div class="mode-choice-icon">'+ic('router',30)+'</div>'+
+        '<span class="eyebrow">WiFi / 日常管理</span><h2>局域网模式</h2>'+
+        '<p>设备需要提前连好 WiFi，并且和当前电脑处于同一局域网。适合大部分日常管理场景，可控制设备配置、AT 命令、OTA、重启等功能。</p>'+
+        '<ul class="mode-check-list"><li>设备需提前已连好 WiFi</li><li>适合批量管理局域网设备</li><li>可执行模块 AT 与固件接管</li></ul>'+
+        '<button class="mode-enter-button" onclick="event.stopPropagation();switchMode(\'lan\')">进入局域网模式</button>'+
+      '</div>'+
+    '</div>'+
+  '</section>';
+}
+
+/* ============================ 仪表盘 ============================ */
+function devStats(){
+  var items=S.devices;
+  return {
+    total:items.length,
+    online:items.filter(function(i){return i.status==='online';}).length,
+    noSim:items.filter(function(i){return !(i.sim1.present||i.sim1.number)&&!(i.sim2.present||i.sim2.number);}).length,
+    registered:items.filter(function(i){return i.sim1.registered||i.sim2.registered;}).length
+  };
+}
+function renderDashboard(){
+  var st=devStats();
+  var d=new Date();
+  var dateText=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][d.getDay()]+' '+d.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'});
+  var recent=S.devices.slice().sort(function(a,b){return (b.status==='online')-(a.status==='online');}).slice(0,6);
+  var devCards=recent.map(function(dev){
+    var online=dev.status==='online';
+    return '<button class="dash-device'+(online?'':' offline')+'" onclick="nav(\'devices\')">'+
+      '<span class="dd-status"></span>'+
+      '<span class="dd-main"><strong>'+esc(dev.name||dev.ip)+'</strong><small>'+dev.ip+(dev.version?' · '+dev.version:'')+'</small></span>'+
+      '<span class="dd-sims"><small>'+(dev.sim1.number?'SIM1 '+dev.sim1.number:'SIM1 无卡')+'</small>'+
+      '<small>'+(dev.sim2.number?'SIM2 '+dev.sim2.number:'SIM2 无卡')+'</small></span>'+
+      '<span class="dd-meta'+(online?' ok':'')+'">'+(online?'在线':'离线')+'</span>'+
+    '</button>';
+  }).join('');
+  return layout('<section class="page dashboard-page">'+
+    '<div class="dash-hello"><div><h1>你好，'+esc(S.username)+'</h1><p>'+dateText+'</p></div>'+
+      '<span class="dash-mode-chip">'+ic('wifi',14)+'局域网模式</span></div>'+
+    '<div class="dash-stats">'+
+      '<button class="dash-stat" onclick="nav(\'devices\')"><strong>'+st.total+'</strong><span>设备总数</span></button>'+
+      '<button class="dash-stat online" onclick="nav(\'devices\')"><strong>'+st.online+'</strong><span>在线</span></button>'+
+      '<button class="dash-stat nosim" onclick="nav(\'devices\')"><strong>'+st.noSim+'</strong><span>无卡设备</span></button>'+
+      '<button class="dash-stat registered" onclick="nav(\'devices\')"><strong>'+st.registered+'</strong><span>已注册</span></button>'+
+    '</div>'+
+    '<div class="dash-quick">'+
+      '<button onclick="nav(\'devices\')"><span class="quick-ico">'+ic('monitor',20)+'</span><span>设备管理</span></button>'+
+      '<button onclick="nav(\'messages\')"><span class="quick-ico green">'+ic('message',20)+'</span><span>短信记录</span></button>'+
+      '<button onclick="nav(\'scan\')"><span class="quick-ico amber">'+ic('radar',20)+'</span><span>局域网扫描</span></button>'+
+      '<button onclick="nav(\'tasks\')"><span class="quick-ico blue">'+ic('cloudup',20)+'</span><span>任务中心</span></button>'+
+    '</div>'+
+    '<div class="dash-recent-header"><h2>最近设备</h2><button onclick="nav(\'devices\')">全部</button></div>'+
+    '<div class="dash-device-list">'+devCards+'</div>'+
+  '</section>');
+}
+
+/* ============================ 设备页 ============================ */
+function selfUpdateBar(){
+  return '<div class="self-update-bar">'+
+    '<div class="self-update-main">'+
+      '<div class="self-update-title"><span>助手升级</span><code>https://cloud.1992418.xyz/T3</code></div>'+
+      '<div class="self-update-meta"><span>本地 v1.5.2</span><span>网盘 v1.5.2</span><span>T3Web-1.5.2.exe · 24.6 MB</span></div>'+
+      '<div class="self-update-msg">当前已是最新版本</div>'+
+    '</div>'+
+    '<div class="self-update-actions">'+
+      '<button onclick="toast(\'已是最新版本\')">'+ic('refresh',14)+'检测更新</button>'+
+      '<button class="btn-primary" disabled>'+ic('rocket',14)+'下载并升级</button>'+
+      '<button onclick="toast(\'演示环境不执行强制更新\')">'+ic('cloudup',14)+'强制更新</button>'+
+    '</div>'+
+  '</div>';
+}
+function simRowHtml(tag, sim){
+  var has=sim.present||sim.number||sim.operator;
+  var body=has
+    ? '<span class="num">'+esc(sim.number||'未设置号码')+'</span><span class="meta">'+esc(sim.operator||'-')+(sim.signal?' · '+sim.signal+'dBm':'')+(sim.registered?' · 已注册':' · 未注册')+'</span>'
+    : '<span class="meta">无卡</span>';
+  return '<div class="dev-sim-row"><span class="dev-sim-tag">'+tag+'</span>'+body+'</div>';
+}
+function filteredDevices(){
+  var q=S.deviceSearch.toLowerCase();
+  var list=S.devices.filter(function(d){
+    if(!q) return true;
+    return (d.name||'').toLowerCase().indexOf(q)>=0 || d.ip.indexOf(q)>=0 || (d.sim1.number||'').indexOf(q)>=0 || (d.sim2.number||'').indexOf(q)>=0 || (d.group||'').toLowerCase().indexOf(q)>=0;
+  });
+  if(S.filterStatus==='online') list=list.filter(function(d){return d.status==='online';});
+  if(S.filterStatus==='offline') list=list.filter(function(d){return d.status!=='online';});
+  if(S.filterStatus==='nosim') list=list.filter(function(d){return !(d.sim1.present||d.sim1.number)&&!(d.sim2.present||d.sim2.number);});
+  return list;
+}
+function renderDevices(){
+  var list=filteredDevices();
+  var st=devStats();
+  var withSim=S.devices.reduce(function(n,d){return n+((d.sim1.present||d.sim1.number)?1:0)+((d.sim2.present||d.sim2.number)?1:0);},0);
+  var cards=list.map(function(dev){
+    var online=dev.status==='online';
+    return '<div class="dev-card'+(online?' online':'')+'">'+
+      '<div class="dev-card-top">'+
+        '<input type="checkbox" class="dev-card-check" onchange="updateBatchBar(this)">'+
+        '<span class="dev-dot"></span>'+
+        '<strong>'+esc(dev.name||dev.ip)+'</strong>'+
+        '<span class="dev-badge'+(online?'':' off')+'">'+(online?'在线':'离线')+'</span>'+
+      '</div>'+
+      '<div class="dev-sim-rows">'+simRowHtml('SIM1',dev.sim1)+simRowHtml('SIM2',dev.sim2)+'</div>'+
+      '<div class="dev-meta-row"><span>IP <b class="mono">'+dev.ip+'</b></span><span>固件 <b>'+esc(dev.version||'-')+'</b></span><span>分组 <b>'+esc(dev.group||'auto')+'</b></span></div>'+
+      '<div class="dev-actions">'+
+        '<button class="btn-action" onclick="toast(\'设备状态已刷新\')">🔄 刷新</button>'+
+        '<button class="btn-action" onclick="openTakeover('+dev.id+')">⚙️ 配置</button>'+
+        '<button class="btn-action" onclick="openSms('+dev.id+')">💬 短信</button>'+
+        '<button class="btn-action" '+(online?'onclick="toast(\''+esc(dev.name||dev.ip)+' 当前已是最新固件\')"':'disabled title="设备离线，无法升级"')+'>'+ic('cloudup',13)+' OTA</button>'+
+        '<button class="btn-action" onclick="toast(\'重启指令已下发\')">⚡ 重启</button>'+
+        '<button class="btn-action" onclick="toast(\'演示环境不打开设备后台\')">🖥️ 后台</button>'+
+        '<button class="btn-action btn-danger" onclick="removeDev('+dev.id+')">🗑️</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  var chips=[['','全部'],['online','在线'],['offline','离线'],['nosim','无卡']].map(function(p){
+    return '<button class="chip'+(S.filterStatus===p[0]?' active':'')+'" onclick="setFilter(\''+p[0]+'\')">'+p[1]+'</button>';
+  }).join('');
+  return layout('<section class="page devices-page">'+
+    selfUpdateBar()+
+    '<div class="stats-bar">'+
+      '<span class="stat-item stat-online">在线 '+st.online+'/'+st.total+'</span>'+
+      '<span class="stat-item stat-sim">插卡 '+withSim+'</span>'+
+      '<span class="stat-item stat-nosim">无卡 '+st.noSim+'</span>'+
+      '<span class="stat-item stat-registered">已注册 '+st.registered+'</span>'+
+      '<span class="stat-item stat-auto-refresh">手动刷新本地列表</span>'+
+    '</div>'+
+    '<div class="filter-chips">'+chips+'</div>'+
+    '<div class="search-bar"><span class="search-icon">'+ic('search',16)+'</span><input value="'+esc(S.deviceSearch)+'" oninput="S.deviceSearch=this.value" onchange="render()" placeholder="搜索编号 / 号码 / IP / 备注"></div>'+
+    noticeHtml()+
+    '<div class="device-list">'+(cards||'<div class="empty">暂无设备，点击右下角 + 扫描或手动添加。</div>')+'</div>'+
+    '<div class="batch-bar" id="batch-bar" style="display:none"><span id="batch-count">0</span> 台已选'+
+      '<button class="btn-action" onclick="toast(\'批量重启指令已下发\')">⚡ 批量重启</button>'+
+      '<button class="btn-action btn-danger" onclick="batchRemove()">🗑️ 批量删除</button>'+
+    '</div>'+
+    '<button class="fab" onclick="openAdd()">'+ic('plus',22)+'添加</button>'+
+  '</section>');
+}
+function setFilter(v){ S.filterStatus=v; render(); }
+function updateBatchBar(cb){
+  var cbs=document.querySelectorAll('.dev-card-check:checked');
+  var bar=document.getElementById('batch-bar'), cnt=document.getElementById('batch-count');
+  if(bar) bar.style.display=cbs.length>0?'flex':'none';
+  if(cnt) cnt.textContent=String(cbs.length);
+}
+function batchRemove(){
+  var cbs=document.querySelectorAll('.dev-card-check:checked');
+  var n=cbs.length;
+  if(!n) return;
+  if(!confirm('确认删除选中的 '+n+' 台设备？')) return;
+  var all=document.querySelectorAll('.dev-card-check');
+  var ids=[];
+  cbs.forEach(function(cb){
+    var idx=[].indexOf.call(all, cb);
+    var visible=filteredDevices();
+    if(visible[idx]) ids.push(visible[idx].id);
+  });
+  S.devices=S.devices.filter(function(d){return ids.indexOf(d.id)<0;});
+  setNotice('已删除 '+n+' 台设备');
+}
+function removeDev(id){
+  var d=S.devices.find(function(x){return x.id===id;});
+  if(!confirm('删除设备 '+(d?d.name||d.ip:'')+'？')) return;
+  S.devices=S.devices.filter(function(x){return x.id!==id;});
+  setNotice('设备已删除');
+}
+function openAdd(){
+  openModal(
+    '<div class="modal-header"><h2>添加短信转发设备</h2><button onclick="closeModal()">✕</button></div>'+
+    '<label class="field"><span>设备 IP 地址</span><input id="add-ip" placeholder="例如 192.168.1.101"></label>'+
+    '<div class="hint">不确定 IP？可先扫描局域网自动发现设备。</div>'+
+    '<div class="modal-actions">'+
+      '<button class="btn-secondary" onclick="closeModal();nav(\'scan\')">扫描局域网</button>'+
+      '<button class="btn-primary" onclick="addDev()">确认添加</button>'+
+    '</div>');
+}
+function addDev(){
+  var ip=document.getElementById('add-ip').value.trim();
+  if(!ip) return;
+  S.devices.push({ id:Date.now(), name:ip, group:'手动添加', ip:ip, status:'online', version:'4.0', uptime:60,
+    sim1:{present:false,number:'',operator:'',registered:false,signal:0},
+    sim2:{present:false,number:'',operator:'',registered:false,signal:0},
+    wifi:{name:''} });
+  closeModal(); setNotice('设备 '+ip+' 已添加');
+}
+function openSms(id){
+  S._smsDev=S.devices.find(function(x){return x.id===id;});
+  openModal(
+    '<div class="modal-header"><h2>发送短信</h2><button onclick="closeModal()">✕</button></div>'+
+    '<div class="form-grid">'+
+      '<label>目标号码<input id="sms-phone" placeholder="手机号"></label>'+
+      '<label>SIM 卡槽<select id="sms-slot"><option value="1">SIM 1</option><option value="2">SIM 2</option></select></label>'+
+      '<label class="full-field">短信内容<textarea id="sms-content" rows="5" placeholder="输入要发送的短信内容"></textarea></label>'+
+    '</div>'+
+    '<div class="modal-actions">'+
+      '<button class="btn-secondary" onclick="closeModal()">取消</button>'+
+      '<button class="btn-primary" onclick="sendSms()">💬 发送</button>'+
+    '</div>');
+}
+function sendSms(){
+  var phone=document.getElementById('sms-phone').value.trim(), content=document.getElementById('sms-content').value.trim();
+  if(!phone||!content){ toast('请填写号码与内容'); return; }
+  var slot=document.getElementById('sms-slot').value;
+  S.msgs.push({ id:Date.now(), phone:phone, deviceId:S._smsDev.id, deviceName:S._smsDev.name, simSlot:slot, direction:'out', content:content, time:Date.now()/1000 });
+  closeModal(); setNotice('短信已通过 '+S._smsDev.name+' SIM'+slot+' 发送');
+}
+
+/* ============================ 接管配置弹窗 ============================ */
+function openTakeover(id){
+  var dev=S.devices.find(function(x){return x.id===id;});
+  S.takeDevice=dev; S.takePane='basic'; S.activeChannel=0;
+  S.config=defaultConfig();
+  S.config.deviceName=dev.name; S.config.webUser='admin';
+  S.config.wifiSsid=dev.wifi.name||''; S.config.wifiPass='';
+  S.config.sim1Number=dev.sim1.number||''; S.config.sim2Number=dev.sim2.number||'';
+  S.pushResult='';
+  renderTakeover();
+}
+function renderTakeover(){
+  var dev=S.takeDevice, c=S.config, pane=S.takePane;
+  var panes=[['basic','📱 基础'],['forward','📤 转发'],['network','🌐 网络服务'],['maint','⚙️ 维护'],['tools','🧰 工具']];
+  var paneBtns=panes.map(function(p){
+    return '<button class="'+(pane===p[0]?'active':'')+'" onclick="S.takePane=\''+p[0]+'\';renderTakeover()">'+p[1]+'</button>';
+  }).join('');
+  openModal(
+    '<div class="modal-header"><h2>'+esc(dev.name||dev.ip)+'</h2><button onclick="closeModal()">✕</button></div>'+
+    '<div class="takeover-content">'+
+      '<div class="takeover-metrics">'+
+        '<div><span>运行</span><strong>'+uptimeLabel(dev.uptime)+'</strong></div>'+
+        '<div><span>WiFi</span><strong>'+esc(c.wifiSsid||dev.wifi.name||'-')+'</strong></div>'+
+        '<div><span>信号</span><strong>'+ (dev.sim1.signal||'-') +' dBm</strong></div>'+
+      '</div>'+
+      '<div class="takeover-nav">'+paneBtns+'</div>'+
+      '<div class="save-config-bar"><button class="btn-primary" onclick="closeModal();toast(\'固件配置已保存\')">💾 保存固件配置</button></div>'+
+      '<div class="takeover-grid">'+takeoverPaneHtml(pane)+'</div>'+
+      '<div class="save-config-bar"><button class="btn-primary" onclick="closeModal();toast(\'固件配置已保存\')">💾 保存固件配置</button></div>'+
+    '</div>', true);
+}
+function takeoverPaneHtml(pane){
+  var c=S.config;
+  var h='';
+  if(pane==='basic'){
+    h+=
+    '<section class="takeover-card accent-blue"><h3>📱 设备身份</h3>'+
+      '<label>设备名称<input value="'+esc(c.deviceName)+'" onchange="S.config.deviceName=this.value"></label>'+
+      '<label>Web 用户<input value="'+esc(c.webUser)+'" onchange="S.config.webUser=this.value"></label>'+
+      '<label>Web 密码<input type="password" value="'+esc(c.webPass)+'" onchange="S.config.webPass=this.value"></label>'+
+    '</section>'+
+    '<section class="takeover-card accent-green"><h3>📶 WiFi 热点接管</h3>'+
+      '<label>热点名称<input value="'+esc(c.wifiSsid)+'" onchange="S.config.wifiSsid=this.value" placeholder="路由器 SSID"></label>'+
+      '<label>热点密码<div class="serial-command"><input type="'+(S.showTakeWifiPass?'text':'password')+'" value="'+esc(c.wifiPass)+'" onchange="S.config.wifiPass=this.value" placeholder="当前热点未设置密码"><button type="button" class="btn-secondary" onclick="S.showTakeWifiPass=!S.showTakeWifiPass;renderTakeover()">'+(S.showTakeWifiPass?'隐藏':'查看')+'</button></div></label>'+
+      '<button class="btn-secondary" onclick="toast(\'WiFi 已保存，设备重连中\')">保存 WiFi 并重连</button>'+
+    '</section>'+
+    '<section class="takeover-card accent-amber"><h3>SIM 与网络</h3>'+
+      '<label>SIM1 号码<input value="'+esc(c.sim1Number)+'" onchange="S.config.sim1Number=this.value"></label>'+
+      '<label>SIM1 PIN 码<input type="password" value="'+esc(c.sim1Pin)+'" onchange="S.config.sim1Pin=this.value" placeholder="'+(c.sim1PinSet?'已设置，留空不修改':'未设置')+'"></label>'+
+      '<label>SIM2 号码<input value="'+esc(c.sim2Number)+'" onchange="S.config.sim2Number=this.value"></label>'+
+      '<label>SIM2 PIN 码<input type="password" value="'+esc(c.sim2Pin)+'" onchange="S.config.sim2Pin=this.value" placeholder="未设置"></label>'+
+      '<label>网络模式<select onchange="S.config.networkMode=Number(this.value)"><option value="0" '+(c.networkMode===0?'selected':'')+'>自动</option><option value="1" '+(c.networkMode===1?'selected':'')+'>WiFi only</option><option value="2" '+(c.networkMode===2?'selected':'')+'>4G only</option></select></label>'+
+      '<label>手动搜网卡槽<select><option>SIM 1</option><option>SIM 2</option></select></label>'+
+      '<label>运营商 PLMN<input placeholder="5-6 位数字，留空=自动搜网"></label>'+
+      '<button class="btn-secondary" onclick="toast(\'搜网任务已启动（1-3 分钟）\')">📡 启动手动搜网（1-3 分钟）</button>'+
+      '<label>保活测试卡槽<select><option>SIM 1</option><option>SIM 2</option></select></label>'+
+      '<div class="takeover-two"><label>测试方式<select><option>短信</option><option>拨号</option></select></label><label>目标号码<input placeholder="留空用配置号码"></label></div>'+
+      '<button class="btn-secondary" onclick="toast(\'保活测试已启动\')">🧪 启动保活测试</button>'+
+    '</section>'+
+    '<section class="takeover-card accent-green"><h3>💾 eSIM 管理</h3>'+
+      '<div class="takeover-two"><label>卡槽<select><option>SIM 1</option><option>SIM 2</option></select></label>'+
+      '<div class="serial-command" style="margin-top:18px"><button class="btn-primary" onclick="toast(\'eSIM 查询完成，本机为实体 SIM\')">查询 eSIM Profile</button></div></div>'+
+      '<div class="diag-row"><span class="diag-key">EID</span><span class="diag-val">89049032000000123456789012345678</span></div>'+
+      '<div class="hint">演示设备为实体 SIM，无已下载 Profile。</div>'+
+    '</section>';
+  }
+  if(pane==='forward'){
+    h+=
+    '<section class="takeover-card"><h3>📞 通话/录音</h3>'+
+      '<label>录音<select onchange="S.config.callRecordEnabled=this.value===\'1\'"><option value="0" '+(c.callRecordEnabled?'':'selected')+'>关闭</option><option value="1" '+(c.callRecordEnabled?'selected':'')+'>开启</option></select></label>'+
+      '<div class="takeover-two">'+
+        '<label>SIM1 自动接听<select onchange="S.config.sim1AutoAnswer=this.value===\'1\'"><option value="0" '+(c.sim1AutoAnswer?'':'selected')+'>关闭</option><option value="1" '+(c.sim1AutoAnswer?'selected':'')+'>开启</option></select></label>'+
+        '<label>SIM2 自动接听<select onchange="S.config.sim2AutoAnswer=this.value===\'1\'"><option value="0" '+(c.sim2AutoAnswer?'':'selected')+'>关闭</option><option value="1" '+(c.sim2AutoAnswer?'selected':'')+'>开启</option></select></label>'+
+      '</div>'+
+      '<label>挂断秒数<input type="number" value="'+c.hangupSeconds+'" onchange="S.config.hangupSeconds=Number(this.value)"></label>'+
+      '<label>TTS 播报<select onchange="S.config.ttsEnabled=this.value===\'1\'"><option value="0" '+(c.ttsEnabled?'':'selected')+'>关闭</option><option value="1" '+(c.ttsEnabled?'selected':'')+'>开启</option></select></label>'+
+      '<label>TTS 内容<input value="'+esc(c.ttsText)+'" onchange="S.config.ttsText=this.value" placeholder="播报内容"></label>'+
+    '</section>'+
+    '<section class="takeover-card accent-amber"><h3>📣 通知模板与短信白名单</h3>'+
+      '<div class="takeover-two">'+
+        '<label>开机通知<select onchange="S.config.bootNotify=this.value===\'1\'"><option value="0" '+(c.bootNotify?'':'selected')+'>关闭</option><option value="1" '+(c.bootNotify?'selected':'')+'>开启</option></select></label>'+
+        '<label>短信白名单<select onchange="S.config.whitelist=this.value===\'1\'"><option value="0" '+(c.whitelist?'':'selected')+'>关闭</option><option value="1" '+(c.whitelist?'selected':'')+'>开启</option></select></label>'+
+      '</div>'+
+      '<label>开机通知模板<input value="'+esc(c.bootTemplate)+'" onchange="S.config.bootTemplate=this.value"></label>'+
+      '<label>来电通知模板<input value="'+esc(c.callTemplate)+'" onchange="S.config.callTemplate=this.value"></label>'+
+      '<label>白名单关键词<input value="'+esc(c.keywords)+'" onchange="S.config.keywords=this.value" placeholder="逗号分隔，短信命中任一关键词才推送"></label>'+
+      '<div class="hint">白名单仅对短信推送生效（固件 V4.7+）；开启后未命中关键词的短信只入消息中心、不推送。</div>'+
+    '</section>'+
+    '<section class="takeover-card"><h3>📤 转发通道</h3>'+channelCardHtml()+'</section>';
+  }
+  if(pane==='network'){
+    h+=
+    '<section class="takeover-card"><h3>📊 MQTT 上报</h3>'+
+      '<div class="takeover-two">'+
+        '<label>MQTT 开关<select onchange="S.config.mqttEnabled=this.value===\'1\'"><option value="0" '+(c.mqttEnabled?'':'selected')+'>关闭</option><option value="1" '+(c.mqttEnabled?'selected':'')+'>开启</option></select></label>'+
+        '<label>Broker 地址<input value="'+esc(c.mqttServer)+'" onchange="S.config.mqttServer=this.value" placeholder="mqtt.example.com"></label>'+
+      '</div>'+
+      '<div class="takeover-two">'+
+        '<label>端口<input type="number" value="'+c.mqttPort+'" onchange="S.config.mqttPort=Number(this.value)"></label>'+
+        '<label>主题前缀<input value="'+esc(c.mqttTopic)+'" onchange="S.config.mqttTopic=this.value"></label>'+
+      '</div>'+
+      '<div class="takeover-two">'+
+        '<label>用户名<input value="'+esc(c.mqttUser)+'" onchange="S.config.mqttUser=this.value"></label>'+
+        '<label>密码<input type="password" value="'+esc(c.mqttPass)+'" onchange="S.config.mqttPass=this.value"></label>'+
+      '</div>'+
+      '<div class="takeover-two">'+
+        '<label>心跳(秒)<input type="number" value="'+c.mqttKeepAlive+'" onchange="S.config.mqttKeepAlive=Number(this.value)"></label>'+
+        '<label>状态间隔(秒)<input type="number" value="'+c.mqttStatusInterval+'" onchange="S.config.mqttStatusInterval=Number(this.value)"></label>'+
+      '</div>'+
+      '<label>Client ID<input value="'+esc(c.mqttClientId)+'" onchange="S.config.mqttClientId=this.value" placeholder="留空自动生成"></label>'+
+    '</section>'+
+    '<section class="takeover-card"><h3>☁️ Cloudflare DDNS</h3>'+
+      '<div class="takeover-two">'+
+        '<label>DDNS 开关<select onchange="S.config.ddnsEnabled=this.value===\'1\'"><option value="0" '+(c.ddnsEnabled?'':'selected')+'>关闭</option><option value="1" '+(c.ddnsEnabled?'selected':'')+'>开启</option></select></label>'+
+        '<label>更新间隔(分钟)<input type="number" value="'+c.ddnsInterval+'" onchange="S.config.ddnsInterval=Number(this.value)"></label>'+
+      '</div>'+
+      '<label>API Token<input type="password" value="'+esc(c.ddnsToken)+'" onchange="S.config.ddnsToken=this.value" placeholder="Cloudflare API Token"></label>'+
+      '<label>子域名<input value="'+esc(c.ddnsDomain)+'" onchange="S.config.ddnsDomain=this.value" placeholder="例如：t3.example.com"></label>'+
+    '</section>'+
+    '<section class="takeover-card accent-amber"><h3>🌐 DDNS 状态</h3>'+
+      '<div class="serial-command refined"><button class="btn-secondary" onclick="toast(\'DDNS 状态已刷新\')">查询状态</button><button class="btn-secondary" onclick="toast(\'DDNS 更新已触发\')">立即更新</button></div>'+
+      '<div class="diag-row"><span class="diag-key">域名</span><span class="diag-val">'+esc(c.ddnsDomain)+'</span></div>'+
+      '<div class="diag-row"><span class="diag-key">解析 IP</span><span class="diag-val">117.143.12.66</span></div>'+
+      '<div class="diag-row"><span class="diag-key">上次更新</span><span class="diag-val">'+fmtFull(Date.now()/1000-1800)+'</span></div>'+
+    '</section>';
+  }
+  if(pane==='maint'){
+    h+=
+    '<section class="takeover-card"><h3>⚙️ 系统与维护</h3>'+
+      '<div class="takeover-two">'+
+        '<label>定时重启<select onchange="S.config.rebootEnabled=this.value===\'1\'"><option value="0" '+(c.rebootEnabled?'':'selected')+'>关闭</option><option value="1" '+(c.rebootEnabled?'selected':'')+'>开启</option></select></label>'+
+        '<label>重启时间<div class="serial-command"><input type="number" value="'+c.rebootHour+'" onchange="S.config.rebootHour=Number(this.value)" style="width:60px"><span>:</span><input type="number" value="'+c.rebootMinute+'" onchange="S.config.rebootMinute=Number(this.value)" style="width:60px"></div></label>'+
+      '</div>'+
+      '<div class="takeover-two">'+
+        '<label>短信控制<select onchange="S.config.smsControl=this.value===\'1\'"><option value="0" '+(c.smsControl?'':'selected')+'>关闭</option><option value="1" '+(c.smsControl?'selected':'')+'>开启</option></select></label>'+
+        '<label>管理员号码<input value="'+esc(c.adminPhones)+'" onchange="S.config.adminPhones=this.value" placeholder="逗号分隔"></label>'+
+      '</div>'+
+      '<div class="takeover-two">'+
+        '<label>短信清理<select onchange="S.config.smsClean=this.value===\'1\'"><option value="0" '+(c.smsClean?'':'selected')+'>关闭</option><option value="1" '+(c.smsClean?'selected':'')+'>开启</option></select></label>'+
+        '<label>清理阈值(%)<input type="number" value="'+c.smsCleanThreshold+'" onchange="S.config.smsCleanThreshold=Number(this.value)"></label>'+
+      '</div>'+
+      '<div class="takeover-two">'+
+        '<label>检测周期(分钟)<input type="number" value="'+c.smsCleanInterval+'" onchange="S.config.smsCleanInterval=Number(this.value)"></label>'+
+        '<label>保留条数<input type="number" value="'+c.smsCleanKeep+'" onchange="S.config.smsCleanKeep=Number(this.value)"></label>'+
+      '</div>'+
+      '<label>Web 端口<input type="number" value="'+c.webPort+'" onchange="S.config.webPort=Number(this.value)"></label>'+
+      '<div class="takeover-two">'+
+        '<label>清理保留条数<input type="number" value="20"></label>'+
+        '<div class="serial-command" style="margin-top:18px"><button class="btn-secondary" onclick="toast(\'SIM 旧短信清理完成\')">🧹 清理 SIM 旧短信</button><button class="btn-secondary" onclick="toast(\'已闪烁全部指示灯\')">🔔 寻找设备</button></div>'+
+      '</div>'+
+      '<label>本地固件上传<div class="serial-command"><input type="file" accept=".bin"><button class="btn-secondary" onclick="toast(\'演示环境不上传固件\')">上传并刷写</button></div></label>'+
+      '<div class="serial-command"><input value="AT"><button class="btn-secondary" onclick="runAt()">执行 AT</button></div>'+
+      '<div id="at-resp"></div>'+
+      '<div class="serial-command"><input placeholder="OTA 固件 URL"><button class="btn-secondary" onclick="toast(\'当前已是最新固件\')">检查 OTA</button><button class="btn-secondary" onclick="toast(\'演示环境不执行升级\')">升级</button></div>'+
+      '<div class="modal-actions">'+
+        '<button class="btn-secondary btn-danger" onclick="toast(\'已发送恢复出厂指令\')">🔄 恢复出厂</button>'+
+        '<button class="btn-secondary btn-danger" onclick="toast(\'已清空设备 messages.log\')">🗑️ 清空设备日志</button>'+
+        '<button class="btn-secondary btn-danger" onclick="toast(\'重启指令已下发\')">⚡ 重启</button>'+
+      '</div>'+
+    '</section>'+
+    '<section class="takeover-card accent-red"><h3>⬆️ OTA 进度</h3>'+
+      '<div class="serial-command refined"><button class="btn-secondary" onclick="toast(\'当前无进行中的升级\')">刷新进度</button></div>'+
+      '<div class="ota-progress"><div class="hint">暂无升级任务。触发 OTA 后此处显示实时进度条。</div></div>'+
+    '</section>';
+  }
+  if(pane==='tools'){
+    h+=
+    '<section class="takeover-card accent-slate"><h3>🩺 设备诊断</h3>'+
+      '<div class="serial-command refined"><button class="btn-secondary" onclick="toast(\'设备诊断完成\')">运行诊断</button></div>'+
+      '<div class="diag-result">'+
+        '<div class="diag-row"><span class="diag-key">固件版本</span><span class="diag-val">'+esc(S.takeDevice.version)+'</span></div>'+
+        '<div class="diag-row"><span class="diag-key">运行时长</span><span class="diag-val">'+uptimeLabel(S.takeDevice.uptime)+'</span></div>'+
+        '<div class="diag-row"><span class="diag-key">网络模式</span><span class="diag-val">WiFi 优先 + 4G 兜底</span></div>'+
+        '<div class="diag-row"><span class="diag-key">WiFi RSSI</span><span class="diag-val">-52 dBm</span></div>'+
+        '<div class="diag-row"><span class="diag-key">SIM1 / SIM2</span><span class="diag-val">'+esc(S.takeDevice.sim1.operator||'无卡')+' / '+esc(S.takeDevice.sim2.operator||'无卡')+'</span></div>'+
+        '<div class="diag-row"><span class="diag-key">消息通道</span><span class="diag-val">钉钉 · 飞书</span></div>'+
+      '</div>'+
+    '</section>'+
+    '<section class="takeover-card accent-green"><h3>📨 推送测试</h3>'+
+      '<label>测试通道<select onchange="S.pushChannel=Number(this.value)">'+[0,1,2,3,4].map(function(i){return '<option value="'+i+'"'+(S.pushChannel===i?' selected':'')+'>通道 '+(i+1)+'</option>';}).join('')+'</select></label>'+
+      '<div class="serial-command refined"><button class="btn-primary" onclick="runPushTest()">发送测试推送</button></div>'+
+      (S.pushResult?'<div class="inline-error success">'+esc(S.pushResult)+'</div>':'')+
+    '</section>'+
+    '<section class="takeover-card accent-slate"><h3>🖥️ 设备调试日志</h3>'+
+      '<div class="serial-command"><input type="password" placeholder="日志管理员密码"><button class="btn-primary" onclick="showDebugLog()">登录</button></div>'+
+      '<div class="hint">登录后每 1.5 秒增量拉取设备运行日志（对应固件 /debug 页面）。</div>'+
+      '<div id="debug-log-box"></div>'+
+    '</section>';
+  }
+  return h;
+}
+function channelCardHtml(){
+  var c=S.config, i=S.activeChannel, ch=c.channels[i], meta=CHANNEL_META[ch.type];
+  var tabs=c.channels.map(function(_,idx){
+    return '<button class="'+(S.activeChannel===idx?'active':'')+'" onclick="S.activeChannel='+idx+';renderTakeover()">通道 '+(idx+1)+'</button>';
+  }).join('');
+  var h='<div class="channel-tabs">'+tabs+'</div>'+
+    '<label>类型<select onchange="patchChannelType(Number(this.value))">'+CHANNEL_TYPES.map(function(n,idx){return '<option value="'+idx+'"'+(ch.type===idx?' selected':'')+'>'+n+'</option>';}).join('')+'</select></label>';
+  if(meta) h+='<label>'+meta.urlLabel+'<textarea onchange="S.config.channels['+i+'].url=this.value" placeholder="'+esc(meta.urlPh)+'">'+esc(ch.url)+'</textarea></label>';
+  if(meta&&meta.k1) h+='<label>'+meta.k1[0]+'<input value="'+esc(ch.key1)+'" onchange="S.config.channels['+i+'].key1=this.value" placeholder="'+esc(meta.k1[1])+'"></label>';
+  if(meta&&meta.k2) h+='<label>'+meta.k2[0]+'<input value="'+esc(ch.key2)+'" onchange="S.config.channels['+i+'].key2=this.value" placeholder="'+esc(meta.k2[1])+'"></label>';
+  h+='<label>模板<textarea onchange="S.config.channels['+i+'].customBody=this.value">'+esc(ch.customBody)+'</textarea></label>'+
+    '<div class="takeover-two">'+
+      '<label>SIM1 推送<select onchange="S.config.channels['+i+'].sim1=this.value===\'1\'"><option value="0" '+(ch.sim1?'':'selected')+'>关闭</option><option value="1" '+(ch.sim1?'selected':'')+'>开启</option></select></label>'+
+      '<label>SIM2 推送<select onchange="S.config.channels['+i+'].sim2=this.value===\'1\'"><option value="0" '+(ch.sim2?'':'selected')+'>关闭</option><option value="1" '+(ch.sim2?'selected':'')+'>开启</option></select></label>'+
+    '</div>'+
+    '<div class="hint">卡绑定：关闭后该通道不转发对应 SIM 卡的短信/来电（固件 V4.7+）。</div>';
+  return h;
+}
+function patchChannelType(t){
+  S.config.channels[S.activeChannel].type=t;
+  renderTakeover();
+}
+function runAt(){
+  var box=document.getElementById('at-resp');
+  if(box) box.innerHTML='<pre class="at-response">AT\nOK</pre>';
+}
+function runPushTest(){
+  var typeName=CHANNEL_TYPES[S.config.channels[S.pushChannel].type]||'未启用';
+  S.pushResult='测试推送已发送到通道 '+(S.pushChannel+1)+'（'+typeName+'）';
+  renderTakeover();
+}
+function showDebugLog(){
+  var box=document.getElementById('debug-log-box');
+  if(box) box.innerHTML='<pre class="at-response" style="max-height:260px">[12:00:01] system: boot ok, fw 4.0\n[12:00:02] rx: AT+CSQ\n[12:00:02] tx: +CSQ: 23,0\n[12:00:05] sms: SIM1 收到 10086 -> 已推送钉钉\n[12:00:31] mqtt: connected to broker</pre>';
+}
+
+/* ============================ 短信页 ============================ */
+function conversations(){
+  var map={};
+  S.msgs.forEach(function(m){
+    var k=m.phone+'|'+m.deviceName+'|'+m.simSlot;
+    if(!map[k]) map[k]={key:k, phone:m.phone, deviceName:m.deviceName, simSlot:m.simSlot, lastContent:m.content, lastTime:m.time, count:1, hasCall:false};
+    else { map[k].count++; if(m.time>=map[k].lastTime){ map[k].lastTime=m.time; map[k].lastContent=m.content; } }
+  });
+  S.calls.forEach(function(cl){
+    var k=cl.phone+'|'+cl.deviceName+'|'+cl.simSlot;
+    if(!map[k]) map[k]={key:k, phone:cl.phone, deviceName:cl.deviceName, simSlot:cl.simSlot, lastContent:'来电记录', lastTime:cl.createdAt, count:1, hasCall:true};
+    else { map[k].hasCall=true; map[k].count++; if(cl.createdAt>=map[k].lastTime){ map[k].lastTime=cl.createdAt; map[k].lastContent='来电记录'; } }
+  });
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return b.lastTime-a.lastTime;});
+}
+function renderMessages(){
+  if(S.chatKey){ return renderChat(); }
+  var stats={ total:S.msgs.length, today:S.msgs.filter(function(m){return Date.now()/1000-m.time<86400;}).length, week:S.msgs.filter(function(m){return Date.now()/1000-m.time<86400*7;}).length, failed:1 };
+  var filtered=S.msgs.filter(function(m){
+    if(S.msgMode==='in'&&m.direction!=='in') return false;
+    if(S.msgMode==='out'&&m.direction!=='out') return false;
+    var q=S.search.toLowerCase();
+    if(!q) return true;
+    return (m.phone||'').toLowerCase().indexOf(q)>=0 || (m.content||'').toLowerCase().indexOf(q)>=0 || (m.deviceName||'').toLowerCase().indexOf(q)>=0;
+  });
+  var convs=conversations();
+  var calls=S.calls;
+  var body='';
+  if(S.lanTabMsg==='conversations'){
+    body=convs.length===0
+      ? '<div class="msg-empty"><div class="msg-empty-icon">'+ic('message',40)+'</div><p>暂无会话</p><span>可从设备同步短信，或等待新消息上报</span></div>'
+      : '<div class="msg-conv-list">'+convs.map(function(cv){
+          return '<button class="msg-conv-card" onclick="openChat(\''+esc(cv.key)+'\')">'+
+            '<div class="msg-conv-avatar'+(cv.hasCall?' call':'')+'">'+ic(cv.hasCall?'phone':'message',16)+'</div>'+
+            '<div class="msg-conv-main">'+
+              '<div class="msg-conv-top"><strong class="mono">'+esc(cv.phone)+'</strong>'+(cv.simSlot?'<span class="msg-tag">SIM'+cv.simSlot+'</span>':'')+'</div>'+
+              '<div class="msg-conv-sub"><span class="msg-conv-preview">'+esc(cv.lastContent||'(无内容)')+'</span></div>'+
+              '<div class="msg-conv-sub mono muted">'+esc(cv.deviceName)+'</div>'+
+            '</div>'+
+            '<div class="msg-conv-meta"><span class="mono">'+fmtTime(cv.lastTime)+'</span><em>'+cv.count+' 条</em></div>'+
+          '</button>';
+        }).join('')+'</div>';
+  } else if(S.lanTabMsg==='messages'){
+    body=filtered.length===0
+      ? '<div class="msg-empty"><div class="msg-empty-icon">'+ic('inbox',40)+'</div><p>暂无短信记录</p></div>'
+      : '<div class="msg-table-wrap"><table class="msg-table"><thead><tr><th>方向</th><th>号码</th><th>内容</th><th>设备</th><th>SIM</th><th>时间</th><th>操作</th></tr></thead><tbody>'+
+        filtered.map(function(m){
+          var isOut=m.direction==='out';
+          return '<tr><td><span class="msg-dir '+(isOut?'out':'in')+'">'+ic(isOut?'up':'down',12)+(isOut?'发出':'收到')+'</span></td>'+
+            '<td class="mono">'+esc(m.phone)+'</td>'+
+            '<td class="msg-content-cell"><div class="msg-from">'+esc(m.deviceName)+'</div><div class="msg-text">'+esc(m.content)+'</div></td>'+
+            '<td class="mono muted">'+esc(m.deviceName)+'</td><td>SIM'+m.simSlot+'</td>'+
+            '<td class="mono muted">'+fmtFull(m.time)+'</td>'+
+            '<td><button class="msg-icon-btn danger" onclick="delMsg('+m.id+')" title="删除">'+ic('trash',14)+'</button></td></tr>';
+        }).join('')+'</tbody></table></div>'+
+        '<div class="msg-pagination"><button class="msg-btn" disabled>'+ic('left',14)+' 上一页</button><span>1 / 1 · 共 '+filtered.length+' 条</span><button class="msg-btn" disabled>下一页 '+ic('right',14)+'</button></div>';
+  } else {
+    body=calls.length===0
+      ? '<div class="msg-empty"><div class="msg-empty-icon">'+ic('phone',40)+'</div><p>暂无通话记录</p></div>'
+      : '<div class="msg-table-wrap"><table class="msg-table"><thead><tr><th>类型</th><th>号码</th><th>设备</th><th>SIM</th><th>时长</th><th>时间</th></tr></thead><tbody>'+
+        calls.map(function(cl){
+          return '<tr><td><span class="msg-dir call">'+ic('phone',12)+' 来电</span></td><td class="mono">'+esc(cl.phone)+'</td>'+
+            '<td class="mono muted">'+esc(cl.deviceName)+'</td><td>SIM'+cl.simSlot+'</td><td>'+fmtDur(cl.duration)+'</td>'+
+            '<td class="mono muted">'+fmtFull(cl.createdAt)+'</td></tr>';
+        }).join('')+'</tbody></table></div>';
+  }
+  return layout('<div class="msg-page">'+
+    '<div class="msg-stats">'+
+      '<div class="msg-stat"><div class="msg-stat-value">'+stats.total+'</div><div class="msg-stat-label">总短信</div></div>'+
+      '<div class="msg-stat"><div class="msg-stat-value">'+stats.today+'</div><div class="msg-stat-label">今日</div></div>'+
+      '<div class="msg-stat"><div class="msg-stat-value">'+stats.week+'</div><div class="msg-stat-label">本周</div></div>'+
+      '<div class="msg-stat"><div class="msg-stat-value">'+stats.failed+'</div><div class="msg-stat-label">失败</div></div>'+
+    '</div>'+
+    '<div class="msg-toolbar">'+
+      '<div class="msg-toolbar-left">'+
+        '<div class="msg-search-wrap">'+ic('search',15)+'<input placeholder="搜索号码 / 内容 / 设备..." value="'+esc(S.search)+'" oninput="S.search=this.value" onchange="render()"></div>'+
+        '<select style="max-width:130px" onchange="S.msgMode=this.value;render()"><option value="">全部方向</option><option value="in" '+(S.msgMode==='in'?'selected':'')+'>仅收到</option><option value="out" '+(S.msgMode==='out'?'selected':'')+'>仅发出</option></select>'+
+      '</div>'+
+      '<div class="msg-toolbar-right">'+
+        '<button class="msg-btn primary" onclick="toast(\'同步完成：新增 0 条\')">'+ic('download',14)+'从设备同步</button>'+
+        '<button class="msg-btn" onclick="toast(\'记录已刷新\')">'+ic('refresh',14)+'刷新</button>'+
+        '<button class="msg-btn danger" onclick="clearMsgs()">'+ic('trash',14)+'清空</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="msg-tabs">'+
+      '<button class="'+(S.lanTabMsg==='conversations'?'active':'')+'" onclick="S.lanTabMsg=\'conversations\';S.chatKey=null;render()">会话列表<em>'+convs.length+'</em></button>'+
+      '<button class="'+(S.lanTabMsg==='messages'?'active':'')+'" onclick="S.lanTabMsg=\'messages\';S.chatKey=null;render()">全部短信<em>'+stats.total+'</em></button>'+
+      '<button class="'+(S.lanTabMsg==='calls'?'active':'')+'" onclick="S.lanTabMsg=\'calls\';S.chatKey=null;render()">通话记录<em>'+calls.length+'</em></button>'+
+    '</div>'+
+    body+
+  '</div>');
+}
+function openChat(key){ S.chatKey=key; render(); }
+function chatItems(cv){
+  var items=[];
+  S.msgs.forEach(function(m){
+    if((m.phone+'|'+m.deviceName+'|'+m.simSlot)===cv.key) items.push({type:'msg', time:m.time, data:m});
+  });
+  S.calls.forEach(function(cl){
+    if((cl.phone+'|'+cl.deviceName+'|'+cl.simSlot)===cv.key) items.push({type:'call', time:cl.createdAt, data:cl});
+  });
+  return items.sort(function(a,b){return a.time-b.time;});
+}
+function renderChat(){
+  var cv=conversations().find(function(x){return x.key===S.chatKey;});
+  if(!cv){ S.chatKey=null; return renderMessages(); }
+  var items=chatItems(cv);
+  var bubbles=items.map(function(it){
+    if(it.type==='call'){
+      return '<div class="msg-bubble call"><div class="msg-bubble-meta"><span class="msg-pill call">来电</span><span class="mono">'+fmtFull(it.data.createdAt)+'</span></div><div class="msg-bubble-text muted">来电记录 · 时长 '+fmtDur(it.data.duration)+'</div></div>';
+    }
+    var m=it.data, isOut=m.direction==='out';
+    return '<div class="msg-bubble '+(isOut?'out':'in')+'">'+
+      '<div class="msg-bubble-meta"><span class="msg-pill '+(isOut?'out':'in')+'">'+(isOut?'发出':'收到')+'</span><span class="mono">'+fmtFull(m.time)+'</span></div>'+
+      '<div class="msg-bubble-text">'+esc(m.content)+'</div>'+
+      '<div class="msg-bubble-actions"><button onclick="delMsg('+m.id+',\'chat\')">'+ic('trash',12)+' 删除</button></div>'+
+    '</div>';
+  }).join('');
+  return layout('<div class="msg-page"><div class="msg-chat-panel">'+
+    '<div class="msg-chat-header">'+
+      '<button class="msg-icon-btn" onclick="S.chatKey=null;render()" title="返回">'+ic('left',18)+'</button>'+
+      '<div class="msg-chat-identity"><strong>'+esc(cv.phone)+'</strong><span class="muted">'+esc(cv.deviceName)+(cv.simSlot?' · SIM'+cv.simSlot:'')+' · '+cv.count+' 条</span></div>'+
+    '</div>'+
+    '<div class="msg-chat-body">'+(bubbles||'<div class="msg-empty">暂无消息</div>')+'</div>'+
+  '</div></div>');
+}
+function delMsg(id, fromChat){
+  if(!confirm('确认删除这条短信？')) return;
+  S.msgs=S.msgs.filter(function(m){return m.id!==id;});
+  if(fromChat){ render(); toast('已删除'); } else { setNotice('已删除'); }
+}
+function clearMsgs(){
+  if(!confirm('确认清空全部短信记录？此操作不可恢复。')) return;
+  S.msgs=[]; S.chatKey=null;
+  setNotice('已清空全部记录');
+}
+
+/* ============================ 扫描页 ============================ */
+function renderScan(){
+  var st=S.scanStatus;
+  var progress=st&&st.total?Math.round((st.total-st.pending)/st.total*100):0;
+  var rows=(!st||st.results.length===0)
+    ? '<tr><td colspan="3" class="empty">暂无扫描结果。输入网段后点击“开始扫描”。</td></tr>'
+    : st.results.map(function(r){
+        return '<tr><td><code>'+r.ip+'</code></td><td>'+(r.success?'已识别设备':(r.httpOpen?'未识别或未升级固件':'未开放 HTTP'))+'</td>'+
+          '<td>'+(r.auto?'<span class="saved">'+ic('save',14)+' 已自动加入</span>':'-')+'</td></tr>';
+      }).join('');
+  return layout('<section class="page">'+
+    '<div class="page-hero"><div><span class="eyebrow">Sector Scan</span><h1>星域扫描</h1><p>只识别带 LAN 密钥发现接口的短信转发节点，识别成功后自动加入节点列表。</p></div></div>'+
+    '<div class="scan-panel">'+
+      '<label><span>CIDR 网段</span><input id="scan-cidr" placeholder="留空自动识别，或 192.168.123.0/24"></label>'+
+      '<label><span>设备用户名</span><input value="admin"></label>'+
+      '<label><span>设备密码</span><input type="password" value="admin"></label>'+
+      '<button class="primary-button" onclick="startScan()" '+(S.scanRunning?'disabled':'')+'>'+ic('radar',16)+' '+(S.scanRunning?'扫描中...':'开始扫描')+'</button>'+
+    '</div>'+
+    (st?'<div class="scan-status"><div class="status-line"><strong>'+st.cidr+'</strong><span>'+(st.auto?'自动识别 · ':'')+progress+'% · 发现 '+st.found+' · 剩余 '+st.pending+'</span></div><div class="progress"><div style="width:'+progress+'%"></div></div></div>':'')+
+    '<div class="msg-table-wrap"><table class="msg-table"><thead><tr><th>IP</th><th>结果</th><th>状态 / 操作</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+  '</section>');
+}
+function startScan(){
+  if(S.scanRunning) return;
+  S.scanRunning=true;
+  var input=document.getElementById('scan-cidr');
+  var cidr=(input&&input.value.trim())||'192.168.123.0/24';
+  var auto=!(input&&input.value.trim());
+  var ips=['192.168.123.21','192.168.123.22','192.168.123.23','192.168.123.24','192.168.123.50'];
+  S.scanStatus={cidr:cidr, auto:auto, total:ips.length, pending:ips.length, found:0, results:ips.map(function(ip){return {ip:ip, success:false, httpOpen:true, auto:false};})};
+  render();
+  var i=0;
+  clearInterval(S.scanTimer);
+  S.scanTimer=setInterval(function(){
+    if(i>=ips.length){
+      clearInterval(S.scanTimer); S.scanRunning=false;
+      S.scanStatus.pending=0;
+      render(); toast('扫描完成，发现 4 台设备');
+      return;
+    }
+    if(i<4){ S.scanStatus.results[i].success=true; S.scanStatus.results[i].auto=true; S.scanStatus.found++; }
+    S.scanStatus.pending--;
+    i++; render();
+  }, 550);
+}
+
+/* ============================ 任务中心 ============================ */
+function renderTasks(){
+  var tab=S.taskTab;
+  var body='';
+  if(tab==='scan'){
+    body='<div class="task-card"><div class="task-card-title"><span class="quick-ico amber">'+ic('radar',18)+'</span>局域网扫描</div>'+
+      '<p class="text-muted">扫描局域网内的 T3 设备并自动加入列表。</p>'+
+      '<div class="task-field">'+
+        '<label><span>网段前缀</span><input id="task-prefix" placeholder="留空自动检测"></label>'+
+        '<div class="task-two"><label><span>起始</span><input value="1"></label><label><span>结束</span><input value="254"></label></div>'+
+      '</div>'+
+      '<div class="task-actions"><button class="btn-secondary" onclick="toast(\'已自动检测网段：192.168.123.0/24\')">自动检测</button>'+
+      '<button class="btn-primary" onclick="runTaskScan()" '+(S.taskProgress?'disabled':'')+'>'+(S.taskProgress?'扫描中…':'开始扫描')+'</button></div>'+
+      (S.taskProgress?'<div class="inline-error">'+esc(S.taskProgress)+'</div>':'')+
+      (S.taskResult?'<div class="inline-error success">'+esc(S.taskResult)+'</div>':'')+
+    '</div>';
+  } else if(tab==='ota'){
+    body='<div class="task-card"><div class="task-card-title"><span class="quick-ico blue">'+ic('cloudup',18)+'</span>批量固件升级</div>'+
+      '<p class="text-muted">对全部在线设备检查并触发 OTA 升级。</p>'+
+      '<div class="task-field"><label><span>OTA 固件 URL</span><input placeholder="留空使用设备检查结果"></label></div>'+
+      '<div class="task-actions"><button class="btn-primary" onclick="runTaskOta()">全部在线设备 OTA</button>'+
+      '<button class="btn-secondary" onclick="nav(\'devices\')">前往设备管理</button></div>'+
+      (S.taskOtaResult?'<div class="inline-error '+(S.taskOtaResult.indexOf('失败')>=0?'':'success')+'">'+esc(S.taskOtaResult)+'</div>':'')+
+    '</div>';
+  } else {
+    body='<div class="task-card"><div class="task-card-title"><span class="quick-ico">'+ic('refresh',18)+'</span>服务端信息</div>'+
+      '<div class="task-info-grid">'+
+        '<div><span>本地版本</span><strong>v1.5.2</strong></div>'+
+        '<div><span>OTA 服务器</span><strong>v4.0</strong></div>'+
+        '<div><span>固件升级</span><strong>可用</strong></div>'+
+      '</div>'+
+      '<div class="task-actions"><button class="btn-secondary" onclick="nav(\'devices\')">'+ic('monitor',15)+'设备列表</button></div>'+
+    '</div>';
+  }
+  return layout('<section class="page tasks-page">'+
+    '<div class="page-header"><h1>任务中心</h1><p>局域网扫描与固件批量升级等运维任务</p></div>'+
+    '<div class="task-tabs">'+
+      '<button class="'+(tab==='scan'?'active':'')+'" onclick="S.taskTab=\'scan\';render()">扫描发现</button>'+
+      '<button class="'+(tab==='ota'?'active':'')+'" onclick="S.taskTab=\'ota\';render()">固件升级</button>'+
+      '<button class="'+(tab==='server'?'active':'')+'" onclick="S.taskTab=\'server\';render()">服务信息</button>'+
+    '</div>'+
+    '<div class="task-action-grid">'+body+'</div>'+
+  '</section>');
+}
+function runTaskScan(){
+  S.taskResult=''; S.taskProgress='正在启动扫描...'; render();
+  var done=0, total=254;
+  clearInterval(S._taskTimer);
+  S._taskTimer=setInterval(function(){
+    done=Math.min(total, done+42);
+    S.taskProgress='扫描 '+done+'/'+total+'，发现 '+(done>=84?4:done>=42?3:done>0?1:0)+' 台设备';
+    render();
+    if(done>=total){
+      clearInterval(S._taskTimer);
+      S.taskProgress=''; S.taskResult='扫描完成，发现 4 台设备（当前列表共 '+S.devices.length+' 台）';
+      render();
+    }
+  }, 450);
+}
+function runTaskOta(){
+  S.taskOtaResult='已触发 '+S.devices.filter(function(d){return d.status==='online';}).length+' 台在线设备 OTA：成功 3 台，失败 0 台';
+  render();
+}
+
+/* ============================ 个人资料 ============================ */
+function renderProfile(){
+  return layout('<section class="page profile-page" style="max-width:720px;margin:0 auto">'+
+    '<div class="profile-hero">'+
+      '<span class="profile-avatar">'+esc(S.username.slice(0,1).toUpperCase())+'</span>'+
+      '<div><h1>'+esc(S.username)+'</h1><p>T3 本地设备助手</p><span class="profile-badge">'+ic('shield',12)+'管理员</span></div>'+
+    '</div>'+
+    '<div class="profile-section"><h2>工作模式</h2>'+
+      '<button class="profile-row" onclick="switchMode(\'lan\')">'+
+        '<span class="po-icon">'+ic('wifi',17)+'</span>'+
+        '<span class="po-main"><strong>局域网控制台</strong><small>当前模式</small></span>'+
+        '<span class="arrow">'+ic('shield',15)+'</span>'+
+      '</button>'+
+      '<button class="profile-row" onclick="switchMode(\'serial\')">'+
+        '<span class="po-icon">'+ic('cable',17)+'</span>'+
+        '<span class="po-main"><strong>串口工作台</strong><small>USB 串口离线配置</small></span>'+
+        '<span class="arrow">'+ic('arrowright',17)+'</span>'+
+      '</button>'+
+    '</div>'+
+    '<div class="profile-section"><h2>服务端信息</h2>'+
+      '<div class="profile-meta">'+
+        '<div><span>本地版本</span><strong>v1.5.2</strong></div>'+
+        '<div><span>OTA 服务器</span><strong>v4.0</strong></div>'+
+        '<div><span>固件升级源</span><strong>可用</strong></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="profile-section">'+
+      '<button class="profile-row danger" onclick="doLogout()">'+
+        '<span class="po-icon">'+ic('logout',17)+'</span>'+
+        '<span class="po-main"><strong>退出登录</strong></span>'+
+        '<span class="arrow">'+ic('right',17)+'</span>'+
+      '</button>'+
+    '</div>'+
+    '<p class="profile-foot">T3 本地设备助手 · 局域网设备运维 · 串口模式随时切换</p>'+
+  '</section>');
+}
+
+/* ============================ 串口工作台 ============================ */
+function startSerialFeed(){
+  if(S.serialTimer) return;
+  var samples=[['rx','AT'],['tx','OK'],['rx','AT+CSQ'],['tx','+CSQ: 22,0'],['rx','AT+COPS?'],['tx','+COPS: 0,0,"CMCC",7'],['system','[state] wifi connected'],['rx','AT+CMGF=1'],['tx','OK']];
+  var n=0;
+  S.serialTimer=setInterval(function(){
+    if(!S.serialConnected || S.view!=='serial'){ return; }
+    n++;
+    var s=samples[n%samples.length];
+    S.serialLogs.push({level:s[0], content:s[1], time:Date.now()/1000});
+    if(S.serialLogs.length>300) S.serialLogs=S.serialLogs.slice(-300);
+    renderSerialLogsOnly();
+  }, 2600);
+}
+function renderSerialLogsOnly(){
+  var box=document.getElementById('terminal');
+  if(!box) return;
+  var logs=S.serialLogs.slice(-200).reverse();
+  box.innerHTML=logs.length===0?'<div class="terminal-empty">连接后显示日志</div>':logs.map(serialRow).join('');
+}
+function serialRow(l){
+  var labels={rx:'接收',tx:'发送',system:'系统',error:'错误'};
+  return '<div class="terminal-row terminal-row-'+l.level+'"><span class="terminal-time">'+(l.time?new Date(l.time*1000).toLocaleTimeString('zh-CN',{hour12:false}):'--:--:--')+'</span><span class="terminal-level">'+(labels[l.level]||l.level)+'</span><code>'+esc(l.content)+'</code></div>';
+}
+function renderSerial(){
+  var connected=S.serialConnected;
+  var sel=S.selectedPorts.filter(function(p){return S.ports.find(function(x){return x.name===p&&x.connected;});});
+  var rx=S.serialLogs.filter(function(l){return l.level==='rx';}).length;
+  var tx=S.serialLogs.filter(function(l){return l.level==='tx';}).length;
+  var portCards=S.ports.map(function(p){
+    var selected=S.selectedPorts.indexOf(p.name)>=0;
+    return '<div class="multi-port-card'+(S.activePort===p.name?' active':'')+(p.connected?' connected':'')+(selected?' selected':'')+'">'+
+      '<input type="checkbox" '+(selected?'checked':'')+' onchange="togglePortSel(\''+p.name+'\',this.checked)">'+
+      '<button onclick="selectPort(\''+p.name+'\')"><span class="multi-port-dot'+(p.connected?' connected':'')+'"></span><strong>'+p.name+'</strong><small>'+esc(p.description)+'</small><em>'+(p.connected?(p.baudrate+' · 实时'):'未连接')+'</em></button>'+
+    '</div>';
+  }).join('');
+  var ch=S.serialChannels[S.serialChannel];
+  var chTabs=S.serialChannels.map(function(_,idx){
+    return '<button class="'+(S.serialChannel===idx?'active':'')+'" onclick="S.serialChannel='+idx+';render()">通道 '+(idx+1)+'</button>';
+  }).join('');
+  var logs=S.serialLogs.slice(-200).reverse();
+  return layout('<section class="page serial-page">'+
+    '<div class="serial-hero"><div><span class="eyebrow">Serial Desk</span><h1>串口工作台</h1>'+
+      '<p>集中处理多串口连接、设备配置读写、配置复刻、导入导出、诊断、DTR/RTS 控制与底部实时日志。</p></div>'+
+      '<div class="serial-hero-actions">'+
+        '<button onclick="toast(\'已刷新串口状态\')">'+ic('refresh',16)+'刷新</button>'+
+        '<button onclick="toggleConnect()">'+ic(connected?'unplug':'plug',16)+(connected?'断开当前':'连接当前')+'</button>'+
+      '</div>'+
+    '</div>'+
+    noticeHtml()+
+    '<div class="version-banner"><span>T3服务端 v1.5.2</span><span>OTA 服务器 v4.0</span><span>串口设备 '+(connected?'4.0':'请选择串口检测')+'</span></div>'+
+    '<div class="multi-serial-layout">'+
+      '<aside class="serial-panel">'+
+        '<div class="panel-title"><div><h2>'+ic('cable',17)+' 串口列表</h2><p>'+S.ports.filter(function(p){return p.connected;}).length+' 个已连接 · 已选 '+sel.length+' 个</p></div></div>'+
+        '<div class="multi-port-list">'+portCards+'</div>'+
+        '<div class="port-selection-actions">'+
+          '<button class="secondary-button" onclick="selAllConnected()">全选已连接</button>'+
+          '<button class="secondary-button" onclick="S.selectedPorts=[];render()">清空</button>'+
+        '</div>'+
+        '<div class="compact-connect-box">'+
+          '<label><span>波特率</span><input type="number" value="'+S.baudrate+'" onchange="S.baudrate=Number(this.value)||115200" '+(connected?'disabled':'')+'></label>'+
+          '<label><span>模式</span><select '+(connected?'disabled':'')+'><option value="cdc" selected>稳定连接</option><option value="safe">防复位</option><option value="normal">标准</option></select></label>'+
+          '<div class="compact-button-row">'+
+            (connected
+              ?'<button class="secondary-button" onclick="toggleConnect()">'+ic('unplug',15)+'断开</button>'
+              :'<button class="secondary-button" onclick="toggleConnect()">'+ic('plug',15)+'连接</button>')+
+            '<button class="secondary-button" onclick="toast(\'已读取 '+S.activePort+' 的配置\')">'+ic('download',15)+'读取</button>'+
+            '<button class="secondary-button" onclick="toast(\'串口设备固件版本：4.0\')">'+ic('save',15)+'检测版本</button>'+
+          '</div>'+
+        '</div>'+
+      '</aside>'+
+      '<main class="serial-panel">'+
+        '<div class="panel-title"><div><h2>'+ic('wifi',17)+' 配置编辑</h2><p>'+S.activePort+' · '+(connected?'已读取':'未读取')+'</p></div>'+
+          '<div class="serial-hero-actions" style="margin:0">'+
+            '<button onclick="toast(\'已导出 t3-config.json\')">'+ic('filedown',15)+'导出</button>'+
+            '<button onclick="toast(\'配置文件已导入\')">'+ic('fileup',15)+'导入</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="wizard-section">'+
+          '<div class="wizard-step-number">01</div>'+
+          '<div class="wizard-section-title"><span>'+ic('wifi',16)+' 首次配置 WiFi</span><small>必填。设备保存后会尝试连接此 2.4 GHz 热点。</small></div>'+
+          '<label><span>WiFi 名称 *</span><input value="'+esc(S.serialCfg.wifiSsid)+'" onchange="S.serialCfg.wifiSsid=this.value" placeholder="输入 2.4 GHz 热点名称"></label>'+
+          '<label><span>WiFi 密码</span><div class="serial-command"><input type="'+(S.showWifiPass?'text':'password')+'" value="'+esc(S.serialCfg.wifiPass)+'" onchange="S.serialCfg.wifiPass=this.value" placeholder="开放热点可留空"><button type="button" class="secondary-button" onclick="S.showWifiPass=!S.showWifiPass;render()">'+(S.showWifiPass?'隐藏':'查看')+'</button></div></label>'+
+          '<div class="wizard-required-note">WiFi 凭据只会写入选中的已连接串口，支持并行保存并返回逐端口结果。</div>'+
+          '<button class="primary-button" onclick="toast(\'WiFi 已保存到已选串口（'+sel.length+'）\')">'+ic('wifi',16)+'保存 WiFi 到已选串口（'+sel.length+'）</button>'+
+        '</div>'+
+        '<div class="wizard-section optional-wizard-section">'+
+          '<div class="wizard-step-number">02</div>'+
+          '<div class="wizard-section-title"><span>可选配置</span><small>只有本次修改的内容才会写入。</small></div>'+
+          '<div class="compact-grid">'+
+            '<label class="full-field"><span>设备名称</span><input value="'+esc(S.serialCfg.deviceName)+'" onchange="S.serialCfg.deviceName=this.value" placeholder="不修改可保持原值"></label>'+
+            '<label><span>SIM1 PIN</span><input type="password" value="'+esc(S.serialCfg.sim1Pin)+'" onchange="S.serialCfg.sim1Pin=this.value" placeholder="不设置请留空"></label>'+
+            '<label><span>SIM2 PIN</span><input type="password" value="'+esc(S.serialCfg.sim2Pin)+'" onchange="S.serialCfg.sim2Pin=this.value" placeholder="不设置请留空"></label>'+
+          '</div>'+
+        '</div>'+
+        '<div>'+
+          '<div class="wizard-section-title" style="margin-bottom:8px"><span>可选转发通道</span><small>通道按固定位置写入；默认模板包含备注字段。</small></div>'+
+          '<div class="channel-tabs" style="margin-bottom:10px">'+chTabs+'</div>'+
+          '<div class="channel-compact-grid">'+
+            '<div><label><span>类型</span><select onchange="S.serialChannels['+S.serialChannel+'].type=Number(this.value);render()">'+CHANNEL_TYPES.map(function(n,idx){return '<option value="'+idx+'"'+(ch.type===idx?' selected':'')+'>'+n+'</option>';}).join('')+'</select></label>'+
+            '<label><span>URL</span><textarea onchange="S.serialChannels['+S.serialChannel+'].url=this.value">'+esc(ch.url)+'</textarea></label>'+
+            '<div class="compact-grid"><label><span>参数1</span><input value="'+esc(ch.key1)+'" onchange="S.serialChannels['+S.serialChannel+'].key1=this.value"></label><label><span>参数2</span><input value="'+esc(ch.key2)+'" onchange="S.serialChannels['+S.serialChannel+'].key2=this.value"></label></div>'+
+            '<label><span>模板</span><textarea onchange="S.serialChannels['+S.serialChannel+'].customBody=this.value">'+esc(ch.customBody)+'</textarea></label></div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="serial-ota-bar"><input placeholder="OTA 固件 URL"><button class="secondary-button" onclick="toast(\'OTA 已触发到已选串口\')">'+ic('download',15)+'全部已选设备 OTA</button></div>'+
+        '<div class="compact-footer-actions">'+
+          '<button class="primary-button" onclick="toast(\'批量配置已写入（'+sel.length+' 个串口）\')">'+ic('save',16)+'批量保存完整配置（'+sel.length+'）</button>'+
+          '<button class="secondary-button" onclick="toast(\'诊断完成，已收到 48 字节\')">'+ic('activity',15)+'诊断</button>'+
+          '<button class="secondary-button" onclick="toast(\'DTR 已切换\')">DTR</button>'+
+          '<button class="secondary-button" onclick="toast(\'RTS 已切换\')">RTS</button>'+
+          '<button class="secondary-button danger-button" onclick="toast(\'复位脉冲已发送\')">复位</button>'+
+        '</div>'+
+      '</main>'+
+    '</div>'+
+    '<section class="serial-panel">'+
+      '<div class="panel-title"><div><h2>'+ic('receiver',17)+' 串口日志</h2><p>'+S.activePort+' · 轮询 · RX '+rx+' / TX '+tx+'</p></div><span class="log-count">'+S.serialLogs.length+'</span></div>'+
+      '<div class="terminal-surface" id="terminal">'+(logs.length===0?'<div class="terminal-empty">连接后显示日志</div>':logs.map(serialRow).join(''))+'</div>'+
+    '</section>'+
+  '</section>');
+}
+function togglePortSel(name, checked){
+  if(checked){ if(S.selectedPorts.indexOf(name)<0) S.selectedPorts.push(name); }
+  else S.selectedPorts=S.selectedPorts.filter(function(p){return p!==name;});
+  render();
+}
+function selectPort(name){
+  S.activePort=name;
+  var p=S.ports.find(function(x){return x.name===name;});
+  S.serialConnected=Boolean(p&&p.connected);
+  render();
+}
+function selAllConnected(){
+  S.selectedPorts=S.ports.filter(function(p){return p.connected;}).map(function(p){return p.name;});
+  render();
+}
+function toggleConnect(){
+  var p=S.ports.find(function(x){return x.name===S.activePort;});
+  if(!p) return;
+  S.serialConnected=!p.connected;
+  p.connected=S.serialConnected;
+  if(S.serialConnected){ p.baudrate=S.baudrate; setNotice(S.activePort+' 已连接'); startSerialFeed(); }
+  else { p.baudrate=0; setNotice(S.activePort+' 已断开'); }
+}
 
 /* ============================ 渲染入口 ============================ */
 function render(){
   applyTheme();
-  const app = $('#app');
-  if (S.view === 'login') return app.innerHTML = renderLogin();
-  if (S.view === 'mode') return app.innerHTML = renderMode();
-  if (S.view === 'lan') return app.innerHTML = renderLan();
-  if (S.view === 'serial') return app.innerHTML = renderSerial();
+  var app=document.getElementById('app');
+  var html;
+  if(S.view==='login') html=renderLogin();
+  else if(S.view==='mode') html=layout(renderMode());
+  else if(S.view==='dashboard') html=renderDashboard();
+  else if(S.view==='devices') html=renderDevices();
+  else if(S.view==='messages') html=renderMessages();
+  else if(S.view==='scan') html=renderScan();
+  else if(S.view==='tasks') html=renderTasks();
+  else if(S.view==='profile') html=renderProfile();
+  else if(S.view==='serial'){ html=renderSerial(); startSerialFeed(); }
+  else html=renderLogin();
+  app.innerHTML=html;
 }
-function applyTheme(){ document.documentElement.dataset.theme = S.theme; }
-
-/* ----- 登录 ----- */
-function renderLogin(){
-  return `
-  <div class="login-wrap">
-    <div class="login-card">
-      <div class="login-brand"><div class="brand-mark">T3</div><div><h1>T3 本地助手</h1><div class="orbital">ORBITAL LINK</div></div></div>
-      <div class="sub">短信转发器本地管理控制台 · 演示</div>
-      <div class="login-field"><label>用户名</label><input id="li-user" value="admin" autofocus></div>
-      <div class="login-field"><label>密码</label><input id="li-pass" type="password" value="admin123"></div>
-      <div class="login-error" id="li-err"></div>
-      <button class="primary-button" style="width:100%" onclick="doLogin()">登录</button>
-      <p class="sub" style="margin-top:14px;text-align:center">演示账号 admin / admin123</p>
-    </div>
-  </div>`;
-}
-function doLogin(){
-  const u = $('#li-user').value.trim(), p = $('#li-pass').value;
-  if (u==='admin' && p==='admin123'){ S.token='demo-token'; localStorage.setItem('token','demo-token'); S.view='mode'; render(); toast('登录成功'); }
-  else { $('#li-err').textContent = '用户名或密码错误（演示账号 admin/admin123）'; }
-}
-
-/* ----- 模式选择 ----- */
-function renderMode(){
-  return `
-  <div class="mode-wrap">
-    <div>
-      <div class="login-brand" style="justify-content:center;margin-bottom:18px"><div class="brand-mark">T3</div><h1 style="margin:0">选择工作模式</h1></div>
-      <div class="mode-grid">
-        <div class="mode-card" onclick="enterMode('lan')">
-          <div class="mode-icon">📡</div>
-          <h3>局域网模式</h3>
-          <p>通过 LAN 密钥发现并接管同一局域网内的短信转发设备，支持设备列表、扫描、短信与通话记录。</p>
-          <button class="primary-button" style="margin-top:8px">进入 →</button>
-        </div>
-        <div class="mode-card" onclick="enterMode('serial')">
-          <div class="mode-icon">🔌</div>
-          <h3>串口模式</h3>
-          <p>通过 USB/串口直连设备，进行多串口管理、离线配置读写、配置复刻、诊断与实时日志。</p>
-          <button class="primary-button" style="margin-top:8px">进入 →</button>
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-function enterMode(m){ S.mode=m; localStorage.setItem('t3-work-mode', m); S.view=m; render(); }
-
-/* ----- 顶栏（LAN） ----- */
-function topNav(){
-  const active = S.lanTab;
-  return `
-  <header class="top-nav-bar">
-    <div class="top-nav-left"><span class="brand-mark-sm">T3</span><span>📡 T3短信转发器控制台</span></div>
-    <nav class="top-nav-tabs">
-      <button class="top-nav-tab ${active==='devices'?'active':''}" onclick="switchLan('devices')">📱 设备管理</button>
-      <button class="top-nav-tab ${active==='messages'?'active':''}" onclick="switchLan('messages')">💬 短信记录</button>
-    </nav>
-    <div class="top-nav-right">
-      <button class="top-nav-icon-btn" onclick="toggleTheme()" title="切换主题">${S.theme==='dark'?'☀️':'🌙'}</button>
-      <button class="top-nav-serial-btn" onclick="switchToSerial()">← 串口模式</button>
-      <button class="top-nav-logout" onclick="doLogout()">🚪 退出</button>
-    </div>
-  </header>`;
-}
-function switchLan(tab){ S.lanTab=tab; render(); }
-function toggleTheme(){ S.theme = S.theme==='dark'?'light':'dark'; localStorage.setItem('t3-theme', S.theme); render(); }
-function switchToSerial(){ localStorage.removeItem('t3-work-mode'); S.mode='serial'; S.view='serial'; render(); }
-function doLogout(){ S.token=null; localStorage.removeItem('token'); localStorage.removeItem('t3-work-mode'); S.mode=null; S.view='login'; render(); toast('已退出'); }
-
-/* ----- LAN 容器 ----- */
-function renderLan(){
-  const content = S.lanTab==='devices' ? renderDevices() : renderMessages();
-  // 扫描页作为设备页“开始扫描”的跳转目标，单独渲染
-  if (S.lanTab==='scan') return renderScanPage();
-  return `<div class="app-shell-topnav">${topNav()}<main class="content-topnav">${content}</main></div>`;
-}
-function renderScanPage(){
-  return `<div class="app-shell-topnav">${topNav()}<main class="content-topnav">${renderScan()}</main></div>`;
-}
-
-/* ----- 设备管理 ----- */
-function statsBar(){
-  const items=S.devices, total=items.length;
-  const online=items.filter(i=>i.status==='online').length;
-  const simSlots=total*2;
-  const sim1=items.filter(i=>i.sim1&&(i.sim1.present||i.sim1.number)).length;
-  const sim2=items.filter(i=>i.sim2&&(i.sim2.present||i.sim2.number)).length;
-  const withSim=sim1+sim2, noSim=items.filter(i=>!(i.sim1&&(i.sim1.present||i.sim1.number))&&!(i.sim2&&(i.sim2.present||i.sim2.number))).length;
-  const registered=items.filter(i=>(i.sim1&&i.sim1.registered)||(i.sim2&&i.sim2.registered)).length;
-  return `<div class="stats-bar">
-    <span class="stat-item">设备 ${total}</span>
-    <span class="stat-item stat-online">🟢 ${online}</span>
-    <span class="stat-item">卡槽 ${simSlots}</span>
-    <span class="stat-item stat-nosim">❌ 无卡 ${noSim}</span>
-    <span class="stat-item stat-sim">🟡 插卡 ${withSim}</span>
-    <span class="stat-item stat-registered">✅ 已注册 ${registered}</span>
-  </div>`;
-}
-function filteredDevices(){
-  const q=S.searchQuery.trim().toLowerCase();
-  if(!q) return S.devices;
-  return S.devices.filter(d=> d.name.toLowerCase().includes(q) || d.ip.includes(q) || (d.sim1&&d.sim1.number||'').includes(q) || (d.sim2&&d.sim2.number||'').includes(q) || (d.group||'').toLowerCase().includes(q));
-}
-function renderDevices(){
-  const items=filteredDevices();
-  return `
-  ${statsBar()}
-  <div class="scan-control-panel">
-    <div class="scan-inputs">
-      <label><span>网段前缀</span><input value="${esc(S.scanPrefix)}" onchange="S.scanPrefix=this.value"></label>
-      <label><span>起始IP</span><input value="${esc(S.scanStart)}" onchange="S.scanStart=this.value"></label>
-      <label><span>结束IP</span><input value="${esc(S.scanEnd)}" onchange="S.scanEnd=this.value"></label>
-      <label><span>设备密码</span><input type="password" value="${esc(S.scanPass)}" onchange="S.scanPass=this.value" placeholder="后台密码"></label>
-    </div>
-    <div class="scan-actions">
-      <button class="btn-primary" onclick="gotoScan()">🔍 开始扫描</button>
-      <button class="btn-secondary" onclick="refreshAll()">🔄 刷新全部</button>
-      <button class="btn-secondary" onclick="addDevice()">➕ 添加设备</button>
-      <button class="btn-secondary" onclick="clearAll()">🗑️ 清空列表</button>
-      <button class="btn-secondary" onclick="toast('统一设置：请逐台在“配置”中调整')">⚙️ 统一设置</button>
-    </div>
-  </div>
-  <div class="search-bar"><span class="search-icon">🔎</span><input placeholder="搜索编号/号码/IP/备注..." value="${esc(S.searchQuery)}" oninput="S.searchQuery=this.value;render()"></div>
-  ${S.error?`<div class="inline-error error">${esc(S.error)}</div>`:''}
-  ${S.notice?`<div class="inline-error success">${esc(S.notice)}</div>`:''}
-  <div class="table-card"><table>
-    <thead><tr><th>设备编号</th><th>IP地址</th><th>状态</th><th>版本号</th><th>SIM卡1</th><th>SIM卡2</th><th>操作</th></tr></thead>
-    <tbody>
-      ${items.length===0?`<tr><td colspan="7" class="empty">暂无设备，请先扫描或手动添加。</td></tr>`:items.map(d=>`
-        <tr>
-          <td><strong>${esc(d.name||d.ip)}</strong><br><small class="text-muted">${esc(d.group||'')}</small></td>
-          <td><code>${esc(d.ip)}</code></td>
-          <td><span class="status-badge ${d.status==='online'?'status-online':'status-offline'}">${d.status==='online'?'🟢 在线':'⚫ 离线'}</span></td>
-          <td>${esc(d.version||'-')}</td>
-          <td>${simCell(d.sim1)}</td>
-          <td>${simCell(d.sim2)}</td>
-          <td class="action-buttons">
-            <button class="btn-action" onclick="refreshDev(${d.id})">🔄 刷新</button>
-            <button class="btn-action" onclick="openTakeover(${d.id})">⚙️ 配置</button>
-            <button class="btn-action" onclick="openSms(${d.id})">💬 短信</button>
-            <button class="btn-action" onclick="rebootDev(${d.id})">⚡ 重启</button>
-            <button class="btn-action" onclick="window.open('http://${esc(d.ip)}')">🖥️ 后台</button>
-            <button class="btn-action btn-danger" onclick="removeDev(${d.id})">🗑️ 删除</button>
-          </td>
-        </tr>`).join('')}
-    </tbody>
-  </table></div>`;
-}
-function simCell(sim){
-  if(sim&&(sim.present||sim.number)) return `<div>${esc(sim.number||'未设置号码')}</div><small class="text-muted">${esc(sim.operator||'')}${sim.registered?' · ✅已注册':' · ❌未注册'}</small>`;
-  return `<span class="text-muted">❌ 无卡</span>`;
-}
-// device actions
-function refreshAll(){ S.notice=`已刷新 ${S.devices.length} 台设备`; S.error=''; render(); }
-function addDevice(){ const ip=`${S.scanPrefix}${S.scanStart}`; S.devices.push({id:Date.now(),name:ip,group:'手动添加',ip,status:'online',version:'4.0',sim1:{present:false,number:'',operator:'',registered:false,signal:0},sim2:{present:false,number:'',operator:'',registered:false,signal:0},wifi:{name:''}}); S.notice=`设备 ${ip} 已添加`; render(); }
-function clearAll(){ if(confirm('确认清空所有设备？')){ S.devices=[]; render(); } }
-function refreshDev(id){ toast('设备信息已刷新'); }
-function rebootDev(id){ toast('重启指令已下发'); }
-function removeDev(id){ if(confirm('删除该设备？')){ S.devices=S.devices.filter(d=>d.id!==id); render(); } }
-function gotoScan(){ S.lanTab='scan'; S.scanStatus=null; render(); }
-
-/* ----- 短信弹窗 ----- */
-function openSms(id){ S.smsDevice=S.devices.find(d=>d.id===id); S.smsPhone=''; S.smsContent=''; S.smsSlot=1;
-  openModal(`<div class="modal-header"><h2>发送短信</h2><button onclick="closeModal()">✕</button></div>
-  <div class="form-grid">
-    <label>目标号码<input id="sms-phone" placeholder="手机号" autofocus></label>
-    <label>SIM 卡槽<select id="sms-slot"><option value="1">SIM 1</option><option value="2">SIM 2</option></select></label>
-    <label class="full-field">短信内容<textarea id="sms-content" rows="5" placeholder="输入要发送的短信内容"></textarea></label>
-  </div>
-  <div class="modal-actions"><button class="btn-secondary" onclick="closeModal()">取消</button><button class="btn-primary" onclick="sendSms()">💬 发送</button></div>`);
-}
-function sendSms(){ const phone=$('#sms-phone').value.trim(), content=$('#sms-content').value.trim(), slot=$('#sms-slot').value;
-  if(!phone||!content){ toast('请填写号码与内容'); return; }
-  closeModal(); toast(`已通过 SIM ${slot} 向 ${phone} 发送`); }
-
-/* ----- 接管配置弹窗 ----- */
-function defaultConfig(){
-  return { deviceName:'', callRecordEnabled:false, callRecordAutoAnswer:false, callHangupSeconds:10, callPlayFile:'',
-    recordUploadType:0, recordUploadUrl:'', mqttEnabled:false, mqttServer:'', mqttPort:1883, mqttTopic:'t3/events',
-    mqttUser:'', mqttPass:'', mqttClientId:'', networkMode:0, webUser:'', webPass:'', sim1Remark:'', sim2Remark:'',
-    pushChannels: Array.from({length:5},(_,i)=>({enabled:false,type:0,name:'通道 '+(i+1),url:'',key1:'',key2:'',customBody:''})) };
-}
-function openTakeover(id){
-  const d=S.devices.find(x=>x.id===id); S.takeoverDevice=d; S.configReady=true; S.atResp=''; S.otaUrl=''; S.activeChannel=0;
-  S.config=defaultConfig(); S.config.deviceName=d.name; S.config.webUser='admin'; S.wifiSsid=d.wifi?.name||'';
-  openModal(renderTakeover());
-}
-function renderTakeover(){
-  const d=S.takeoverDevice, c=S.config, ac=S.activeChannel;
-  const ch=c.pushChannels[ac]||{};
-  return `
-  <div class="modal-header"><h2>${esc(d.name||d.ip)}</h2><button onclick="closeModal()">✕</button></div>
-  <div class="takeover-content">
-    <div class="takeover-metrics">
-      <div><span>运行</span><strong>3 时 12 分</strong></div>
-      <div><span>堆内存</span><strong>182040 B</strong></div>
-      <div><span>WiFi</span><strong>${esc(S.wifiSsid||d.wifi?.name||'-')}</strong></div>
-      <div><span>信号</span><strong>-67 dBm</strong></div>
-    </div>
-    <div class="save-config-bar"><button class="btn-primary" onclick="saveConfig()">💾 保存固件配置</button></div>
-    <div class="takeover-grid">
-      <section class="takeover-card accent-blue"><h3>📱 设备身份</h3>
-        <label>设备名称<input value="${esc(c.deviceName)}" onchange="S.config.deviceName=this.value"></label>
-        <label>Web 用户<input value="${esc(c.webUser)}" onchange="S.config.webUser=this.value"></label>
-        <label>Web 密码<input type="password" value="${esc(c.webPass||'')}" onchange="S.config.webPass=this.value"></label>
-      </section>
-      <section class="takeover-card accent-green"><h3>📶 WiFi 热点接管</h3>
-        <label>热点名称<input value="${esc(S.wifiSsid)}" onchange="S.wifiSsid=this.value"></label>
-        <label>热点密码<input type="password" value="${esc(S.wifiPass)}" onchange="S.wifiPass=this.value" placeholder="留空不修改"></label>
-        <button class="btn-secondary" onclick="toast('WiFi 已保存并重连')">保存 WiFi 并重连</button>
-      </section>
-      <section class="takeover-card accent-amber"><h3>📶 SIM 与网络</h3>
-        <label>SIM1 号码<input value="${esc(d.sim1?.number||'')}" onchange="toast('SIM1 号码已写入')"></label>
-        <label>SIM1 PIN 码<input type="password" value="" placeholder="未设置" onchange="toast('SIM1 PIN 已更新')"></label>
-        <label>SIM2 号码<input value="${esc(d.sim2?.number||'')}" onchange="toast('SIM2 号码已写入')"></label>
-        <label>SIM2 PIN 码<input type="password" value="" placeholder="未设置" onchange="toast('SIM2 PIN 已更新')"></label>
-        <label>网络模式<select value="${c.networkMode}" onchange="S.config.networkMode=Number(this.value)"><option value="0">自动</option><option value="1">WiFi only</option><option value="2">4G only</option></select></label>
-      </section>
-      <section class="takeover-card"><h3>📞 通话/录音</h3>
-        <label>来电处理<select onchange="const v=this.value;S.config.callRecordEnabled=v!=='0';S.config.callRecordAutoAnswer=v==='1'"><option value="0">关闭</option><option value="1">自动接听录音</option><option value="2">仅记录</option></select></label>
-        <label>挂断秒数<input type="number" value="${c.callHangupSeconds}" onchange="S.config.callHangupSeconds=Number(this.value)"></label>
-        <label>TTS 内容<input value="${esc(c.callPlayFile)}" onchange="S.config.callPlayFile=this.value" placeholder="播报内容"></label>
-      </section>
-      <section class="takeover-card wide"><h3>📤 转发通道</h3>
-        <div class="channel-tabs">${[0,1,2,3,4].map(i=>`<button class="${ac===i?'active':''}" onclick="S.activeChannel=${i};refreshTakeover()">通道 ${i+1}</button>`).join('')}</div>
-        <div class="takeover-two">
-          <label>名称<input value="${esc(ch.name)}" onchange="patchCh('name',this.value)"></label>
-          <label>类型<select onchange="patchCh('type',Number(this.value))">${CHANNEL_TYPES.map((n,i)=>`<option value="${i}" ${ch.type===i?'selected':''}>${n}</option>`).join('')}</select></label>
-        </div>
-        <label>URL<textarea onchange="patchCh('url',this.value)">${esc(ch.url)}</textarea></label>
-        <div class="takeover-two">
-          <label>参数1<input value="${esc(ch.key1)}" onchange="patchCh('key1',this.value)"></label>
-          <label>参数2<input value="${esc(ch.key2)}" onchange="patchCh('key2',this.value)"></label>
-        </div>
-        <label>模板<textarea onchange="patchCh('customBody',this.value)">${esc(ch.customBody)}</textarea></label>
-      </section>
-      <section class="takeover-card wide"><h3>📊 MQTT 上报</h3>
-        <div class="takeover-two">
-          <label>MQTT 开关<select onchange="S.config.mqttEnabled=this.value==='1'"><option value="0">关闭</option><option value="1" ${c.mqttEnabled?'selected':''}>开启</option></select></label>
-          <label>Broker 地址<input value="${esc(c.mqttServer)}" onchange="S.config.mqttServer=this.value" placeholder="mqtt.example.com"></label>
-        </div>
-        <div class="takeover-two">
-          <label>端口<input type="number" value="${c.mqttPort}" onchange="S.config.mqttPort=Number(this.value)"></label>
-          <label>主题前缀<input value="${esc(c.mqttTopic)}" onchange="S.config.mqttTopic=this.value" placeholder="sms"></label>
-        </div>
-        <div class="takeover-two">
-          <label>用户名<input value="${esc(c.mqttUser)}" onchange="S.config.mqttUser=this.value"></label>
-          <label>密码<input type="password" value="${esc(c.mqttPass)}" onchange="S.config.mqttPass=this.value"></label>
-        </div>
-        <div class="takeover-two">
-          <label>心跳(秒)<input type="number" value="60" onchange="toast('心跳已更新')"></label>
-          <label>状态间隔(秒)<input type="number" value="60" onchange="toast('状态间隔已更新')"></label>
-        </div>
-        <label>Client ID<input value="${esc(c.mqttClientId)}" onchange="S.config.mqttClientId=this.value" placeholder="留空自动生成"></label>
-      </section>
-      <section class="takeover-card wide"><h3>⚙️ AT / OTA / 系统</h3>
-        <div class="serial-command"><input value="${esc(S.atCmd)}" onchange="S.atCmd=this.value"><button class="btn-secondary" onclick="runAt()">执行 AT</button></div>
-        ${S.atResp?`<pre class="at-response">${esc(S.atResp)}</pre>`:''}
-        <div class="serial-command"><input value="${esc(S.otaUrl)}" onchange="S.otaUrl=this.value" placeholder="3.x升级4.0请全量更新"><button class="btn-secondary" onclick="checkOta()">查看更新规则</button><button class="btn-secondary" onclick="window.open('https://s.dkb.cc.cd/','_blank')">全量更新</button></div>
-        <div class="modal-actions" style="padding:0;border:0;justify-content:flex-start">
-          <button class="btn-secondary btn-danger" onclick="toast('已发送恢复出厂指令')">🔄 恢复出厂</button>
-          <button class="btn-secondary btn-danger" onclick="toast('已清空设备日志')">🗑️ 清空设备日志</button>
-          <button class="btn-secondary btn-danger" onclick="toast('重启指令已下发')">⚡ 重启</button>
-        </div>
-      </section>
-    </div>
-    <div class="save-config-bar"><button class="btn-primary" onclick="saveConfig()">💾 保存固件配置</button></div>
-  </div>`;
-}
-function refreshTakeover(){ openModal(renderTakeover()); }
-function patchCh(k,v){ const i=S.activeChannel; S.config.pushChannels[i]={...S.config.pushChannels[i],[k]:v, enabled: k==='type'?(v!==0):S.config.pushChannels[i].enabled}; }
-function saveConfig(){ toast('固件配置已保存'); }
-function runAt(){ const cmd=S.atCmd.trim();
-  const map={ 'AT':'OK', 'AT+CSQ':'+CSQ: 23,0', 'ATI':'T3-MQTT v4.6', 'AT+CGMR':'4.6' };
-  S.atResp = map[cmd] || ('[' + cmd + ']\nOK'); refreshTakeover(); }
-function checkOta(){ S.otaUrl='https://s.dkb.cc.cd/'; refreshTakeover(); toast('3.x升级4.0需全量更新，4.0以上支持正常 OTA'); }
-
-/* ----- 星域扫描页 ----- */
-function renderScan(){
-  const st=S.scanStatus;
-  return `
-  <div class="page-hero"><div><span class="eyebrow">Sector Scan</span><h1>星域扫描</h1><p>只识别带 LAN 密钥发现接口的短信转发节点，识别成功后自动加入节点列表。</p></div></div>
-  <div class="scan-panel">
-    <label><span>CIDR 网段</span><input value="${esc(S.cidr)}" onchange="S.cidr=this.value" placeholder="留空自动识别，或 192.168.1.0/24"></label>
-    <label><span>设备用户名</span><input value="${esc(S.scanUser)}" onchange="S.scanUser=this.value"></label>
-    <label><span>设备密码</span><input type="password" value="${esc(S.scanPass2)}" onchange="S.scanPass2=this.value"></label>
-    <button class="primary-action" onclick="startScanDemo()" ${S.scanRunning?'disabled':''}>🛰️ ${S.scanRunning?'扫描中...':'开始扫描'}</button>
-  </div>
-  ${S.error?`<div class="inline-error error">${esc(S.error)}</div>`:''}
-  ${st?`<div class="scan-status">
-    <div class="status-line"><strong>${esc(st.cidr)}</strong><span>${st.auto?'自动识别 · ':''}${st.progress}% · 发现 ${st.found} · 剩余 ${st.pending}</span></div>
-    <div class="progress"><div style="width:${st.progress}%"></div></div>
-  </div>`:''}
-  <div class="table-card"><table>
-    <thead><tr><th>IP</th><th>结果</th><th>状态 / 操作</th></tr></thead>
-    <tbody>
-      ${!st||st.results.length===0?`<tr><td colspan="3" class="empty">暂无扫描结果。输入网段后点击“开始扫描”。</td></tr>`:st.results.map(r=>`
-        <tr><td><code>${esc(r.ip)}</code></td>
-        <td>${r.success?'已识别设备':(r.httpOpen?'未识别或未升级固件':'未开放 HTTP')}</td>
-        <td>${r.auto?'<span class="text-muted">✅ 已自动加入</span>':`<button class="small-action" onclick="claimIp('${esc(r.ip)}')">+ 重新接管</button>`}</td></tr>`).join('')}
-    </tbody>
-  </table></div>`;
-}
-function startScanDemo(){
-  if(S.scanRunning) return;
-  S.scanRunning=true; S.error='';
-  const cidr=S.cidr.trim()||'192.168.123.0/24'; const auto=!S.cidr.trim();
-  const ips=['192.168.123.21','192.168.123.22','192.168.123.23','192.168.123.24','192.168.123.50'];
-  S.scanStatus={cidr, auto, total:ips.length, pending:ips.length, found:0, progress:0, results:ips.map(ip=>({ip, success:false, httpOpen:true, auto:false}))};
-  render();
-  let i=0;
-  S.scanTimer=setInterval(()=>{
-    if(i>=ips.length){ clearInterval(S.scanTimer); S.scanRunning=false; S.scanStatus.pending=0; S.scanStatus.progress=100; render(); return; }
-    const r=S.scanStatus.results[i]; r.success=true; r.auto=true;
-    S.scanStatus.found++; S.scanStatus.pending--; S.scanStatus.progress=Math.round((i+1)/ips.length*100);
-    i++; render();
-  }, 600);
-}
-function claimIp(ip){ const r=S.scanStatus.results.find(x=>x.ip===ip); if(r){ r.auto=true; render(); toast(`已将 ${ip} 加入节点列表`); } }
-
-/* ----- 短信/通话记录 ----- */
-function renderMessages(){
-  const convs = CONVERSATIONS.filter(g=>{
-    if(S.msgMode==='sms' && g.items.some(it=>it.direction==='call')) { /* keep if has sms */ }
-    if(S.msgMode==='call') return g.items.some(it=>it.direction==='call');
-    if(S.msgMode==='sms') return g.items.some(it=>it.direction!=='call');
-    return true;
-  }).map(g=>({...g, items: g.items.filter(it=> S.msgMode==='all'?true : S.msgMode==='call'? it.direction==='call' : it.direction!=='call')}))
-    .sort((a,b)=> (b.items[b.items.length-1]?.createdAt||0) - (a.items[a.items.length-1]?.createdAt||0));
-  const q=S.msgSearch.toLowerCase();
-  if(q) convs.forEach(g=>{}); // search handled below
-  const filtered = q? CONVERSATIONS.filter(g=> g.phone.toLowerCase().includes(q) || g.items.some(it=>(it.content||'').toLowerCase().includes(q))).map(g=>({...g, items:g.items.filter(it=> S.msgMode==='all'?true : S.msgMode==='call'? it.direction==='call' : it.direction!=='call')})) : convs;
-
-  if(S.chatPhone){ return renderChat(S.chatPhone); }
-  return `
-  <div class="page-hero"><div><span class="eyebrow">Signal Archive</span><h1>${S.msgMode==='all'?'短信和通话记录':S.msgMode==='sms'?'短信记录':'通话记录'}</h1><p>共 ${filtered.length} 个会话。</p></div>
-    <button class="secondary-button" onclick="loadMsgs()">🔄 刷新</button></div>
-  <div class="record-tabs">
-    <button class="${S.msgMode==='all'?'active':''}" onclick="S.msgMode='all';S.chatPhone=null;render()">💬 全部</button>
-    <button class="${S.msgMode==='sms'?'active':''}" onclick="S.msgMode='sms';S.chatPhone=null;render()">📩 短信</button>
-    <button class="${S.msgMode==='call'?'active':''}" onclick="S.msgMode='call';S.chatPhone=null;render()">📞 通话</button>
-  </div>
-  <div class="toolbar">
-    <div class="search-field">🔎<input placeholder="搜索号码或内容" value="${esc(S.msgSearch)}" oninput="S.msgSearch=this.value;render()"></div>
-    <button class="primary-action" onclick="loadMsgs()">搜索</button>
-    <button class="secondary-button" onclick="toast('记录已清空')">🗑️ 清空</button>
-  </div>
-  <div class="messages-conversations">
-    ${filtered.length===0?`<div class="empty">暂无记录。</div>`:filtered.map(g=>{
-      const latest=g.items[g.items.length-1]; const call=g.items.some(it=>it.direction==='call');
-      return `<button class="messages-conversation-card" onclick="S.chatPhone='${esc(g.phone)}';render()">
-        <div class="messages-conversation-icon">${call?'📞':'💬'}</div>
-        <div class="messages-conversation-main"><strong>${esc(g.phone)}</strong><span class="messages-conversation-preview">${call?'来电':esc(latest.content.slice(0,40))}</span></div>
-        <div class="messages-conversation-meta"><span>${fmtTime(latest.createdAt)}</span><span>${g.items.length} 条</span></div>
-      </button>`;
-    }).join('')}
-  </div>`;
-}
-function renderChat(phone){
-  const g=CONVERSATIONS.find(x=>x.phone===phone); if(!g) return renderMessages();
-  const items=g.items.filter(it=> S.msgMode==='all'?true : S.msgMode==='call'? it.direction==='call' : it.direction!=='call').sort((a,b)=>a.createdAt-b.createdAt);
-  return `
-  <div class="page-hero"><div><span class="eyebrow">Signal Archive</span><h1>会话详情</h1></div>
-    <button class="secondary-button" onclick="S.chatPhone=null;render()">← 返回</button></div>
-  <div class="messages-chat-view">
-    <div class="messages-chat-header"><button class="secondary-button" onclick="S.chatPhone=null;render()">← 返回</button>
-      <div class="messages-chat-title">${items.some(i=>i.direction==='call')?'📞':'💬'} <strong>${esc(phone)}</strong></div></div>
-    <div class="messages-chat-body">
-      ${items.map(m=> m.direction==='call'
-        ? `<div class="messages-bubble call-bubble"><div class="messages-bubble-meta"><span class="messages-bubble-time">${fmtTime(m.createdAt)}</span><span class="messages-bubble-call">来电</span></div><div class="messages-bubble-call-content">通话记录</div></div>`
-        : `<div class="messages-bubble ${m.direction==='in'?'bubble-in':'bubble-out'}"><div class="messages-bubble-meta"><span class="messages-bubble-time">${fmtTime(m.createdAt)}</span><span>${m.direction==='in'?'接收':'发出'}</span></div><div class="messages-bubble-content">${esc(m.content)}</div></div>`
-      ).join('')}
-    </div>
-  </div>`;
-}
-function loadMsgs(){ toast('记录已刷新'); }
-
-/* ============================ 串口工作台 ============================ */
-function startSerialLogFeed(){
-  if(S.serialTimer) clearInterval(S.serialTimer);
-  const samples=['AT','AT+CSQ','+CSQ: 22,0','AT+COPS?','+COPS: 0,0,"CMCC"','OK','> ','SMS sent','state: connected'];
-  let n=0;
-  S.serialTimer=setInterval(()=>{
-    n++; const lvl = n%3===0?'rx':(n%3===1?'tx':'system');
-    const content = samples[n%samples.length];
-    S.serialLogs.push({id:Date.now()+n, level:lvl, content, time:Date.now()/1000});
-    if(S.serialLogs.length>300) S.serialLogs=S.serialLogs.slice(-300);
-    if(S.view==='serial') render();
-  }, 2600);
-}
-function renderSerial(){
-  if(!S.serialTimer) startSerialLogFeed();
-  const port=S.ports.find(p=>p.name===S.activePort)||S.ports[0];
-  const connected=Boolean(port&&port.connected);
-  const ch=S.channels[S.activeSerialChannel]||{};
-  const logs=[...S.serialLogs].reverse().slice(0,200);
-  const rx=S.serialLogs.filter(l=>l.level==='rx').length, tx=S.serialLogs.filter(l=>l.level==='tx').length;
-  return `
-  <div class="app-shell">
-    <aside class="sidebar">
-      <a class="sidebar-brand" href="javascript:void(0)"><div class="sidebar-brand-mark">T3</div><div class="sidebar-brand-text"><strong>T3短信转发器控制台</strong><span>SMS Forwarder</span></div></a>
-      <nav class="sidebar-nav"><a class="sidebar-nav-item active" href="javascript:void(0)">串口配置</a></nav>
-      <div class="sidebar-footer"><button class="sidebar-logout" onclick="doLogout()">🚪 退出登录</button></div>
-    </aside>
-    <main class="content">
-      <div class="serial-hero"><div><span class="eyebrow">Serial Desk</span><h1>串口工作台</h1><p>集中处理多串口连接、设备配置读写、配置复刻、导入导出、诊断、DTR/RTS 控制与底部实时日志。</p></div>
-        <div class="serial-hero-actions"><button class="secondary-button" onclick="refreshSerial()">🔄 刷新</button><button class="primary-action" onclick="${connected?'disconnectSerial()':'connectSerial()'}">${connected?'⏏ 断开当前':'🔌 连接当前'}</button></div>
-      </div>
-      ${S.error?`<div class="inline-error error">${esc(S.error)}</div>`:''}
-      ${S.notice?`<div class="inline-error success">${esc(S.notice)}</div>`:''}
-      <div class="multi-serial-layout">
-        <aside class="serial-panel">
-          <div class="panel-title"><div><h2>🔌 串口列表</h2><p>${S.ports.filter(p=>p.connected).length} 个已连接</p></div></div>
-          <div class="multi-port-list">${S.ports.map(p=>`<button class="multi-port-card ${p.name===S.activePort?'active':''} ${p.connected?'connected':''}" onclick="selectPort('${p.name}')"><span class="multi-port-dot"></span><strong>${esc(p.name)}</strong><small>${esc(p.description)}</small><em>${p.connected?`${p.baudrate} · ${p.logCount} 条`:'未连接'}</em></button>`).join('')}</div>
-          <div class="compact-connect-box">
-            <label><span>波特率</span><input type="number" value="${S.baudrate}" onchange="S.baudrate=Number(this.value)||115200" ${connected?'disabled':''}></label>
-            <label><span>模式</span><select onchange="S.serialMode=this.value" ${connected?'disabled':''}><option value="cdc" ${S.serialMode==='cdc'?'selected':''}>稳定连接</option><option value="safe" ${S.serialMode==='safe'?'selected':''}>防复位</option><option value="normal" ${S.serialMode==='normal'?'selected':''}>标准</option></select></label>
-            <div class="compact-button-row">
-              ${connected?`<button class="secondary-button danger-button" onclick="disconnectSerial()">⏏ 断开</button>`:`<button class="secondary-button" onclick="connectSerial()">🔌 连接</button>`}
-              <button class="secondary-button" onclick="readSerialConfig()">⬇️ 读取</button>
-              <button class="secondary-button" onclick="toast('固件版本检测请在 LAN 设备页执行')">💾 版本说明</button>
-            </div>
-          </div>
-        </aside>
-        <main class="serial-panel">
-          <div class="panel-title"><div><h2>📶 配置编辑</h2><p>${esc(S.activePort)} · ${connected?'已连接':'未连接'}</p></div>
-            <div class="compact-actions"><button class="secondary-button" onclick="exportConfig()">⬇️ 导出</button><button class="secondary-button" onclick="importConfig()">⬆️ 导入</button><button class="secondary-button" onclick="cloneConfig()" ${S.ports.filter(p=>p.connected).length<2?'disabled':''}>📋 复刻</button></div>
-          </div>
-          <div class="compact-grid">
-            <label><span>设备名称</span><input value="${esc(S.deviceName)}" onchange="S.deviceName=this.value"></label>
-            <label><span>WiFi 名称</span><input value="${esc(S.wifiSsid2)}" onchange="S.wifiSsid2=this.value"></label>
-            <label><span>WiFi 密码</span><input type="password" value="${esc(S.wifiPass2)}" onchange="S.wifiPass2=this.value" placeholder="留空则不改"></label>
-            <label><span>网络模式</span><select onchange="S.netMode=Number(this.value)"><option value="0" ${S.netMode===0?'selected':''}>自动</option><option value="1" ${S.netMode===1?'selected':''}>WiFi only</option><option value="2" ${S.netMode===2?'selected':''}>4G only</option></select></label>
-            <label><span>SIM1 PIN</span><input type="password" value="${esc(S.sim1Pin)}" onchange="S.sim1Pin=this.value" placeholder="未设置"></label>
-            <label><span>SIM2 PIN</span><input type="password" value="${esc(S.sim2Pin)}" onchange="S.sim2Pin=this.value" placeholder="未设置"></label>
-          </div>
-          <div class="mini-channel-shell">
-            <div class="channel-tabs serial-channel-tabs">${S.channels.map((_,i)=>`<button class="${S.activeSerialChannel===i?'active':''}" onclick="S.activeSerialChannel=${i};renderSerial()">通道 ${i+1}</button>`).join('')}</div>
-            <div class="compact-grid channel-compact-grid">
-              <label><span>名称</span><input value="${esc(ch.name)}" onchange="patchSerCh('name',this.value)"></label>
-              <label><span>类型</span><select onchange="patchSerCh('type',Number(this.value))">${CHANNEL_TYPES.map((n,i)=>`<option value="${i}" ${ch.type===i?'selected':''}>${n}</option>`).join('')}</select></label>
-              <label class="full-field"><span>URL</span><textarea onchange="patchSerCh('url',this.value)">${esc(ch.url)}</textarea></label>
-              <label><span>参数1</span><input value="${esc(ch.key1)}" onchange="patchSerCh('key1',this.value)"></label>
-              <label><span>参数2</span><input value="${esc(ch.key2)}" onchange="patchSerCh('key2',this.value)"></label>
-              <label class="full-field"><span>模板</span><textarea onchange="patchSerCh('customBody',this.value)">${esc(ch.customBody)}</textarea></label>
-            </div>
-          </div>
-          <div class="compact-footer-actions">
-            <button class="primary-action" onclick="saveOfflineConfig()" ${connected?'':'disabled'}>💾 写入当前串口</button>
-            <button class="secondary-button" onclick="runProbe()" ${connected?'':'disabled'}>📡 诊断</button>
-            <button class="secondary-button" onclick="toggleLine('dtr')" ${connected?'':'disabled'}>DTR</button>
-            <button class="secondary-button" onclick="toggleLine('rts')" ${connected?'':'disabled'}>RTS</button>
-            <button class="secondary-button danger-button" onclick="resetDevice()" ${connected?'':'disabled'}>♻️ 复位</button>
-          </div>
-        </main>
-      </div>
-      <section class="serial-panel serial-log-bottom">
-        <div class="panel-title"><div><h2>📟 串口日志</h2><p>${esc(S.activePort)} · ${S.streamMode==='ws'?'实时流':'轮询'} · RX ${rx} / TX ${tx}</p></div><span class="log-count">${S.serialLogs.length}</span></div>
-        <div class="terminal-surface">${logs.length===0?`<div class="terminal-empty">连接后显示日志</div>`:logs.map(l=>`<div class="terminal-row terminal-row-${l.level}"><span class="terminal-level">${l.level==='rx'?'接收':l.level==='tx'?'发送':l.level==='error'?'错误':'系统'}</span><code>${esc(l.content)}</code><span class="terminal-time">${fmtTimeShort(l.time)}</span></div>`).join('')}</div>
-      </section>
-    </main>
-  </div>`;
-}
-// serial helpers
-function selectPort(name){ S.activePort=name; renderSerial(); }
-function connectSerial(){ const p=S.ports.find(x=>x.name===S.activePort); if(p){ p.connected=true; p.baudrate=S.baudrate; p.logCount=S.serialLogs.length; } S.notice=`${S.activePort} 已连接`; renderSerial(); }
-function disconnectSerial(){ const p=S.ports.find(x=>x.name===S.activePort); if(p){ p.connected=false; p.baudrate=0; } S.notice=`${S.activePort} 已断开`; renderSerial(); }
-function refreshSerial(){ S.notice='已刷新串口状态'; renderSerial(); }
-function readSerialConfig(){ S.notice=`已读取 ${S.activePort} 的配置`; renderSerial(); }
-function saveOfflineConfig(){ S.notice=`${S.activePort}: 配置已发送`; renderSerial(); }
-function cloneConfig(){ const targets=S.ports.filter(p=>p.connected&&p.name!==S.activePort); if(!targets.length){ S.error='没有其它已连接串口可复刻'; renderSerial(); return;} S.notice=`已复刻到 ${targets.length} 个串口`; renderSerial(); }
-function exportConfig(){ toast('已导出 t3-config.json'); }
-function importConfig(){ toast('配置文件已导入，可写入或复刻'); }
-function runProbe(){ S.notice='诊断完成，已收到若干字节'; renderSerial(); }
-function toggleLine(which){ if(which==='dtr') S.dtr=!S.dtr; else S.rts=!S.rts; S.notice=`${which.toUpperCase()} 已切换`; renderSerial(); }
-function resetDevice(){ S.notice='复位脉冲已发送'; renderSerial(); }
-function patchSerCh(k,v){ const i=S.activeSerialChannel; S.channels[i]={...S.channels[i],[k]:v, enabled: k==='type'?(v!==0):S.channels[i].enabled}; }
-
-/* ============================ 启动 ============================ */
+document.documentElement.dataset.theme=S.theme;
+if(localStorage.getItem('t3-theme')!=='light'&&localStorage.getItem('t3-theme')!=='dark') localStorage.setItem('t3-theme','light');
+// 与真实应用一致：token 有效时刷新后直接进入模式选择页
+if(localStorage.getItem('token')==='demo-token') S.view='mode';
 render();
 </script>
 </body>
