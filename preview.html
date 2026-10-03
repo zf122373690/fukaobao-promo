@@ -766,16 +766,6 @@ body{max-width:none;margin:0;color:var(--fg);font-size:14px;letter-spacing:0}
 <span class="meta" id="ch_meta">通道 1 / 5</span>
 </div>
 <div class="card-bd">
-<div class="channel-config-panel wecom-free-panel" style="margin-bottom:16px">
-<div class="eyebrow wecom-free-title">T3专属企业微信应用（专属免费通道）</div>
-<div class="fld-hint" style="margin-bottom:12px">扫码关注后填写账号 ID，教程：<a href="http://wx.1992418.xyz" target="_blank" rel="noopener">wx.1992418.xyz</a></div>
-<div class="wecom-free-row">
-<div class="fld"><label class="fld-lbl">状态</label><select id="wecom_free_enabled"><option value="0">关</option><option value="1">开</option></select></div>
-<div class="fld"><label class="fld-lbl">接收人</label><input class="inp" id="wecom_free_recipient" placeholder="企业微信成员账号，多个用 | 分隔"></div>
-<button class="btn btn-primary" type="button" onclick="saveFreeWeCom(false)">保存</button>
-<button class="btn btn-ghost" id="wecom_free_test_btn" type="button" onclick="saveFreeWeCom(true)">测试</button>
-</div>
-</div>
 <select id="ch_sel" style="display:none" onchange="cacheCh();renderCh(this.value)"><option value="0">通道 1</option><option value="1">通道 2</option><option value="2">通道 3</option><option value="3">通道 4</option><option value="4">通道 5</option></select>
 <div class="channel-blocks">
 <button class="channel-block active" type="button" data-channel="0" onclick="selectChannel(0)"><strong>通道 1</strong><span id="ch_block_name_0">未配置</span></button>
@@ -1408,7 +1398,7 @@ const VIRTUAL_STATUS = {
     ipv6: '2408:8214:3a15:1a2b::1a2b'
   },
   uptime: 277200,
-  version: 'V4.6',
+  version: 'V4.8',
   businessNetwork: 'wifi',
   businessDataSlot: 1,
   mqtt: {enabled:true,configured:true,connected:true,transport:'wifi'},
@@ -1719,32 +1709,10 @@ function selectChannel(i){
 cacheCh();$('ch_sel').value=String(i);renderCh(i);
 }
 function syncFreeWeCom(){
-if(!cfg)return;
-if(!cfg.pushChannels)cfg.pushChannels=[];
-while(cfg.pushChannels.length<6)cfg.pushChannels.push({});
-let free=cfg.pushChannels[5]||{};
-for(let i=0;i<5;i++){
-if((cfg.pushChannels[i]||{}).type===16){if(!free.type)free=cfg.pushChannels[i];cfg.pushChannels[i]={};}
-}
-free.type=16;free.url='';free.key1='';free.recordUploadEnabled=false;free.recordUrl='';
-cfg.pushChannels[5]=free;
-$('wecom_free_enabled').value=free.enabled?'1':'0';
-$('wecom_free_recipient').value=free.key2||'';
+// 固件 v4.8 已移除内置企业微信免费通道，此函数保留为空以兼容旧调用
 }
 async function saveFreeWeCom(test){
-if(!cfg)return;
-let recipient=$('wecom_free_recipient').value.trim(),enabled=$('wecom_free_enabled').value==='1';
-if(enabled&&!recipient){alert('请填写接收人成员账号');$('wecom_free_recipient').focus();return}
-cacheCh();
-while(cfg.pushChannels.length<6)cfg.pushChannels.push({});
-cfg.pushChannels[5]={enabled:enabled,type:16,name:'T3专属企业微信应用（专属免费通道）',url:'',key1:'',key2:recipient,customBody:'',recordUploadEnabled:false,recordUrl:''};
-let btn=$('wecom_free_test_btn');if(test){btn.disabled=true;btn.textContent='测试中…'}
-try{
-await postJson('/api/config',payload());
-if(test){let d=await postJson('/api/push/test',{channel:5});alert(d.message||'测试消息发送成功')}else alert('免费通道已保存');
-await loadConfig();
-}catch(e){alert((test?'测试失败：':'保存失败：')+(e.message||'请求失败'))}
-finally{if(test){btn.disabled=false;btn.textContent='测试'}}
+// 固件 v4.8 已移除内置企业微信免费通道
 }
 function refreshChannelBlocks(){
 let channels=(cfg&&cfg.pushChannels)||[];

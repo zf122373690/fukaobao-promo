@@ -932,19 +932,19 @@ var CHANNEL_META = {
 var DEFAULT_TEMPLATE = '【{{设备名称}}】{{事件标题}}\n号码: {{号码}}\n内容: {{内容}}\n时间: {{时间}}\n来源: SIM{{卡槽}} {{卡号}}\n备注: {{备注}}';
 
 var DEVICES = [
-  { id:1, name:'Node-A1', group:'办公室', ip:'192.168.123.21', status:'online', version:'4.0', uptime:11520,
+  { id:1, name:'Node-A1', group:'办公室', ip:'192.168.123.21', status:'online', version:'4.8', uptime:11520,
     sim1:{present:true,number:'13800001111',operator:'中国移动',registered:true,signal:-67},
     sim2:{present:true,number:'13900002222',operator:'中国联通',registered:true,signal:-73},
     wifi:{name:'Office-5G'} },
-  { id:2, name:'Node-B2', group:'仓库', ip:'192.168.123.22', status:'online', version:'4.0', uptime:8420,
+  { id:2, name:'Node-B2', group:'仓库', ip:'192.168.123.22', status:'online', version:'4.8', uptime:8420,
     sim1:{present:true,number:'13700003333',operator:'中国电信',registered:true,signal:-71},
     sim2:{present:false,number:'',operator:'',registered:false,signal:0},
     wifi:{name:'WH-2.4G'} },
-  { id:3, name:'Node-C3', group:'门店', ip:'192.168.123.23', status:'offline', version:'4.0', uptime:0,
+  { id:3, name:'Node-C3', group:'门店', ip:'192.168.123.23', status:'offline', version:'4.8', uptime:0,
     sim1:{present:true,number:'13600004444',operator:'中国移动',registered:false,signal:-85},
     sim2:{present:true,number:'13500005555',operator:'中国联通',registered:true,signal:-69},
     wifi:{name:'Shop-WiFi'} },
-  { id:4, name:'Node-D4', group:'家庭', ip:'192.168.123.24', status:'online', version:'4.0', uptime:230400,
+  { id:4, name:'Node-D4', group:'家庭', ip:'192.168.123.24', status:'online', version:'4.8', uptime:230400,
     sim1:{present:false,number:'',operator:'',registered:false,signal:0},
     sim2:{present:false,number:'',operator:'',registered:false,signal:0},
     wifi:{name:'Home'} }
@@ -1336,7 +1336,7 @@ function openAdd(){
 function addDev(){
   var ip=document.getElementById('add-ip').value.trim();
   if(!ip) return;
-  S.devices.push({ id:Date.now(), name:ip, group:'手动添加', ip:ip, status:'online', version:'4.0', uptime:60,
+  S.devices.push({ id:Date.now(), name:ip, group:'手动添加', ip:ip, status:'online', version:'4.8', uptime:60,
     sim1:{present:false,number:'',operator:'',registered:false,signal:0},
     sim2:{present:false,number:'',operator:'',registered:false,signal:0},
     wifi:{name:''} });
@@ -1802,7 +1802,7 @@ function renderTasks(){
     body='<div class="task-card"><div class="task-card-title"><span class="quick-ico">'+ic('refresh',18)+'</span>服务端信息</div>'+
       '<div class="task-info-grid">'+
         '<div><span>本地版本</span><strong>v1.5.2</strong></div>'+
-        '<div><span>OTA 服务器</span><strong>v4.0</strong></div>'+
+        '<div><span>OTA 服务器</span><strong>v4.8</strong></div>'+
         '<div><span>固件升级</span><strong>可用</strong></div>'+
       '</div>'+
       '<div class="task-actions"><button class="btn-secondary" onclick="nav(\'devices\')">'+ic('monitor',15)+'设备列表</button></div>'+
@@ -1860,7 +1860,7 @@ function renderProfile(){
     '<div class="profile-section"><h2>服务端信息</h2>'+
       '<div class="profile-meta">'+
         '<div><span>本地版本</span><strong>v1.5.2</strong></div>'+
-        '<div><span>OTA 服务器</span><strong>v4.0</strong></div>'+
+        '<div><span>OTA 服务器</span><strong>v4.8</strong></div>'+
         '<div><span>固件升级源</span><strong>可用</strong></div>'+
       '</div>'+
     '</div>'+
@@ -1925,7 +1925,7 @@ function renderSerial(){
       '</div>'+
     '</div>'+
     noticeHtml()+
-    '<div class="version-banner"><span>T3服务端 v1.5.2</span><span>OTA 服务器 v4.0</span><span>串口设备 '+(connected?'4.0':'请选择串口检测')+'</span></div>'+
+    '<div class="version-banner"><span>T3服务端 v1.5.2</span><span>OTA 服务器 v4.8</span><span>串口设备 '+(connected?'4.8':'请选择串口检测')+'</span></div>'+
     '<div class="multi-serial-layout">'+
       '<aside class="serial-panel">'+
         '<div class="panel-title"><div><h2>'+ic('cable',17)+' 串口列表</h2><p>'+S.ports.filter(function(p){return p.connected;}).length+' 个已连接 · 已选 '+sel.length+' 个</p></div></div>'+

@@ -73,8 +73,8 @@ footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 <div class="latest">
 <div class="badge">🚀</div>
 <div class="info">
-<h3><span class="ver">v4.6</span>当前最新版本</h3>
-<p>新增设备编号与 .local 局域网访问、网页公告等能力，优化录音上传队列与联通卡注册稳定性。</p>
+<h3><span class="ver">v4.8</span>当前最新版本</h3>
+<p>转发通道支持卡绑定、新增短信白名单，通知模板与录音上传配置更灵活；随 4.7 一并带来消息中心改版与控制台直接回复短信。</p>
 </div>
 <div class="dl">
 <a class="btn btn-primary" href="download.html">下载固件 ↓</a>
@@ -83,6 +83,27 @@ footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 </div>
 
 <div class="timeline">
+<div class="entry">
+<div class="e-head"><span class="e-ver">v4.8</span><span class="e-date">2026-10-03</span><span class="e-type t-new">功能更新</span></div>
+<ul>
+<li>转发通道支持卡绑定：每个通道可单独选择接收 SIM1 / SIM2，关闭后该通道不再转发对应卡的短信与来电。</li>
+<li>新增短信白名单：开启后仅命中关键词（如验证码、动态码、校验码）的短信才推送到各通道，未命中的只进入消息中心；关键词支持逗号或换行分隔。</li>
+<li>通知模板增强：开机提醒支持独立开关，开机 / 来电通知正文可自定义模板，并提供 <code>{{设备名称}}</code> 等占位符一键插入。</li>
+<li>录音上传地址独立配置：每个通道可单独填写上传地址，留空自动复用当前转发通道 URL。</li>
+<li>移除内置企业微信免费通道，推送统一走 5 个自定义转发通道，配置更清爽。</li>
+</ul>
+<a class="e-link" href="download.html">前往下载 →</a>
+</div>
+<div class="entry">
+<div class="e-head"><span class="e-ver">v4.7</span><span class="e-date">2026-09-18</span><span class="e-type t-new">功能更新</span></div>
+<ul>
+<li>消息中心改版：短信与来电统一为单列，按时间倒序排列，最新记录置顶，支持查看消息详情与来电记录。</li>
+<li>支持在控制台直接回复短信：打开会话输入回复内容即可下发。</li>
+<li>在线更新增强：控制台可从更新服务器检测并安装正式固件（服务器托管于 Cloudflare，检测偶尔会有延迟）。</li>
+<li>提升模组与消息中心长期运行稳定性，加快 OTA 检查速度。</li>
+</ul>
+<a class="e-link" href="download.html">前往下载 →</a>
+</div>
 <div class="entry">
 <div class="e-head"><span class="e-ver">v4.6</span><span class="e-date">2026-09-16</span><span class="e-type t-new">功能更新</span></div>
 <ul>
